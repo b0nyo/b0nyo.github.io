@@ -19,6 +19,11 @@
     const topic = document.querySelector(".md-header__topic:last-child .md-ellipsis");
     const links = Array.from(document.querySelectorAll(".md-tabs__link"));
 
+    for (const link of links) {
+      const hash = new URL(link.href, window.location.href).hash;
+      if (sections.some((section) => hash === `#${section.id}`)) link.href = hash;
+    }
+
     function headerBottom() {
       const header = document.querySelector(".md-header");
       const tabs = document.querySelector(".md-tabs");
@@ -75,6 +80,8 @@
       if (!sections.some((section) => section.id === id)) return;
 
       event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       history.pushState(null, "", hash);
       scrollToSection(id);
     }
