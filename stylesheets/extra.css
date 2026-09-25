@@ -128,11 +128,13 @@ body {
   color: var(--sage) !important;
   transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
 }
-.social-links .social-ring { border: 1.5px solid var(--sage); border-radius: 50%; }
+.social-links .social-ring,
+.social-links .social-htb { border: 1.5px solid var(--sage); border-radius: 50%; }
 .social-links svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
-.social-links .social-htb svg { width: 2.15rem; height: 2.15rem; }
+.social-links .social-htb svg { width: 1.4rem; height: 1.4rem; }
 .social-links a:hover { color: var(--blood-hot) !important; transform: translateY(-2px); }
-.social-links .social-ring:hover { background: rgba(143, 15, 25, .08); border-color: var(--blood-hot); }
+.social-links .social-ring:hover,
+.social-links .social-htb:hover { background: rgba(143, 15, 25, .08); border-color: var(--blood-hot); }
 .md-social__link { color: var(--sage); }
 .md-social__link:hover { color: var(--blood-hot); }
 
