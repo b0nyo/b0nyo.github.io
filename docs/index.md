@@ -25,9 +25,9 @@ I'm **Jose Raul Bongiovani (`b0nyo`)**, a penetration tester focused on Active D
 - **Network exploitation** — enumeration, service abuse, and lateral movement
 - **Vulnerability research** — root-cause analysis and coordinated disclosure
 
-<div class="landing-section" markdown>
+<div class="landing-section" id="write-ups" markdown>
 
-## Write-ups { #write-ups }
+## Write-ups
 
 <span class="eyebrow">01 // TACTICAL ARCHIVE</span>
 
@@ -67,9 +67,9 @@ Redelegate · APT
 
 </div>
 
-<div class="landing-section" markdown>
+<div class="landing-section" id="cve-disclosures" markdown>
 
-## CVE Disclosures { #cve-disclosures }
+## CVE Disclosures
 
 <span class="eyebrow">02 // VULNERABILITY RESEARCH</span>
 
@@ -85,9 +85,9 @@ published only after the agreed timeline or when a fix becomes available.
 
 </div>
 
-<div class="landing-section" markdown>
+<div class="landing-section" id="about-contact" markdown>
 
-## About & Contact { #about-contact }
+## About & Contact
 
 <span class="eyebrow">03 // OPERATOR PROFILE</span>
 

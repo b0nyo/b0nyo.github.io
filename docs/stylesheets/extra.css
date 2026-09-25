@@ -54,8 +54,9 @@ body {
 .md-header__title { color: var(--sand); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 800; letter-spacing: .04em; }
 .md-tabs { background: rgba(16, 18, 13, .92); border-bottom: 1px solid rgba(175, 180, 134, .1); }
 .md-tabs__link { color: var(--sage); font-size: .69rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.md-tabs__link--active,
 .md-tabs__link:hover { color: var(--blood-hot); }
+.md-tabs__link--active { color: var(--blood-hot); }
+.landing-nav .md-tabs__link--active:not(.section-active) { color: var(--sage); }
 
 .md-grid { max-width: 78rem; }
 .md-main__inner { margin-top: 1.8rem; }
@@ -96,10 +97,9 @@ body {
 .feature-card p:last-child { margin-bottom: 0; }
 .muted-card { opacity: .65; }
 
-.landing-section { padding: 3.5rem 0 2rem; }
+.landing-section { padding: 3.5rem 0 2rem; scroll-margin-top: 7.75rem; }
 .landing-section + .landing-section { border-top: 1px solid rgba(175, 180, 134, .14); }
 .landing-section > h2:first-child { margin-top: 0; }
-.landing-section > h2[id] { scroll-margin-top: 7.75rem; }
 
 .md-tabs__link.section-active { color: var(--blood-hot); }
 
