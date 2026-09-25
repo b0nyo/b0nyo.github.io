@@ -119,19 +119,20 @@ body {
   border-color: var(--blood-hot);
 }
 
-.social-links { display: flex; gap: .8rem; margin: 1rem 0 1.5rem; }
+.social-links { display: flex; align-items: center; gap: 1rem; margin: 1rem 0 1.5rem; }
 .social-links a {
   display: grid;
-  width: 2.65rem;
-  height: 2.65rem;
+  width: 2.5rem;
+  height: 2.5rem;
   place-items: center;
   color: var(--sage) !important;
-  border: 1px solid var(--moss);
-  border-radius: 50%;
   transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
 }
-.social-links svg { width: 1.25rem; height: 1.25rem; fill: currentColor; }
-.social-links a:hover { color: var(--blood-hot) !important; background: rgba(143, 15, 25, .08); border-color: var(--blood-hot); transform: translateY(-2px); }
+.social-links .social-ring { border: 1.5px solid var(--sage); border-radius: 50%; }
+.social-links svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+.social-links .social-htb svg { width: 2.15rem; height: 2.15rem; }
+.social-links a:hover { color: var(--blood-hot) !important; transform: translateY(-2px); }
+.social-links .social-ring:hover { background: rgba(143, 15, 25, .08); border-color: var(--blood-hot); }
 .md-social__link { color: var(--sage); }
 .md-social__link:hover { color: var(--blood-hot); }
 
