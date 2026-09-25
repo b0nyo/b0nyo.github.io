@@ -57,6 +57,7 @@ body {
 .md-tabs__link:hover { color: var(--blood-hot); }
 .md-tabs__link--active { color: var(--blood-hot); }
 .landing-nav .md-tabs__link--active:not(.section-active) { color: var(--sage); }
+.landing-nav .md-tabs__item--active .md-tabs__link:not(.section-active) { color: var(--sage); }
 
 .md-grid { max-width: 78rem; }
 .md-main__inner { margin-top: 1.8rem; }
