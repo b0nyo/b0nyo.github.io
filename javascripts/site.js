@@ -19,12 +19,31 @@
     const topic = document.querySelector(".md-header__topic:last-child .md-ellipsis");
     const links = Array.from(document.querySelectorAll(".md-tabs__link"));
 
+    function headerBottom() {
+      const header = document.querySelector(".md-header");
+      const tabs = document.querySelector(".md-tabs");
+      return Math.max(
+        header ? header.getBoundingClientRect().bottom : 0,
+        tabs ? tabs.getBoundingClientRect().bottom : 0,
+      );
+    }
+
+    function scrollToSection(id, behavior = "smooth") {
+      const section = sections.find((item) => item.id === id);
+      const heading = section?.element.querySelector("h2");
+      if (!heading) return;
+
+      const top = window.scrollY + heading.getBoundingClientRect().top - headerBottom() - 18;
+      window.scrollTo({ top, behavior });
+    }
+
     function update() {
-      const threshold = 145;
+      const threshold = headerBottom() + 24;
       let active = { id: "home", label: "Home" };
 
       for (const section of sections) {
-        if (section.element.getBoundingClientRect().top <= threshold) active = section;
+        const heading = section.element.querySelector("h2");
+        if (heading && heading.getBoundingClientRect().top <= threshold) active = section;
       }
 
       if (topic) topic.textContent = active.label;
@@ -49,11 +68,30 @@
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+
+    function onTabClick(event) {
+      const hash = new URL(event.currentTarget.href, window.location.href).hash;
+      const id = hash.slice(1);
+      if (!sections.some((section) => section.id === id)) return;
+
+      event.preventDefault();
+      history.pushState(null, "", hash);
+      scrollToSection(id);
+    }
+
+    for (const link of links) link.addEventListener("click", onTabClick);
+
     update();
+
+    const initialId = window.location.hash.slice(1);
+    if (sections.some((section) => section.id === initialId)) {
+      requestAnimationFrame(() => scrollToSection(initialId, "auto"));
+    }
 
     cleanup = () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      for (const link of links) link.removeEventListener("click", onTabClick);
       document.documentElement.classList.remove("landing-nav");
     };
   }
