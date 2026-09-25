@@ -29,6 +29,8 @@
 
 html { background: var(--ink); }
 
+html { scroll-behavior: smooth; scroll-padding-top: 7rem; }
+
 body {
   background:
     linear-gradient(rgba(7, 8, 6, .94), rgba(7, 8, 6, .98)),
@@ -93,6 +95,10 @@ body {
 .feature-card h3 { margin-top: .55rem; }
 .feature-card p:last-child { margin-bottom: 0; }
 .muted-card { opacity: .65; }
+
+.landing-section { padding: 3.5rem 0 2rem; }
+.landing-section + .landing-section { border-top: 1px solid rgba(175, 180, 134, .14); }
+.landing-section > h2:first-child { margin-top: 0; }
 
 .md-button { color: var(--sage) !important; margin-top: .5rem; border-color: rgba(175, 180, 134, .6) !important; border-radius: 1px !important; background: transparent !important; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; letter-spacing: .05em; }
 .md-button--primary { color: var(--ink) !important; background: var(--sage) !important; border-color: var(--sage) !important; }
