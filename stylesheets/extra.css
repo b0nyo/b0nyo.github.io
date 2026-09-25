@@ -29,7 +29,7 @@
 
 html { background: var(--ink); }
 
-html { scroll-behavior: smooth; scroll-padding-top: 7rem; }
+html { scroll-behavior: smooth; scroll-padding-top: 7.75rem; }
 
 body {
   background:
@@ -99,6 +99,9 @@ body {
 .landing-section { padding: 3.5rem 0 2rem; }
 .landing-section + .landing-section { border-top: 1px solid rgba(175, 180, 134, .14); }
 .landing-section > h2:first-child { margin-top: 0; }
+.landing-section > h2[id] { scroll-margin-top: 7.75rem; }
+
+.md-tabs__link.section-active { color: var(--blood-hot); }
 
 .cert-link {
   display: inline-block;
