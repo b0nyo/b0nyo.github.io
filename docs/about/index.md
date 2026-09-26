@@ -4,7 +4,10 @@
 
 ## Jose Raul Bongiovani
 
-I'm a penetration tester focused on **Active Directory**, **network exploitation**, **post-exploitation**, and **vulnerability research**. I approach assessments with an emphasis on precise evidence, repeatable methodology, and clear technical communication.
+Offensive security specialist with practical experience in web and network
+exploitation, privilege escalation, post-exploitation, and initial Active
+Directory attack techniques. Strong background in enumeration, misconfiguration
+analysis, and leveraging common vulnerabilities to gain and maintain access.
 
 ## Certifications
 

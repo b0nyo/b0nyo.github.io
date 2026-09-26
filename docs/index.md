@@ -91,11 +91,10 @@ published only after the agreed timeline or when a fix becomes available.
 
 <span class="eyebrow">03 // OPERATOR PROFILE</span>
 
-I'm **Jose Raul Bongiovani (`b0nyo`)**, a penetration tester specializing in
-Active Directory, network exploitation, post-exploitation, and vulnerability
-research. I hold the **Certified Penetration Testing Specialist (CPTS)**
-certification and document my work with an emphasis on precise evidence and
-reproducible methodology.
+Offensive security specialist with practical experience in web and network
+exploitation, privilege escalation, post-exploitation, and initial Active
+Directory attack techniques. Strong background in enumeration, misconfiguration
+analysis, and leveraging common vulnerabilities to gain and maintain access.
 
 ### Certifications
 
