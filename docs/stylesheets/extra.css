@@ -99,6 +99,7 @@ body {
 .muted-card { opacity: .65; }
 
 .landing-section { padding: 3.5rem 0 2rem; scroll-margin-top: 7.75rem; }
+.landing-section:last-child { min-height: calc(100vh - 7.75rem); }
 .landing-section + .landing-section { border-top: 1px solid rgba(175, 180, 134, .14); }
 .landing-section > h2:first-child { margin-top: 0; }
 
