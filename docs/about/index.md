@@ -4,19 +4,19 @@
 
 ## Jose Raul Bongiovani
 
-I'm Jose, the person behind `b0nyo`. I got into offensive security because I
-enjoy understanding how things work—and what happens when they do not work the
-way their creators expected. What keeps me here is the mix of curiosity,
-persistence, and creative problem-solving that every target demands.
+I'm Jose, the person behind `b0nyo`. I got into security because I always wanted
+to know how things worked and why they broke. I like the part of the job where
+there is no obvious answer and I have to keep digging until something makes
+sense.
 
-I work across web and network exploitation, privilege escalation,
-post-exploitation, and Active Directory. I care just as much about explaining
-the journey as reaching the objective, which is why I created this blog: to turn
-hard-earned lessons into something useful for the next person.
+Most of my time goes into web and network exploitation, privilege escalation,
+post-exploitation, and Active Directory. I started this blog to keep a record of
+what I learn. Writing things down also forces me to understand them better, and
+maybe those notes can save someone else a few hours.
 
-Behind the technical work, I value honest conversations, shared knowledge, and
-meeting people who are genuinely curious about security. If you want to compare
-notes, talk research, or simply say hello, I would be glad to hear from you.
+I enjoy meeting people who are curious about security and willing to share what
+they know. If you want to compare notes, discuss research, or work on something
+together, you can reach me through the links below.
 
 ## Certifications
 

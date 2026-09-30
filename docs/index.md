@@ -10,7 +10,7 @@ hide:
 
 # Notes from the field.<br>Lessons from the work.
 
-I'm **Jose Raul Bongiovani (`b0nyo`)**, an offensive security operator focused on Active Directory, network exploitation, and vulnerability research. This is my personal corner of the internet—a place to document what I learn, share the reasoning behind an attack path, and publish research responsibly.
+I'm **Jose Raul Bongiovani (`b0nyo`)**. I work in offensive security, mostly with Active Directory, network exploitation, and vulnerability research. I use this blog to keep notes on what I learn and to share my research.
 
 [Explore write-ups](writeups/index.md){ .md-button .md-button--primary }
 [View CVEs](cves/index.md){ .md-button }
@@ -21,9 +21,9 @@ I'm **Jose Raul Bongiovani (`b0nyo`)**, an offensive security operator focused o
 
 ## Current focus
 
-- **Active Directory** — identity attack paths, delegation, and domain compromise
-- **Network exploitation** — enumeration, service abuse, and lateral movement
-- **Vulnerability research** — root-cause analysis and coordinated disclosure
+- **Active Directory:** identity attack paths, delegation, and domain compromise
+- **Network exploitation:** enumeration, service abuse, and lateral movement
+- **Vulnerability research:** root-cause analysis and coordinated disclosure
 
 <div class="landing-section" id="write-ups" markdown>
 
@@ -31,10 +31,9 @@ I'm **Jose Raul Bongiovani (`b0nyo`)**, an offensive security operator focused o
 
 <span class="eyebrow">01 // FIELD NOTES</span>
 
-Every write-up is more than a list of commands. I break down the decisions,
-failed assumptions, attack path, and lessons that made the target worth
-documenting. The entries stay inside the archive—choose a platform there and
-follow the path that interests you.
+I write down the full process, including enumeration, wrong turns, the final
+attack path, and what I learned from the target. The machine list stays inside
+the archive. Enter, choose a platform, and browse from there.
 
 <div class="section-grid" markdown>
 
@@ -42,7 +41,7 @@ follow the path that interests you.
 
 ### The reasoning
 
-Enumeration, clues, assumptions, and the decisions that shaped the attack.
+The clues I found and why I decided to follow them.
 
 </div>
 
@@ -50,7 +49,7 @@ Enumeration, clues, assumptions, and the decisions that shaped the attack.
 
 ### The path
 
-From the first foothold to privilege escalation, explained step by step.
+The route from initial access to privilege escalation.
 
 </div>
 
@@ -58,7 +57,7 @@ From the first foothold to privilege escalation, explained step by step.
 
 ### The takeaway
 
-What worked, what did not, and what I would carry into the next engagement.
+The mistakes, useful details, and lessons I want to remember.
 
 </div>
 
@@ -92,16 +91,15 @@ published only after the agreed timeline or when a fix becomes available.
 
 <span class="eyebrow">03 // ABOUT & CONTACT</span>
 
-I'm **Jose**, the person behind `b0nyo`. I got into offensive security because I
-enjoy understanding how things work—and what happens when they do not work the
-way their creators expected. What keeps me here is the mix of curiosity,
-persistence, and creative problem-solving that every target demands.
+I'm **Jose**, the person behind `b0nyo`. I got into security because I always
+wanted to know how things worked and why they broke. I like the part of the job
+where there is no obvious answer and I have to keep digging until something
+makes sense.
 
-I work across web and network exploitation, privilege escalation,
-post-exploitation, and Active Directory. I care just as much about explaining
-the journey as reaching the objective, so this blog is where I turn hard-earned
-lessons into something useful for the next person. If that way of thinking
-resonates with you, feel free to reach out.
+Most of my time goes into web and network exploitation, privilege escalation,
+post-exploitation, and Active Directory. I started this blog to keep a record of
+what I learn and share it with anyone who may find it useful. You can contact me
+if you want to talk about security, research, or a project.
 
 ### Certifications
 
