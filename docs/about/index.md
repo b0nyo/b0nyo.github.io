@@ -1,13 +1,22 @@
-# About & Contact
+# Beyond the terminal
 
-<span class="eyebrow">OPERATOR PROFILE // B0NYO</span>
+<span class="eyebrow">ABOUT & CONTACT // B0NYO</span>
 
 ## Jose Raul Bongiovani
 
-Offensive security specialist with practical experience in web and network
-exploitation, privilege escalation, post-exploitation, and initial Active
-Directory attack techniques. Strong background in enumeration, misconfiguration
-analysis, and leveraging common vulnerabilities to gain and maintain access.
+I'm Jose, the person behind `b0nyo`. I got into offensive security because I
+enjoy understanding how things work—and what happens when they do not work the
+way their creators expected. What keeps me here is the mix of curiosity,
+persistence, and creative problem-solving that every target demands.
+
+I work across web and network exploitation, privilege escalation,
+post-exploitation, and Active Directory. I care just as much about explaining
+the journey as reaching the objective, which is why I created this blog: to turn
+hard-earned lessons into something useful for the next person.
+
+Behind the technical work, I value honest conversations, shared knowledge, and
+meeting people who are genuinely curious about security. If you want to compare
+notes, talk research, or simply say hello, I would be glad to hear from you.
 
 ## Certifications
 
