@@ -2,17 +2,17 @@
 
 <span class="eyebrow">FIELD NOTES // ATTACK PATHS & LESSONS</span>
 
-This is where the actual archive begins. Choose a platform to explore complete
-attack paths, the reasoning behind each decision, and the lessons collected
-along the way. Entries are organized by **content type**, **category**, and
-**difficulty** so you can follow the path that is most useful to you.
+The machine list starts here. Choose a platform to see the available write-ups.
+Each one includes the full attack path, my notes, and the reason behind the main
+decisions. Entries are organized by **content type**, **category**, and
+**difficulty**.
 
 <div class="section-grid" markdown>
 <div class="feature-card" markdown>
 
 ### Hack The Box
 
-Machines, challenges, and the notes behind each solution.
+Machines, challenges, and my notes for each solution.
 
 [Browse Hack The Box →](hack-the-box/index.md)
 </div>
@@ -20,7 +20,6 @@ Machines, challenges, and the notes behind each solution.
 
 ### More field notes
 
-New platforms and competitions will get their own space here, keeping each
-archive clear without mixing taxonomies or scoring systems.
+I will add other platforms and competitions here as I write about them.
 </div>
 </div>
