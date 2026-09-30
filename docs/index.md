@@ -6,11 +6,11 @@ hide:
 
 <div class="hero" markdown>
 
-<span class="eyebrow">B0NYO // OFFENSIVE SECURITY</span>
+<span class="eyebrow">B0NYO // OFFENSIVE SECURITY OPERATOR</span>
 
-# Documenting the path<br>from signal to shell.
+# Notes from the field.<br>Lessons from the work.
 
-I'm **Jose Raul Bongiovani (`b0nyo`)**, a penetration tester focused on Active Directory, network exploitation, and vulnerability research. This is my field log: reproducible attack paths, CTF write-ups, and responsible disclosures.
+I'm **Jose Raul Bongiovani (`b0nyo`)**, an offensive security operator focused on Active Directory, network exploitation, and vulnerability research. This is my personal corner of the internet—a place to document what I learn, share the reasoning behind an attack path, and publish research responsibly.
 
 [Explore write-ups](writeups/index.md){ .md-button .md-button--primary }
 [View CVEs](cves/index.md){ .md-button }
@@ -29,35 +29,36 @@ I'm **Jose Raul Bongiovani (`b0nyo`)**, a penetration tester focused on Active D
 
 ## Write-ups
 
-<span class="eyebrow">01 // TACTICAL ARCHIVE</span>
+<span class="eyebrow">01 // FIELD NOTES</span>
 
-Technical walkthroughs organized by **platform**, **content type**, **category**,
-and **difficulty**. The current archive contains seven Hack The Box machines
-covering Linux, Windows, web exploitation, and Active Directory.
+Every write-up is more than a list of commands. I break down the decisions,
+failed assumptions, attack path, and lessons that made the target worth
+documenting. The entries stay inside the archive—choose a platform there and
+follow the path that interests you.
 
 <div class="section-grid" markdown>
 
 <div class="feature-card" markdown>
 
-### Easy
+### The reasoning
 
-Bashed · Nibbles · TimeLapse
-
-</div>
-
-<div class="feature-card" markdown>
-
-### Medium
-
-Delegate · Popcorn
+Enumeration, clues, assumptions, and the decisions that shaped the attack.
 
 </div>
 
 <div class="feature-card" markdown>
 
-### Hard / Insane
+### The path
 
-Redelegate · APT
+From the first foothold to privilege escalation, explained step by step.
+
+</div>
+
+<div class="feature-card" markdown>
+
+### The takeaway
+
+What worked, what did not, and what I would carry into the next engagement.
 
 </div>
 
@@ -87,14 +88,20 @@ published only after the agreed timeline or when a fix becomes available.
 
 <div class="landing-section" id="about-contact" markdown>
 
-## About & Contact
+## Beyond the terminal
 
-<span class="eyebrow">03 // OPERATOR PROFILE</span>
+<span class="eyebrow">03 // ABOUT & CONTACT</span>
 
-Offensive security specialist with practical experience in web and network
-exploitation, privilege escalation, post-exploitation, and initial Active
-Directory attack techniques. Strong background in enumeration, misconfiguration
-analysis, and leveraging common vulnerabilities to gain and maintain access.
+I'm **Jose**, the person behind `b0nyo`. I got into offensive security because I
+enjoy understanding how things work—and what happens when they do not work the
+way their creators expected. What keeps me here is the mix of curiosity,
+persistence, and creative problem-solving that every target demands.
+
+I work across web and network exploitation, privilege escalation,
+post-exploitation, and Active Directory. I care just as much about explaining
+the journey as reaching the objective, so this blog is where I turn hard-earned
+lessons into something useful for the next person. If that way of thinking
+resonates with you, feel free to reach out.
 
 ### Certifications
 

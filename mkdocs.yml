@@ -1,4 +1,4 @@
-site_name: b0nyo // Offensive Security
+site_name: b0nyo // Offensive Security Operator
 site_description: Personal cyber security research, CTF write-ups, and vulnerability disclosures by Jose Raul Bongiovani.
 site_author: Jose Raul Bongiovani
 site_url: https://b0nyo.github.io/
@@ -56,7 +56,7 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/jose-raul-bongiovani/
       name: LinkedIn
-    - icon: fontawesome/solid/cube
+    - icon: simple/hackthebox
       link: https://app.hackthebox.com/users/1117173
       name: Hack The Box
 copyright: Copyright &copy; 2026 Jose Raul Bongiovani

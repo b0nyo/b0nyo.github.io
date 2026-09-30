@@ -1,22 +1,26 @@
 # Write-ups
 
-<span class="eyebrow">TACTICAL ARCHIVE // 07 REPORTS</span>
+<span class="eyebrow">FIELD NOTES // ATTACK PATHS & LESSONS</span>
 
-Technical walkthroughs organized first by **platform**, then by **content type**. Challenges are classified by category and difficulty; machines are classified by difficulty.
+This is where the actual archive begins. Choose a platform to explore complete
+attack paths, the reasoning behind each decision, and the lessons collected
+along the way. Entries are organized by **content type**, **category**, and
+**difficulty** so you can follow the path that is most useful to you.
 
 <div class="section-grid" markdown>
 <div class="feature-card" markdown>
 
 ### Hack The Box
 
-**07 machines** · **Linux & Windows** · Easy through Insane
+Machines, challenges, and the notes behind each solution.
 
 [Browse Hack The Box →](hack-the-box/index.md)
 </div>
 <div class="feature-card muted-card" markdown>
 
-### More platforms
+### More field notes
 
-The archive is ready for future labs and competitions without mixing their taxonomies or scoring systems.
+New platforms and competitions will get their own space here, keeping each
+archive clear without mixing taxonomies or scoring systems.
 </div>
 </div>
