@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Slashed zero favicon">
+  <rect width="64" height="64" rx="12" fill="#10120d"/>
+
+  <!-- Subtle displaced red glitch -->
+  <ellipse cx="34" cy="32" rx="18" ry="23" fill="none" stroke="#8f0f19" stroke-width="7"/>
+  <path d="M18 52 49 11" stroke="#c7202d" stroke-width="5" stroke-linecap="square"/>
+
+  <!-- Main slashed zero -->
+  <ellipse cx="30" cy="32" rx="18" ry="23" fill="#070806" stroke="#afb486" stroke-width="7"/>
+  <path d="M13 53 47 10" stroke="#cec39a" stroke-width="5" stroke-linecap="square"/>
+
+  <!-- Small digital breaks -->
+  <rect x="9" y="27" width="13" height="4" fill="#10120d"/>
+  <rect x="41" y="34" width="13" height="4" fill="#10120d"/>
+  <rect x="8" y="26" width="10" height="4" fill="#c7202d"/>
+  <rect x="46" y="35" width="9" height="4" fill="#c7202d"/>
+</svg>

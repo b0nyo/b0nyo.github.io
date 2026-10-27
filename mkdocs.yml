@@ -6,8 +6,8 @@ theme:
   name: material
   language: en
   custom_dir: overrides
-  logo: assets/logo.svg
-  favicon: assets/favicon.svg
+  logo: assets/demon-head-logo.png
+  favicon: assets/favicon-zero.svg
   features:
     - navigation.instant
     - navigation.instant.progress
