@@ -8,9 +8,12 @@ hide:
 
 <span class="eyebrow">B0NYO // OFFENSIVE SECURITY OPERATOR</span>
 
-# Notes from the field.<br>Lessons from the work.
+# Living off the land.<br>Operating in the shadows.
 
-I'm **Jose Raul Bongiovani (`b0nyo`)**. I work in offensive security, mostly with Active Directory, network exploitation, and vulnerability research. I use this blog to keep notes on what I learn and to share my research.
+Offensive security specialist with practical experience in web and network
+exploitation, privilege escalation, post-exploitation, and initial Active
+Directory attack techniques. Strong background in enumeration, misconfiguration
+analysis, and leveraging common vulnerabilities to gain and maintain access.
 
 [Explore write-ups](writeups/index.md){ .md-button .md-button--primary }
 [View CVEs](cves/index.md){ .md-button }

@@ -48,9 +48,13 @@ body {
   backdrop-filter: blur(16px);
 }
 
-.md-header__inner { min-height: 3.65rem; }
+.md-header__inner { min-height: 4rem; }
 .md-header__button.md-logo img,
-.md-header__button.md-logo svg { height: 2rem; }
+.md-header__button.md-logo svg {
+  width: 3.15rem;
+  height: 3.15rem;
+  object-fit: contain;
+}
 .md-header__title { color: var(--sand); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 800; letter-spacing: .04em; }
 .md-tabs { background: rgba(16, 18, 13, .92); border-bottom: 1px solid rgba(175, 180, 134, .1); }
 .md-tabs__link { color: var(--sage); font-size: .69rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
