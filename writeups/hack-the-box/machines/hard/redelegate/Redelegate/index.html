@@ -17,6 +17,9 @@
       
       
       
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../../feed_rss_updated.xml">
+      
       <link rel="icon" href="../../../../../../assets/favicon-zero.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
     
@@ -197,13 +200,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="/#write-ups" class="md-tabs__link">
+      <a href="/#blog" class="md-tabs__link">
         
   
   
     
   
-  Write-ups
+  Blog
 
       </a>
     </li>
@@ -223,6 +226,25 @@
     
   
   CVEs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#write-ups" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Write-ups
 
       </a>
     </li>
@@ -315,12 +337,12 @@
   
   
     <li class="md-nav__item">
-      <a href="/#write-ups" class="md-nav__link">
+      <a href="/#blog" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Write-ups
+    Blog
     
   </span>
   
@@ -343,6 +365,28 @@
   
   <span class="md-ellipsis">
     CVEs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#write-ups" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Write-ups
     
   </span>
   
@@ -924,7 +968,7 @@
 <a id="__codelineno-1-114" name="__codelineno-1-114" href="#__codelineno-1-114"></a><span class="p">|</span>_<span class="w">  </span>start_date:<span class="w"> </span>N/A
 </code></pre></div>
 <p>Two key findings:
-- <strong>FTP allows anonymous login</strong> and already lists three files, including a <code>Shared.kdbx</code>  KeePass password database.
+- <strong>FTP allows anonymous login</strong> and already lists three files, including a <code>Shared.kdbx</code> KeePass password database.
 - <strong>MSSQL</strong> is running on a DC, which is unusual and suggests a service account may be configured there.</p>
 <p>The domain is <code>redelegate.vl</code> and the machine is <code>dc.redelegate.vl</code>.</p>
 <hr />
@@ -1034,7 +1078,7 @@
 This is a small but highly targeted wordlist — 19 entries. That's intentional: the training document handed us the exact pattern, so a broad wordlist would just be noise.</p>
 <hr />
 <h3 id="extracting-the-hash-and-cracking-with-hashcat">Extracting the Hash and cracking with Hashcat</h3>
-<p><code>keepass2john</code> reads the <code>.kdbx</code> file and outputs a hash that represents the KDF (Key Derivation Function) parameters plus the encrypted database blob. This hash is what we crack offline at no point does the database itself need to be "open".
+<p><code>keepass2john</code> reads the <code>.kdbx</code> file and outputs a hash that represents the KDF (Key Derivation Function) parameters plus the encrypted database blob. This hash is what we crack offline; at no point does the database itself need to be "open".
 We use mode <code>-m 13400</code> (KeePass KDBX v2/v3) and feed it our custom wordlist:</p>
 <h2 id="keepass2john-sharedkdbx-hash_to_cracktxt-hashcat-m-13400-hash_to_cracktxt-passwordstxt-hashcat-v712-starting-keepass26000000ce7395f413946b0cd27950redacted_hashredacted_passwd-snip"><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>❯<span class="w"> </span>keepass2john<span class="w"> </span>Shared.kdbx<span class="w"> </span>&gt;<span class="w"> </span>hash_to_crack.txt
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>❯<span class="w"> </span>hashcat<span class="w"> </span>-m<span class="w"> </span><span class="m">13400</span><span class="w"> </span>hash_to_crack.txt<span class="w"> </span>passwords.txt
@@ -1045,7 +1089,7 @@ We use mode <code>-m 13400</code> (KeePass KDBX v2/v3) and feed it our custom wo
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>&lt;SNIP&gt;
 </code></pre></div></h2>
 <h3 id="dumping-the-database-contents">Dumping the Database Contents</h3>
-<p>Before dumping everything, we first list the top-level groups to understand what's inside. This mirrors what a real attacker would do enumerate before extracting:</p>
+<p>Before dumping everything, we first list the top-level groups to understand what's inside. This mirrors what a real attacker would do — enumerate before extracting:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>❯<span class="w"> </span>keepassxc-cli<span class="w"> </span>ls<span class="w"> </span>Shared.kdbx
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Enter<span class="w"> </span>password<span class="w"> </span>to<span class="w"> </span>unlock<span class="w"> </span>Shared.kdbx:
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>KdbxXmlReader::readDatabase:<span class="w"> </span>found<span class="w"> </span><span class="m">1</span><span class="w"> </span>invalid<span class="w"> </span>group<span class="w"> </span>reference<span class="o">(</span>s<span class="o">)</span>

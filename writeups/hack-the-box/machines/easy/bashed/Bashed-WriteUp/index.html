@@ -17,6 +17,9 @@
       
       
       
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../../feed_rss_updated.xml">
+      
       <link rel="icon" href="../../../../../../assets/favicon-zero.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
     
@@ -72,6 +75,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#takeaway" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -192,13 +200,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="/#write-ups" class="md-tabs__link">
+      <a href="/#blog" class="md-tabs__link">
         
   
   
     
   
-  Write-ups
+  Blog
 
       </a>
     </li>
@@ -218,6 +226,25 @@
     
   
   CVEs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#write-ups" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Write-ups
 
       </a>
     </li>
@@ -310,12 +337,12 @@
   
   
     <li class="md-nav__item">
-      <a href="/#write-ups" class="md-nav__link">
+      <a href="/#blog" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Write-ups
+    Blog
     
   </span>
   
@@ -338,6 +365,28 @@
   
   <span class="md-ellipsis">
     CVEs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#write-ups" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Write-ups
     
   </span>
   
@@ -387,6 +436,23 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      Takeaway
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -406,6 +472,16 @@
 <p><img alt="Bashed" src="../img/Bashed_0001.png" /></p>
 <p>Machine: <a href="https://app.hackthebox.com/machines/Bashed?">Bashed</a>:
 Easy . Linux</p>
+<p>In this easy Linux machine, we go from an exposed PHP webshell to root by chaining three
+misconfigurations: an information disclosure that leaves a webshell reachable under <code>/dev</code>, a
+<code>sudo</code> rule that lets <code>www-data</code> pivot to another user, and a root cron job that runs a
+writable script (cron hijacking). You will learn how to:</p>
+<ul>
+<li>Enumerate a web server with <code>ffuf</code> and spot an exposed development directory</li>
+<li>Get command execution through a pre-planted <code>phpbash</code> webshell</li>
+<li>Abuse a permissive <code>sudo</code> rule to pivot between service accounts</li>
+<li>Escalate to root by hijacking a writable script executed by a root cron job</li>
+</ul>
 <hr />
 <p>Tags: #webshell #misconfiguration-abuse #cron-hijack #privesc #linux</p>
 <hr />
@@ -414,7 +490,7 @@ Information Disclosure — <code>/dev</code> directory exposed with active websh
 Misconfiguration — sudoers rule allows pivot from www-data to scriptmanager
 Insecure File Permissions — script executed by root cron is writable by unprivileged user (Cron Hijacking)</p>
 <hr />
-<p>🧰 Tools used: <code>namp</code> <code>ffuf</code> <code>netcat</code> <code>phpbash</code></p>
+<p>🧰 Tools used: <code>nmap</code> <code>ffuf</code> <code>netcat</code> <code>phpbash</code></p>
 <hr />
 <p>We performed a scan of open TCP ports:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>❯<span class="w"> </span>sudo<span class="w"> </span>nmap<span class="w"> </span>--open<span class="w"> </span>-Pn<span class="w"> </span>-p-<span class="w"> </span>-sS<span class="w"> </span>-n<span class="w"> </span>-vvv<span class="w"> </span>&lt;VICTIM_IP&gt;<span class="w"> </span>-oG<span class="w"> </span>allPorts
@@ -494,6 +570,8 @@ Insecure File Permissions — script executed by root cron is writable by unpriv
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>User<span class="w"> </span>www-data<span class="w"> </span>may<span class="w"> </span>run<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>commands<span class="w"> </span>on<span class="w"> </span>bashed:<span class="w">  </span>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="o">(</span>scriptmanager<span class="w"> </span>:<span class="w"> </span>scriptmanager<span class="o">)</span><span class="w"> </span>NOPASSWD:<span class="w"> </span>ALL
 </code></pre></div></p>
+<p>This rule lets <code>www-data</code> run any command as <code>scriptmanager</code> without a password — a free pivot
+to a second account. We use it to spawn a reverse shell as <code>scriptmanager</code>.</p>
 <p>We started a listener with <code>netcat</code> on our attacking machine:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>❯<span class="w"> </span>nc<span class="w"> </span>-lvnp<span class="w"> </span>&lt;PORT&gt;
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Listening<span class="w"> </span>on<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>&lt;PORT&gt;
@@ -536,7 +614,7 @@ Insecure File Permissions — script executed by root cron is writable by unpriv
 <a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>drwxr-xr-x<span class="w">  </span><span class="m">12</span><span class="w"> </span>root<span class="w">          </span>root<span class="w">           </span><span class="m">4096</span><span class="w"> </span>Jun<span class="w">  </span><span class="m">2</span><span class="w">  </span><span class="m">2022</span><span class="w"> </span>var
 <a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>lrwxrwxrwx<span class="w">   </span><span class="m">1</span><span class="w"> </span>root<span class="w">          </span>root<span class="w">             </span><span class="m">29</span><span class="w"> </span>Dec<span class="w">  </span><span class="m">4</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>vmlinuz<span class="w"> </span>-&gt;<span class="w"> </span>boot/vmlinuz-4.4.0-62-generic
 </code></pre></div></p>
-<p>The <code>/scripts</code> directory belongs to <code>scriptmanager</code>. Inside we found a <code>test.py</code> script
+<p>The <code>/scripts</code> directory belongs to <code>scriptmanager</code>. Inside, we found a <code>test.py</code> script:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>scriptmanager@bashed:/scripts$<span class="w"> </span>ls<span class="w"> </span>-l
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>total<span class="w"> </span><span class="m">8</span>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>scriptmanager<span class="w"> </span>scriptmanager<span class="w"> </span><span class="m">58</span><span class="w"> </span>Dec<span class="w">  </span><span class="m">4</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>test.py
@@ -547,7 +625,7 @@ Insecure File Permissions — script executed by root cron is writable by unpriv
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>f.write<span class="o">(</span><span class="s2">"testing 123!"</span><span class="o">)</span>
 <a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>f.close
 </code></pre></div>
-The file <code>test.txt</code> is owned by root but was written by the <code>test.py</code> script owned by scriptmanager, which indicates root executes that script periodically via cron.</p>
+The file <code>test.txt</code> is owned by root but was written by the <code>test.py</code> script, which is owned by scriptmanager. This indicates that root runs that script periodically via cron. Since <code>scriptmanager</code> owns <code>test.py</code> and root is the one executing it, we can overwrite the script with a reverse shell payload and have root run it for us — classic cron hijacking.</p>
 <p>We put <code>nc</code> in listen mode on port 1234
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>❯<span class="w"> </span>nc<span class="w"> </span>-lvnp<span class="w"> </span>&lt;PORT&gt;
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Listening<span class="w"> </span>on<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>&lt;PORT&gt;
@@ -565,6 +643,13 @@ The file <code>test.txt</code> is owned by root but was written by the <code>tes
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>cat<span class="w"> </span>/root/root.txt
 <a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>&lt;FLAG_ROOT&gt;
 </code></pre></div></p>
+<hr />
+<h2 id="takeaway">Takeaway</h2>
+<ul>
+<li><strong>Never leave development tooling in a web root.</strong> The <code>phpbash</code> shell under <code>/dev</code> gave instant RCE. Dev artifacts shouldn't reach production, and guessable paths plus directory listing make them trivial to find.</li>
+<li><strong>Scope <code>sudo</code> rules tightly.</strong> The <code>www-data → scriptmanager</code> <code>NOPASSWD: ALL</code> rule existed for convenience but handed an attacker a free pivot. Grant the minimum set of commands, never <code>ALL</code>.</li>
+<li><strong>Watch permissions on scheduled jobs.</strong> A root cron job running a script that a lower-privileged user can write to is a direct path to root. Scripts run by privileged schedulers must be owned by root and not writable by anyone else.</li>
+</ul>
 
 
 
