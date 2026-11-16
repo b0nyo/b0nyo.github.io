@@ -188,8 +188,10 @@ body {
 }
 
 /* ===== Blog index: drop the empty left sidebar, use full width ===== */
+.md-main__inner:has(.blog-header) { margin-top: 0; }
 .md-main__inner:has(.blog-header) > .md-sidebar--primary { display: none; }
 .md-main__inner:has(.blog-header) > .md-content { max-width: none; }
+.md-content__inner:has(.blog-header) { padding-top: 0; }
 
 /* ===== Blog: card grid (index) ===== */
 .post-grid {
@@ -276,14 +278,14 @@ body {
 /* ===== Blog: header ===== */
 .blog-header {
   position: relative;
-  padding: 3.25rem 0 1.85rem;
+  padding: 2.15rem 0 1.85rem;
   margin-bottom: 1.75rem;
   border-bottom: 1px solid var(--md-default-fg-color--lightest);
 }
 .blog-header::before {
   content: "";
   position: absolute;
-  top: 2rem; left: 0;
+  top: .9rem; left: 0;
   width: 4.2rem; height: 3px;
   background: linear-gradient(90deg, var(--sage) 0 48%, var(--moss) 48% 76%, var(--olive) 76%);
 }
