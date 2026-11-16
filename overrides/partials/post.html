@@ -1,0 +1,48 @@
+<article class="md-post md-post--excerpt post-card">
+  {% if post.meta.cover %}
+    <a class="post-card__cover" href="{{ post.url | url }}" tabindex="-1" aria-hidden="true">
+      <img src="{{ post.meta.cover }}" alt="" loading="lazy">
+    </a>
+  {% endif %}
+  <div class="post-card__body">
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="{{ post.config.date.created }}">
+            {{- post.config.date.created | date -}}
+          </time>
+        </li>
+        {% if post.categories %}
+          <li class="md-meta__item">
+            {{ lang.t("blog.categories.in") }}
+            {% for category in post.categories %}
+              <a href="{{ category.url | url }}" class="md-meta__link">
+                {{- category.title -}}
+              </a>
+              {%- if loop.revindex > 1 %}, {% endif -%}
+            {% endfor -%}
+          </li>
+        {% endif %}
+        {% if post.config.readtime %}
+          {% set time = post.config.readtime %}
+          <li class="md-meta__item">
+            {% if time == 1 %}
+              {{ lang.t("readtime.one") }}
+            {% else %}
+              {{ lang.t("readtime.other") | replace("#", time) }}
+            {% endif %}
+          </li>
+        {% endif %}
+        {% if post.config.draft %}
+          <li class="md-meta__item"><span class="md-draft">{{ lang.t("blog.draft") }}</span></li>
+        {% endif %}
+      </ul>
+    </div>
+    <h2 class="post-card__title">
+      <a href="{{ post.url | url }}">{{ post.title }}</a>
+    </h2>
+    <div class="post-card__excerpt md-typeset">
+      {{ post.content }}
+    </div>
+  </div>
+</article>

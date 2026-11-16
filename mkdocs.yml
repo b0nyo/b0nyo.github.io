@@ -25,12 +25,22 @@ theme:
     accent: custom
 nav:
   - Home: index.md
-  - Write-ups: /#write-ups
+  - Blog: /#blog
   - CVEs: /#cve-disclosures
+  - Write-ups: /#write-ups
   - About & Contact: /#about-contact
 plugins:
   - search
   - tags
+  - blog:
+      post_readtime: true
+      post_url_date_format: yyyy/MM
+  - rss:
+      match_path: "blog/posts/.*"
+      date_from_meta:
+        as_creation: date
+      categories:
+        - categories
 markdown_extensions:
   - admonition
   - attr_list
@@ -59,4 +69,7 @@ extra:
     - icon: simple/hackthebox
       link: https://app.hackthebox.com/users/1117173
       name: Hack The Box
+    - icon: fontawesome/solid/rss
+      link: /feed_rss_created.xml
+      name: RSS
 copyright: Copyright &copy; 2026 Jose Raul Bongiovani
