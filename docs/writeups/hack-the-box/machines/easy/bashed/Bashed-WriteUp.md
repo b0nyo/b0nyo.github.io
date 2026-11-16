@@ -3,6 +3,16 @@
 Machine: [Bashed](https://app.hackthebox.com/machines/Bashed?):
 Easy . Linux
 
+In this easy Linux machine, we go from an exposed PHP webshell to root by chaining three
+misconfigurations: an information disclosure that leaves a webshell reachable under `/dev`, a
+`sudo` rule that lets `www-data` pivot to another user, and a root cron job that runs a
+writable script (cron hijacking). You will learn how to:
+
+- Enumerate a web server with `ffuf` and spot an exposed development directory
+- Get command execution through a pre-planted `phpbash` webshell
+- Abuse a permissive `sudo` rule to pivot between service accounts
+- Escalate to root by hijacking a writable script executed by a root cron job
+
 ---
 Tags: #webshell #misconfiguration-abuse #cron-hijack #privesc #linux
 
@@ -13,7 +23,7 @@ Misconfiguration — sudoers rule allows pivot from www-data to scriptmanager
 Insecure File Permissions — script executed by root cron is writable by unprivileged user (Cron Hijacking)
 
 ---
-🧰 Tools used: `namp` `ffuf` `netcat` `phpbash`
+🧰 Tools used: `nmap` `ffuf` `netcat` `phpbash`
 
 ---
 We performed a scan of open TCP ports:
@@ -109,6 +119,9 @@ User www-data may run the following commands on bashed:
 (scriptmanager : scriptmanager) NOPASSWD: ALL
 ```
 
+This rule lets `www-data` run any command as `scriptmanager` without a password — a free pivot
+to a second account. We use it to spawn a reverse shell as `scriptmanager`.
+
 We started a listener with `netcat` on our attacking machine:
 ```bash
 ❯ nc -lvnp <PORT>
@@ -159,7 +172,7 @@ drwxr-xr-x  12 root          root           4096 Jun  2  2022 var
 lrwxrwxrwx   1 root          root             29 Dec  4  2017 vmlinuz -> boot/vmlinuz-4.4.0-62-generic
 ```
 
-The `/scripts` directory belongs to `scriptmanager`. Inside we found a `test.py` script
+The `/scripts` directory belongs to `scriptmanager`. Inside, we found a `test.py` script:
 ```bash
 scriptmanager@bashed:/scripts$ ls -l
 total 8
@@ -171,7 +184,7 @@ f = open("test.txt", "w")
 f.write("testing 123!")
 f.close
 ```
-The file `test.txt` is owned by root but was written by the `test.py` script owned by scriptmanager, which indicates root executes that script periodically via cron.
+The file `test.txt` is owned by root but was written by the `test.py` script, which is owned by scriptmanager. This indicates that root runs that script periodically via cron. Since `scriptmanager` owns `test.py` and root is the one executing it, we can overwrite the script with a reverse shell payload and have root run it for us — classic cron hijacking.
 
 We put `nc` in listen mode on port 1234
 ```bash
@@ -197,3 +210,11 @@ We retrieved the `root.txt` flag
 cat /root/root.txt
 <FLAG_ROOT>
 ```
+
+---
+
+## Takeaway
+
+- **Never leave development tooling in a web root.** The `phpbash` shell under `/dev` gave instant RCE. Dev artifacts shouldn't reach production, and guessable paths plus directory listing make them trivial to find.
+- **Scope `sudo` rules tightly.** The `www-data → scriptmanager` `NOPASSWD: ALL` rule existed for convenience but handed an attacker a free pivot. Grant the minimum set of commands, never `ALL`.
+- **Watch permissions on scheduled jobs.** A root cron job running a script that a lower-privileged user can write to is a direct path to root. Scripts run by privileged schedulers must be owned by root and not writable by anyone else.

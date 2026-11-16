@@ -15,58 +15,38 @@ exploitation, privilege escalation, post-exploitation, and initial Active
 Directory attack techniques. Strong background in enumeration, misconfiguration
 analysis, and leveraging common vulnerabilities to gain and maintain access.
 
-[Explore write-ups](writeups/index.md){ .md-button .md-button--primary }
+[Blog](blog/index.md){ .md-button .md-button--primary }
 [View CVEs](cves/index.md){ .md-button }
+[Explore write-ups](writeups/index.md){ .md-button }
 
 </div>
 
 <div class="status-line"><span>STATUS</span> ONLINE <i></i></div>
 
-## Current focus
+## Focus
 
-- **Active Directory:** identity attack paths, delegation, and domain compromise
-- **Network exploitation:** enumeration, service abuse, and lateral movement
+**Where I operate today**
+
+- **Active Directory & identity:** attack paths, delegation abuse, Kerberos attacks, and full domain compromise
+- **Network & web exploitation:** enumeration, misconfiguration and service abuse, and lateral movement
+- **Post-exploitation:** credential access, privilege escalation, and persistence
+
+**Building toward red team**
+
+- **Adversary emulation & tradecraft:** exploring C2 frameworks, with an eye on evasion and OPSEC
 - **Vulnerability research:** root-cause analysis and coordinated disclosure
 
-<div class="landing-section" id="write-ups" markdown>
+<div class="landing-section" id="blog" markdown>
 
-## Write-ups
+## Blog
 
-<span class="eyebrow">01 // FIELD NOTES</span>
+<span class="eyebrow">01 // BLOG</span>
 
-I write down the full process, including enumeration, wrong turns, the final
-attack path, and what I learned from the target. The machine list stays inside
-the archive. Enter, choose a platform, and browse from there.
+Offensive Security Field Notes.
 
-<div class="section-grid" markdown>
+This is my personal blog focused on offensive security.
 
-<div class="feature-card" markdown>
-
-### The reasoning
-
-The clues I found and why I decided to follow them.
-
-</div>
-
-<div class="feature-card" markdown>
-
-### The path
-
-The route from initial access to privilege escalation.
-
-</div>
-
-<div class="feature-card" markdown>
-
-### The takeaway
-
-The mistakes, useful details, and lessons I want to remember.
-
-</div>
-
-</div>
-
-[Explore all write-ups](writeups/index.md){ .md-button .md-button--primary }
+[Read the blog](blog/index.md){ .md-button .md-button--primary }
 
 </div>
 
@@ -88,11 +68,29 @@ published only after the agreed timeline or when a fix becomes available.
 
 </div>
 
+<div class="landing-section" id="write-ups" markdown>
+
+## Write-ups
+
+<span class="eyebrow">03 // FIELD NOTES</span>
+
+I write down the full process, including enumeration, the final attack path, and
+what I learned from the target. The machine list stays inside the archive. Enter,
+choose a platform, and browse from there.
+
+[Explore all write-ups](writeups/index.md){ .md-button .md-button--primary }
+
+</div>
+
 <div class="landing-section" id="about-contact" markdown>
 
 ## Beyond the terminal
 
-<span class="eyebrow">03 // ABOUT & CONTACT</span>
+<span class="eyebrow">04 // ABOUT & CONTACT</span>
+
+**Penetration Tester** (freelance at Null Hunter) focused on web, network, and Active
+Directory exploitation, and working toward **red team operations**. I hold the **HTB
+Certified Penetration Testing Specialist (CPTS)** certification.
 
 I'm **Jose**, the person behind `b0nyo`. I got into security because I always
 wanted to know how things worked and why they broke. I like the part of the job
@@ -103,6 +101,8 @@ Most of my time goes into web and network exploitation, privilege escalation,
 post-exploitation, and Active Directory. I started this blog to keep a record of
 what I learn and share it with anyone who may find it useful. You can contact me
 if you want to talk about security, research, or a project.
+
+[Download CV](assets/CV_Jose_Bongiovani.pdf){ .md-button .md-button--primary download }
 
 ### Certifications
 

@@ -3,13 +3,23 @@
 Machine: [Nibbles](https://app.hackthebox.com/machines/Nibbles):
 Easy . Linux
 
+In this easy Linux machine, we go from an outdated Nibbleblog install to root. Default admin
+credentials get us into the dashboard, a known arbitrary-file-upload bug (CVE-2015-6967) turns
+that access into remote code execution, and a `sudo` rule over a writable script hands us root.
+You will learn how to:
+
+- Enumerate a web application and read exposed configuration and user files
+- Log into an admin panel using default credentials
+- Exploit the Nibbleblog 4.0.3 arbitrary file upload (CVE-2015-6967) for RCE
+- Escalate to root by abusing a `sudo` rule over a writable script
+
 ---
 Tags: #nibbleblog #arbitrary-file-upload #misconfiguration-abuse
 
 ---
 **Vulnerabilities:**
 
-Weak Credentials - Default Admin Dashboard Logins (admin:<PASSWORD>>)
+Weak Credentials - Default Admin Dashboard Login (admin:<PASSWORD>)
 Arbitrary File Upload - Nibbleblog 4.0.3 "My Image" Plugin Exploit (RCE)
 Sudo Misconfiguration - Writeable Script Execution Allowed as Root (Privesc to root)
 
@@ -173,13 +183,16 @@ Archive:  personal.zip
   inflating: personal/stuff/monitor.sh
 ```
 
-We confirmed that we can modify the `monitor.sh` file
+We confirmed that we could modify the `monitor.sh` file:
 ```bash
 nibbler@Nibbles:/home/nibbler$ cd personal/stuff/
 nibbler@Nibbles:/home/nibbler/personal/stuff$ ls -l
 total 4
 -rwxrwxrwx 1 nibbler nibbler 4015 May  8  2015 monitor.sh
 ```
+
+Because `monitor.sh` is world-writable (`-rwxrwxrwx`) and the `sudo` rule lets us run it as root
+without a password, overwriting it with our own commands gives us root execution.
 
 We replaced the contents of `monitor.sh` with a shell script:
 ```bash
@@ -200,3 +213,11 @@ We read the `root.txt` flag
 root@Nibbles:/home/nibbler/personal/stuff# cat /root/root.txt
 <ROOT_FLAG>
 ```
+
+---
+
+## Takeaway
+
+- **Patch, and never ship defaults.** Nibbleblog 4.0.3 is years out of date, and the admin panel used default credentials — fixing either one alone would have broken this chain.
+- **Lock down `sudo` targets.** Letting a user run a script as root is only safe if that script isn't writable by that user. Here `monitor.sh` was world-writable, turning the rule into instant root.
+- **Don't expose configuration and user files.** A readable `users.xml` let us confirm the valid `admin` account before even trying to log in. Sensitive files should sit outside the web root or be denied by the server.

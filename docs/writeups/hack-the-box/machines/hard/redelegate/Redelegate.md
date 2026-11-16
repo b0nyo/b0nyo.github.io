@@ -189,7 +189,7 @@ Host script results:
 ```
 
 Two key findings:
-- **FTP allows anonymous login** and already lists three files, including a `Shared.kdbx`  KeePass password database.
+- **FTP allows anonymous login** and already lists three files, including a `Shared.kdbx` KeePass password database.
 - **MSSQL** is running on a DC, which is unusual and suggests a service account may be configured there.
 
 The domain is `redelegate.vl` and the machine is `dc.redelegate.vl`.
@@ -322,7 +322,7 @@ This is a small but highly targeted wordlist — 19 entries. That's intentional:
 
 ### Extracting the Hash and cracking with Hashcat
 
-`keepass2john` reads the `.kdbx` file and outputs a hash that represents the KDF (Key Derivation Function) parameters plus the encrypted database blob. This hash is what we crack offline at no point does the database itself need to be "open".
+`keepass2john` reads the `.kdbx` file and outputs a hash that represents the KDF (Key Derivation Function) parameters plus the encrypted database blob. This hash is what we crack offline; at no point does the database itself need to be "open".
 We use mode `-m 13400` (KeePass KDBX v2/v3) and feed it our custom wordlist:
 
 ```bash
@@ -338,7 +338,7 @@ $keepass$*2*600000*0*ce7395f413946b0cd27950<REDACTED_HASH>:<REDACTED_PASSWD>
 
 ### Dumping the Database Contents
 
-Before dumping everything, we first list the top-level groups to understand what's inside. This mirrors what a real attacker would do enumerate before extracting:
+Before dumping everything, we first list the top-level groups to understand what's inside. This mirrors what a real attacker would do — enumerate before extracting:
 
 ```bash
 ❯ keepassxc-cli ls Shared.kdbx
