@@ -1,173 +1,178 @@
 ---
 date: 2026-11-16
+slug: omg-cable-hidx-stealthlink
 categories:
   - Hardware
 authors:
   - b0nyo
 cover: /assets/img/cover-omg.png
 cover_credit: Hak5 / mg.lol
+language: en
+translation_url: /blog/2026/11/omg-cable-hidx-stealthlink-es/
 ---
 
-# O.MG Cable y HIDX StealthLink
+# O.MG Cable and HIDX StealthLink
 
-En este artículo vamos a ver cómo el **O.MG Cable**, mediante **HIDX StealthLink**, lleva la inyección de teclado tradicional a un nivel completamente distinto.
+In this article, we will look at how the **O.MG Cable** uses **HIDX StealthLink** to take traditional keyboard injection to a different level.
 
-**HIDX StealthLink** es una de las capacidades más interesantes del O.MG Cable Elite. Permite establecer un canal de comunicación bidireccional entre el equipo objetivo y la estación de control mediante una interfaz USB HID, utilizando el implante como intermediario entre el host y la red inalámbrica del operador.
+**HIDX StealthLink** is one of the O.MG Cable Elite's most interesting capabilities. It establishes a bidirectional communication channel between the target computer and the control station through a USB HID interface, with the implant acting as a bridge between the host and the operator's wireless network.
 
-Pero antes de profundizar con la función, arranquemos por algo más básico. Qué es el O.MG Cable y qué riesgos implica?
+Before getting into that feature, let's start with the basics: what is the O.MG Cable, and what risks does it pose?
 
 <!-- more -->
 
-## El cable es el implante
+## The cable is the implant
 
-La mayoría conoce los vectores de acceso inicial basados en software, como la explotación de vulnerabilidades o los ataques de phishing. Estas técnicas pueden permitir la ejecución de código, el acceso a información o el establecimiento de un punto de apoyo desde el cual realizar otras acciones.
+Most people are familiar with software based initial access methods, such as exploiting vulnerabilities or phishing. These techniques can enable code execution, access to information, or a foothold from which to take further action.
 
-El O.MG Cable introduce un enfoque diferente. Utiliza un dispositivo físico de apariencia legítima para interactuar con el sistema objetivo. En lugar de depender necesariamente de la explotación de una vulnerabilidad de software, aprovecha la confianza que el sistema operativo deposita en determinados periféricos USB.
+The O.MG Cable takes a different approach. It uses a physical device that looks legitimate to interact with the target system. Instead of necessarily relying on a software vulnerability, it takes advantage of the trust that operating systems place in certain USB peripherals.
 
 ![O.MG Cable](img/image1.png)
 
-El O.MG Cable, fabricado por [MG](https://mg.lol/) y comercializado por [Hak5](https://shop.hak5.org/products/omg-cable), se ve y funciona exactamente igual que cualquier cable USB-C, Lightning o USB-A común. Sin embargo, dentro del conector esconde una placa diminuta equipada con un chip, antena Wi-Fi propia, memoria y una interfaz de control web a la que el operador accede desde el navegador. La máquina de la víctima lo reconoce automáticamente como un periférico de entrada estándar, mientras que el atacante mantiene el control a distancia.
+The O.MG Cable, made by [MG](https://mg.lol/) and sold by [Hak5](https://shop.hak5.org/products/omg-cable), looks and works like an ordinary USB-C, Lightning, or USB-A cable. Inside its connector, however, it hides a tiny board with a chip, its own Wi-Fi antenna, memory, and a web control interface that the operator can access from a browser. The victim's computer automatically recognizes it as a standard input peripheral, while the attacker retains remote control.
 
-El O.MG Cable se comercializa en versiones Basic y Elite. Estas son las diferencias técnicas principales entre ambas generaciones:
+The O.MG Cable comes in Basic and Elite versions. These are the main technical differences between the two hardware generations:
 
-| Función (generación de hardware) | Basic (Gen 1) | Elite (Gen 3) |
+| Feature (hardware generation) | Basic (Gen 1) | Elite (Gen 3) |
 | --- | --- | --- |
-| Inyección de teclado | DuckyScript 2 | DuckyScript 3 |
-| Inyección de mouse | Sí | Sí |
-| Slots de payloads | 8 | 50-300 |
-| Tamaño máx. de payload | 4.000 pulsaciones | 1.500.000 pulsaciones |
-| Velocidad máx. | 120 puls./seg | 890 puls./seg |
-| Autodestrucción | Sí | Sí |
-| Geofencing | Sí | Sí |
-| Disparadores por Wi-Fi | Sí | Sí |
-| Keylogger de hardware USB FullSpeed | No | Sí |
-| HIDX StealthLink | No | Sí |
-| C2 de red cifrado | No | Sí |
-| Alcance Wi-Fi extendido | No | Sí |
-| Consumo optimizado para sigilo | No | Sí |
+| Keyboard injection | DuckyScript 2 | DuckyScript 3 |
+| Mouse injection | Yes | Yes |
+| Payload slots | 8 | 50-300 |
+| Maximum payload size | 4,000 keystrokes | 1,500,000 keystrokes |
+| Maximum speed | 120 keystrokes/sec | 890 keystrokes/sec |
+| Self-destruct | Yes | Yes |
+| Geofencing | Yes | Yes |
+| Wi-Fi triggers | Yes | Yes |
+| USB FullSpeed hardware keylogger | No | Yes |
+| HIDX StealthLink | No | Yes |
+| Encrypted network C2 | No | Yes |
+| Extended Wi-Fi range | No | Yes |
+| Power consumption optimized for stealth | No | Yes |
 
-*Todas las especificaciones corresponden al firmware beta más reciente.*
+*All specifications refer to the latest beta firmware.*
 
-Entre sus capacidades operativas destacan:
+Its notable operational capabilities include:
 
-- **Control Wi-Fi**: gestión integral desde el navegador, ya sea desde un equipo de escritorio o dispositivo móvil.
-- **Keymaps globales**: incluye 192 distribuciones de teclado para adaptarse a configuraciones regionales de cualquier país.
-- **IDE integrado**: la WebUI marca errores de sintaxis en tiempo real mientras se desarrollan los payloads.
-- **Payloads a móviles**: los modelos con punta activa USB-C permiten interactuar directamente con dispositivos móviles.
-- **Sigilo**: permanece en reposo hasta recibir el disparador; emula un dispositivo USB 2.0 convencional y permite falsear identificadores USB (VID/PID) y direcciones MAC de red.
-- **Keylogger de hardware** (Elite): captura pasiva de tráfico para teclados USB FullSpeed con capacidad de almacenamiento de hasta 650.000 pulsaciones.
-- **HIDX StealthLink** (Elite): túnel bidireccional entre el host objetivo, el O.MG y la estación de control.
-- **C2 de red cifrado** (Elite): canal de comando y control cifrado, con la opción de desactivar la WebUI para operar de forma oculta en entornos hostiles.
-- **Autodestrucción**: borra de forma segura payloads y registros internos, dejando el dispositivo inerte (recuperable mediante el O.MG Programmer).
-- **Geofencing**: automatiza acciones basadas en ubicación geográfica (por ejemplo, autoinmolación si el cable sale de un radio determinado).
-- **Disparadores por Wi-Fi**: ejecución remota de scripts mediante balizas Wi-Fi específicas.
+- **Wi-Fi control**: full management from a browser on a desktop or mobile device.
+- **Global keymaps**: 192 keyboard layouts for regional configurations around the world.
+- **Integrated IDE**: the WebUI flags syntax errors in real time while payloads are being developed.
+- **Mobile payloads**: models with an active USB-C tip can interact directly with mobile devices.
+- **Stealth**: remains idle until triggered, emulates a conventional USB 2.0 device, and can spoof USB identifiers (VID/PID) and network MAC addresses.
+- **Hardware keylogger** (Elite): passively captures traffic from USB FullSpeed keyboards and can store up to 650,000 keystrokes.
+- **HIDX StealthLink** (Elite): a bidirectional tunnel between the target host, the O.MG, and the control station.
+- **Encrypted network C2** (Elite): an encrypted command and control channel, with the option to disable the WebUI for covert operation in hostile environments.
+- **Self-destruct**: securely erases payloads and internal logs, leaving the device inert (recoverable with the O.MG Programmer).
+- **Geofencing**: automates actions based on geographic location, such as self-destruction if the cable leaves a specified radius.
+- **Wi-Fi triggers**: remotely executes scripts in response to specific Wi-Fi beacons.
 
 ![O.MG Cable](img/image2.jpg)
 
-El principal riesgo no está solamente en que el cable pase desapercibido, sino en la **confianza** que los sistemas operativos depositan en los dispositivos USB conectados. Un cable olvidado en una sala de reuniones o intercambiado en un espacio de trabajo comparte ciertos objetivos con un correo de phishing, como lograr la ejecución de código inicial, pero utiliza un modelo completamente diferente. Opera mediante requisitos, restricciones y capacidades físicas particulares que evitan filtros de correo, aunque su éxito efectivo dependerá de la configuración del dispositivo, el contexto del equipo objetivo y los controles de seguridad perimetrales o de endpoint vigentes.
+The main risk goes beyond the cable's ability to go unnoticed: it also lies in the **trust** that operating systems place in connected USB devices. A cable left in a meeting room or swapped in a workplace can serve a similar goal to a phishing email, such as achieving initial code execution, but it follows a different model. It operates under its own physical requirements, constraints, and capabilities that bypass email filters. Its actual success still depends on device configuration, the target computer's environment, and the perimeter or endpoint security controls in place.
 
-## Del software al hardware. Cómo un cable puede ejecutar comandos
+## From software to hardware: how a cable can run commands
 
-Este comportamiento se sustenta en la forma en que los sistemas operativos gestionan los periféricos de entrada.
+This behavior relies on the way operating systems handle input peripherals.
 
-Al conectar un dispositivo USB, este se enumera declarando su clase al host. Si se presenta como un teclado (dispositivo HID), en configuraciones habituales, el sistema puede reconocerlo y habilitarlo automáticamente mediante controladores nativos, siempre que las políticas de seguridad lo permitan, priorizando su operatividad ante cualquier otra tarea. El implante del O.MG explota este comportamiento predeterminado inyectando comandos a alta velocidad, simulando la escritura humana.
+When a USB device is connected, it identifies its class to the host during enumeration. If it presents itself as a keyboard (an HID device), the system can typically recognize and enable it automatically using native drivers, provided security policies allow it. The O.MG implant takes advantage of this default behavior by injecting commands at high speed, simulating human typing.
 
-Aunque este principio es compartido con herramientas clásicas como el Rubber Ducky, la inyección tradicional sufre de una limitación operativa crítica, es estrictamente **unidireccional y a ciegas**. El dispositivo escribe comandos pero no recibe retroalimentación sobre su éxito o fallo (por ejemplo, si una ventana emergente de UAC o un bloqueo de pantalla interfirieron), dejando al operador sin visibilidad en tiempo real.
+Although this principle is shared with tools such as the Rubber Ducky, traditional keyboard injection has a critical operational limitation: it is **one-way and blind**. The device types commands but receives no feedback about whether they succeeded or failed, for example if a UAC prompt or lock screen got in the way. The operator has no real-time visibility.
 
-El O.MG supera esta restricción integrando componentes avanzados.
+The O.MG addresses this limitation by combining several components:
 
-- **Conectividad Wi-Fi y motor web**, permitiendo parametrizar y disparar secuencias de forma remota.
-- **Memoria y lógica de ejecución condicional**, capaces de albergar múltiples escenarios de ataque.
-- **Microcontrolador programable**, clave para habilitar un canal de comunicación bidireccional.
+- **Wi-Fi connectivity and a web engine** to configure and trigger sequences remotely.
+- **Memory and conditional execution logic** to hold multiple attack scenarios.
+- **A programmable microcontroller**, which is key to enabling a bidirectional communication channel.
 
-Gracias a su conectividad Wi-Fi y capacidad de procesamiento, el O.MG puede ir más allá de la inyección de comandos y habilitar la exfiltración de datos y comunicaciones interactivas con el equipo objetivo.
+Thanks to its Wi-Fi connectivity and processing capability, the O.MG can go beyond command injection to support data exfiltration and interactive communication with the target computer.
 
-## HIDX StealthLink: ¿qué es?
+## What is HIDX StealthLink?
 
-StealthLink es la función del O.MG Cable Elite que habilita un canal de comunicación bidireccional entre el implante y el operador, permitiendo enviar instrucciones y recibir respuestas en tiempo real.
+StealthLink is an O.MG Cable Elite feature that enables a bidirectional communication channel between the implant and the operator, allowing instructions to be sent and responses to be received in real time.
 
-Este canal se establece a través de una interfaz HID (*Human Interface Device*) cruda expuesta por el implante en el sistema operativo víctima. No constituye una interfaz de red ni un almacenamiento externo, sino que reutiliza la arquitectura de los dispositivos de entrada para transportar datos en ambos sentidos.
+This channel uses a raw HID (*Human Interface Device*) interface exposed by the implant to the victim's operating system. It is neither a network interface nor external storage. Instead, it reuses the architecture of input devices to carry data in both directions.
 
-- El implante expone una interfaz HID dedicada de forma independiente al canal de inyección de teclado convencional.
-- Un agente liviano ejecutado en la máquina víctima (mediante scripts en PowerShell o Python) interactúa con dicha interfaz para leer y escribir tramas de datos hacia el implante.
+- The implant exposes a dedicated HID interface separate from the conventional keyboard injection channel.
+- A lightweight agent running on the victim's computer (using PowerShell or Python scripts) interacts with that interface to read and write data frames to the implant.
 
-El implante actúa como pasarela entre el entorno del atacante y el equipo comprometido, ofreciendo un canal de transferencia acotado pero suficiente para operar de forma interactiva.
+The implant acts as a gateway between the attacker's environment and the compromised computer, offering a limited but sufficient channel for interactive operation.
 
-![Arquitectura de HIDX StealthLink](img/image3.png)
+![HIDX StealthLink architecture](img/image3.png)
 
-El concepto de sigilo (*stealth*) se apoya en los siguientes factores operativos.
+The *stealth* aspect rests on several operational factors:
 
-- **Aislamiento del canal en el host**, la máquina víctima no levanta servicios de red ni genera conexiones salientes hacia internet o la red local a través de su propia pila IP para este canal, lo que reduce la visibilidad ante herramientas tradicionales de monitoreo de red basadas en host. Sin embargo, **debe tenerse en cuenta que el cable O.MG en sí mismo genera tráfico de red mediante su propia interfaz Wi-Fi** al comunicarse con el servidor catcher del operador.
-- **Minimización de artefactos locales**, la ejecución en el host se apoya en controladores nativos del sistema operativo para dispositivos HID, evitando la instalación de drivers propietarios, aunque la ejecución de intérpretes (como PowerShell) puede registrar entradas en los logs del sistema.
-- **Mimetización con el tráfico legítimo**, el uso constante de periféricos HID en entornos corporativos reduce la probabilidad de que este canal genere anomalías evidentes ante soluciones de monitoreo genéricas, aunque un EDR configurado estrictamente puede llegar a advertir comportamientos anómalos en el acceso a interfaces HID o procesos asociados.
+- **Channel isolation on the host**: the victim's computer does not start network services or make outbound connections through its own IP stack for this channel, reducing visibility to traditional host network monitoring tools. **The O.MG Cable itself still generates network traffic through its Wi-Fi interface** when communicating with the operator's catcher server.
+- **Fewer local artifacts**: the host uses native operating system drivers for HID devices, avoiding proprietary driver installation. Interpreter execution, such as PowerShell, may still leave entries in system logs.
+- **Similarity to legitimate peripheral traffic**: HID peripherals are common in corporate environments, reducing the chance that generic monitoring tools will flag this channel as unusual. A strictly configured EDR may still detect anomalous access to HID interfaces or associated processes.
 
-### **Limitaciones operativas**
+### **Operational limitations**
 
-El rendimiento del sistema está condicionado por los siguientes factores.
+Several factors constrain performance:
 
-- **Ancho de banda limitado**, al tunelizar datos por una interfaz HID, la tasa de transferencia es baja, por lo que no resulta apto para la exfiltración masiva de archivos pesados.
-- **Dependencia del entorno**, requiere permisos de ejecución adecuados en el host para inicializar el script cliente, compatibilidad con la versión del firmware y estabilidad en la conexión inalámbrica del implante.
-- **Conectividad del implante**, permite establecer comunicaciones con sistemas air-gapped sin utilizar la interfaz de red del equipo objetivo. Para operar remotamente, el implante debe disponer de un enlace inalámbrico con la infraestructura o estación de control, ya sea mediante su propio punto de acceso Wi-Fi (modo AP) o conectándose a una red existente (modo Station). No requiere necesariamente acceso a Internet ni infraestructura inalámbrica externa. Determinadas operaciones también permiten almacenar información localmente en el dispositivo.
+- **Limited bandwidth**: tunneling data through an HID interface provides a low transfer rate, so it is unsuitable for large-scale exfiltration of heavy files.
+- **Environmental dependencies**: the host needs suitable execution permissions to start the client script, compatible firmware, and a stable wireless connection to the implant.
+- **Implant connectivity**: it can communicate with air-gapped systems without using the target computer's network interface. For remote operation, the implant needs a wireless link to the control station or infrastructure, either through its own Wi-Fi access point (AP mode) or by joining an existing network (Station mode). Internet access or external wireless infrastructure is not necessarily required. Some operations can also store information locally on the device.
 
-## Armado del laboratorio
+## Lab setup
 
-El escenario de pruebas consta de tres componentes principales: una máquina Linux que aloja el servidor receptor (*catcher*), una máquina Windows que cumple el rol de víctima, y el O.MG Cable interconectado físicamente por USB.
+The test environment has three main components: a Linux machine hosting the receiving server (*catcher*), a Windows machine acting as the victim, and the O.MG Cable physically connected over USB.
 
-![Diagrama del laboratorio](img/image4.png)
+![Lab diagram](img/image4.png)
 
-## Configuración del O.MG
+## O.MG configuration
 
-Se requiere un O.MG Cable Elite con firmware v3 o superior compatible con HIDX StealthLink, actualizado mediante la herramienta oficial [WebFlasher](https://o-mg.github.io/WebFlasher/).
+This requires an O.MG Cable Elite with firmware v3 or later that supports HIDX StealthLink, updated using the official [WebFlasher](https://o-mg.github.io/WebFlasher/) tool.
 
-### **Configuración HIDX (pestaña USB)**
+### **HIDX settings (USB tab)**
 
-1. Acceder a la interfaz de configuración mediante el icono de engranaje.
-2. Seleccionar la pestaña **USB**.
-3. Habilitar **HIDX TCP** para permitir que el implante establezca una conexión TCP saliente hacia el servidor receptor.
-4. Indicar la dirección IP de la máquina Linux en **HIDX Server Address** (`192.168.1.5`) y el puerto del servidor en **HIDX Server Port** (`1234`).
-5. Activar **HIDX AutoStart on Boot** para automatizar el inicio del túnel al energizarse el dispositivo.
-6. Guardar los cambios presionando **CHANGE SETTINGS**.
+1. Open the settings interface using the gear icon.
+2. Select the **USB** tab.
+3. Enable **HIDX TCP** so the implant can establish an outbound TCP connection to the receiving server.
+4. Set **HIDX Server Address** to the Linux machine's IP address (`192.168.1.5`) and **HIDX Server Port** to the server port (`1234`).
+5. Enable **HIDX AutoStart on Boot** to start the tunnel automatically when the device receives power.
+6. Save the changes by clicking **CHANGE SETTINGS**.
 
-![Configuración HIDX - pestaña USB](img/image5.png)
+![HIDX settings, USB tab](img/image5.png)
 
-### **Configuración de red (pestaña NET)**
+### **Network settings (NET tab)**
 
-1. Abrir el menú de configuración.
-2. Seleccionar la pestaña **NET**.
-3. Configurar **WiFi Mode** en modo **Station** para que el implante se conecte a una red inalámbrica existente en lugar de generar un punto de acceso propio.
-4. Introducir el SSID y la contraseña de la red del laboratorio.
-5. Aplicar los cambios mediante **CHANGE SETTINGS** para reiniciar el implante y verificar la dirección IP asignada en **Device IP Address** (`192.168.1.6`).
+1. Open the settings menu.
+2. Select the **NET** tab.
+3. Set **WiFi Mode** to **Station** so the implant joins an existing wireless network instead of creating its own access point.
+4. Enter the lab network's SSID and password.
+5. Click **CHANGE SETTINGS** to apply the changes and restart the implant. Then verify the assigned IP address under **Device IP Address** (`192.168.1.6`).
 
-![Configuración de red - pestaña NET](img/image6.png)
+![Network settings, NET tab](img/image6.png)
 
-![Dirección IP asignada al implante](img/image7.png)
+![IP address assigned to the implant](img/image7.png)
 
-*Nota: Los pasos exactos de configuración pueden variar según la versión del firmware, se aconseja consultar la documentación oficial en el repositorio [HIDX StealthLink Wiki - Windows PowerShell](https://github.com/O-MG/O.MG-Firmware/wiki/HIDX-StealthLink---Windows-PowerShell---Shell).*
+*Note: The exact configuration steps may vary by firmware version. Consult the official [HIDX StealthLink Wiki - Windows PowerShell](https://github.com/O-MG/O.MG-Firmware/wiki/HIDX-StealthLink---Windows-PowerShell---Shell) documentation.*
 
-## Demostración
+## Demonstration
 
-### **Carga del payload**
+### **Loading the payload**
 
-Desde la consola web del O.MG, seleccionar el payload StealthLink correspondiente a Windows/PowerShell y transferirlo a la memoria del dispositivo.
+In the O.MG web console, select the StealthLink payload for Windows/PowerShell and transfer it to the device's memory.
 
-![Carga del payload StealthLink](img/image8.png)
+![Loading the StealthLink payload](img/image8.png)
 
-### **Puesta en marcha del receptor y ejecución**
+### **Starting the receiver and running the payload**
 
-Iniciar el servidor receptor en la máquina Linux:
+Start the receiving server on the Linux machine:
 
 ```bash
 python3 stealthlink-client-universal.py 0.0.0.0 1234
 [*]Server listening on 0.0.0.0:1234
 ```
-La ejecución se inicia desde la interfaz web de control. El payload abre el cuadro de diálogo **Ejecutar** de Windows e introduce el comando mediante emulación HID, dejándolo escrito en el campo correspondiente antes de confirmar su ejecución.
 
-![Cuadro de diálogo Ejecutar de Windows](img/image9.png)
-En esta demostración, el payload descarga y ejecuta `win-hidshell.ps1` mediante PowerShell, utilizando la conectividad IP de Windows. Una vez iniciado, StealthLink intercambia comandos y respuestas a través de USB HID, mientras que el O.MG Cable utiliza su propia conexión Wi-Fi para comunicarse con el receptor Linux, sin depender de la interfaz de red del host.
+Execution starts from the web control interface. The payload opens the Windows **Run** dialog and types the command through HID emulation, leaving it in the field before confirming execution.
 
-Establecimiento de sesión
+![Windows Run dialog](img/image9.png)
 
-Una vez ejecutado el agente en el host víctima, el implante abre el canal TCP contra el catcher. En el host Linux.
+In this demonstration, the payload downloads and runs `win-hidshell.ps1` through PowerShell, using Windows IP connectivity. Once started, StealthLink exchanges commands and responses over USB HID, while the O.MG Cable uses its own Wi-Fi connection to communicate with the Linux receiver. The interactive channel does not depend on the host's network interface.
+
+Session establishment
+
+Once the agent runs on the victim host, the implant opens a TCP channel to the catcher. On the Linux host:
 
 ```
 [*]Server listening on 0.0.0.0:1234
@@ -176,9 +181,11 @@ HIDX StealthLink Universal Client (type '%quit' to exit)
 [+]Session Established!
 >
 ```
-Operación
 
-A través de la consola interactiva establecida mediante el canal HID, es posible ejecutar comandos en el sistema objetivo y recibir sus resultados, dentro de los permisos correspondientes al contexto de ejecución del cliente.
+Operation
+
+Through the interactive console established over the HID channel, the operator can run commands on the target system and receive their output, within the permissions of the client process.
+
 ```
 [+]Session Established!
 >
@@ -190,47 +197,46 @@ b0nyo-pc\bonyo
 
 <video controls muted playsinline preload="metadata" width="100%">
   <source src="/assets/video/poc_omg.mp4" type="video/mp4">
-  Tu navegador no soporta la reproducción de video.
+  Your browser does not support video playback.
 </video>
 
-Aunque el video corresponde a una demostración anterior, la PoC se ejecutó nuevamente con éxito el 16 de noviembre de 2026.
+Although the video shows an earlier demonstration, the PoC was successfully repeated on November 16, 2026.
 
-Durante la prueba el Microsoft Defender Antivirus se encontraba activo con las siguientes configuraciones.
+During the test, Microsoft Defender Antivirus was active with the following settings.
 
-Detalle del AV y OS
+AV and OS details
 
-![Detalle del AV y OS](img/image10.png)
+![AV and OS details](img/image10.png)
 
+## Detection and defense
 
-## Detección y defensa
+The main defensive challenge with HIDX StealthLink is that its communication channel does not use the target computer's network stack. Commands and responses travel over USB HID, while the implant maintains an independent wireless connection to the control station.
 
-El principal desafío defensivo de HIDX StealthLink es que su canal de comunicación no utiliza la pila de red del equipo objetivo. Los comandos y sus respuestas se transportan mediante USB HID, mientras que el implante establece una conexión inalámbrica independiente con la estación de control.
+This limits visibility for traditional controls that inspect the host's IP traffic, such as NIDS and *egress filtering* policies. It does not make the activity undetectable: running the client and interacting with the operating system can still leave evidence.
 
-Esto limita la visibilidad de los controles tradicionales de inspección de tráfico IP del host, como NIDS y políticas de *egress filtering*. Sin embargo, no implica que la actividad sea indetectable, ya que la ejecución del cliente y su interacción con el sistema operativo pueden generar evidencias.
+The main detection and mitigation surfaces are:
 
-Las principales superficies de detección y mitigación son las siguientes.
+- **Physical security.** Control the origin of USB cables and peripherals. Visual inspection does not guarantee that an implant hidden in a legitimate looking device will be identified.
 
-- **Seguridad física.** Controlar la procedencia de cables y periféricos USB. La inspección visual no garantiza la identificación de implantes integrados en dispositivos de apariencia legítima.
+- **USB and HID auditing.** Monitor the enumeration of new devices, unexpected changes to HID interfaces, and raw HID device access. Bidirectional reports may provide context, although they are not by themselves an indicator of malicious activity.
 
-- **Auditoría USB e HID.** Supervisar la enumeración de nuevos dispositivos, cambios inesperados en interfaces HID y accesos a dispositivos mediante *raw HID*. Los reportes bidireccionales pueden aportar contexto, aunque no constituyen por sí solos un indicador de actividad maliciosa.
+- **Endpoint telemetry.** Correlate USB connection events with process creation and script execution. On Windows, Script Block Logging can record PowerShell script blocks under Event ID 4104 when enabled. Detection of HID related behavior depends on the EDR's capabilities and configuration.
 
-- **Telemetría del endpoint.** Correlacionar eventos de conexión USB con la creación de procesos y la ejecución de scripts. En Windows, Script Block Logging permite registrar bloques de PowerShell mediante el Event ID 4104 cuando está habilitado. La detección de comportamientos asociados con HID depende de las capacidades y la configuración del EDR.
+- **Device control.** Restrict peripheral installation through corporate policies based on hardware IDs, classes, and instance IDs. Lists of approved devices reduce exposure, although VID/PID identifiers can be spoofed.
 
-- **Control de dispositivos.** Aplicar restricciones de instalación de periféricos mediante políticas corporativas, utilizando identificadores de hardware, clases e identificadores de instancia. Las listas de dispositivos autorizados reducen la exposición, aunque los identificadores VID/PID pueden ser suplantados.
+These measures should be complemented by physical access controls and automatic session locking, particularly on sensitive workstations.
 
-Estas medidas deben complementarse con controles de acceso físico y bloqueo automático de sesiones, especialmente en estaciones de trabajo sensibles.
+## Conclusion
 
-## Conclusión
+The O.MG Cable exploits the trust that operating systems place in HID peripherals to inject commands through keyboard emulation. HIDX StealthLink extends this capability with a bidirectional channel for exchanging instructions and responses without using the target computer's conventional network interface for that transport.
 
-El O.MG Cable aprovecha la confianza que los sistemas operativos depositan en los periféricos HID para introducir comandos mediante emulación de teclado. HIDX StealthLink amplía esta capacidad incorporando un canal bidireccional que permite intercambiar instrucciones y respuestas sin utilizar la interfaz de red convencional del equipo objetivo para ese transporte.
+During the PoC, an interactive session was established and commands were executed remotely on Windows. Although the computer had Ethernet connectivity for the initial client download, StealthLink's interactive communication used USB HID and the implant's Wi-Fi connection.
 
-Durante la PoC se estableció una sesión interactiva funcional y se ejecutaron comandos remotamente sobre Windows. Aunque el equipo contaba con conectividad Ethernet para la carga inicial del cliente, la comunicación interactiva de StealthLink se realizó mediante USB HID y la conexión Wi-Fi del implante.
+The demonstration confirms that the mechanism works, but it is not a test of evasion against Microsoft Defender or other security controls because their telemetry was not specifically analyzed.
 
-La demostración confirma el funcionamiento del mecanismo, pero no constituye una prueba de evasión de Microsoft Defender ni de otros controles de seguridad, dado que no se realizó un análisis específico de su telemetría.
+From a defensive perspective, this test also makes one point clear: monitoring network traffic alone is insufficient. Visibility into USB devices, running processes, and endpoint activity is also needed.
 
-Desde el lado defensivo, esta prueba también deja algo claro. No alcanza con monitorear el tráfico de red. Hay que tener visibilidad sobre los dispositivos USB, los procesos que se ejecutan y la actividad del endpoint.
-
-## Fuentes
+## Sources
 
 - [O.MG Firmware Wiki](https://github.com/O-MG/O.MG-Firmware/wiki)
 - [HIDX StealthLink - Windows PowerShell Shell](https://github.com/O-MG/O.MG-Firmware/wiki/HIDX-StealthLink---Windows-PowerShell---Shell)
@@ -238,8 +244,8 @@ Desde el lado defensivo, esta prueba también deja algo claro. No alcanza con mo
 - [Microsoft - PowerShell Logging](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging)
 - [Microsoft - Device Installation Restrictions](https://learn.microsoft.com/en-us/windows/client-management/client-tools/manage-device-installation-with-group-policy)
 
-## Aviso legal
+## Legal notice
 
-Este artículo tiene fines educativos y de investigación en ciberseguridad. El O.MG Cable es una herramienta comercial de pruebas de seguridad cuyas capacidades están documentadas públicamente por su fabricante.
+This article is for educational and cybersecurity research purposes. The O.MG Cable is a commercial security testing tool whose capabilities are publicly documented by its manufacturer.
 
-Las pruebas deben realizarse exclusivamente sobre sistemas propios o con autorización expresa, dentro de entornos controlados. Su utilización sin autorización puede infringir la legislación aplicable.
+Tests must be performed exclusively on systems you own or have explicit authorization to assess, within controlled environments. Unauthorized use may violate applicable laws.

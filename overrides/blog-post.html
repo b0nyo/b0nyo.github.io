@@ -1,5 +1,12 @@
 {% extends "main.html" %}
 {% import "partials/nav-item.html" as item with context %}
+{% block extrahead %}
+  {{ super() }}
+  {% if page.meta.translation_url %}
+    <link rel="alternate" hreflang="{{ page.meta.language }}" href="{{ page.canonical_url }}">
+    <link rel="alternate" hreflang="{{ 'en' if page.meta.language == 'es' else 'es' }}" href="{{ config.site_url.rstrip('/') }}{{ page.meta.translation_url }}">
+  {% endif %}
+{% endblock %}
 {% block container %}
   <div class="md-content md-content--post" data-md-component="content">
     <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
@@ -126,14 +133,20 @@
         </div>
       </div>
     </div>
-    <article class="md-content__inner md-typeset">
+    <article class="md-content__inner md-typeset" lang="{{ page.meta.language | default('en') }}">
       {% if page.meta.cover %}
         <figure class="post-cover">
           <img src="{{ page.meta.cover }}" alt="{{ page.title }}">
           {% if page.meta.cover_credit %}
-            <figcaption>Imagen: {{ page.meta.cover_credit }}</figcaption>
+            <figcaption>{{ "Imagen" if page.meta.language == "es" else "Image" }}: {{ page.meta.cover_credit }}</figcaption>
           {% endif %}
         </figure>
+      {% endif %}
+      {% if page.meta.translation_url %}
+        <nav class="post-language-switch" aria-label="{{ 'Idioma del artículo' if page.meta.language == 'es' else 'Article language' }}">
+          <a href="{{ page.url | url if page.meta.language == 'en' else page.meta.translation_url }}" lang="en" hreflang="en" aria-label="English"{% if page.meta.language == 'en' %} aria-current="page"{% endif %}>EN</a>
+          <a href="{{ page.url | url if page.meta.language == 'es' else page.meta.translation_url }}" lang="es" hreflang="es" aria-label="Español"{% if page.meta.language == 'es' %} aria-current="page"{% endif %}>ES</a>
+        </nav>
       {% endif %}
       {% block content %}
         {% include "partials/content.html" %}
