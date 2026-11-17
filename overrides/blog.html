@@ -7,7 +7,9 @@
       </header>
       <div class="post-grid">
         {% for post in posts %}
-          {% include "partials/post.html" %}
+          {% if not post.meta.translation_of %}
+            {% include "partials/post.html" %}
+          {% endif %}
         {% endfor %}
       </div>
       {% if pagination %}

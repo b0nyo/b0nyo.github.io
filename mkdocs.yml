@@ -36,7 +36,7 @@ plugins:
       post_readtime: true
       post_url_date_format: yyyy/MM
   - rss:
-      match_path: "blog/posts/.*"
+      match_path: 'blog/posts/(?!.*-es\.md$).*'
       date_from_meta:
         as_creation: date
       categories:
