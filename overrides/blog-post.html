@@ -144,8 +144,8 @@
       {% endif %}
       {% if page.meta.translation_url %}
         <nav class="post-language-switch" aria-label="{{ 'Idioma del artículo' if page.meta.language == 'es' else 'Article language' }}">
-          <a href="{{ page.url | url if page.meta.language == 'en' else page.meta.translation_url }}" lang="en" hreflang="en" aria-label="English"{% if page.meta.language == 'en' %} aria-current="page"{% endif %}>EN</a>
-          <a href="{{ page.url | url if page.meta.language == 'es' else page.meta.translation_url }}" lang="es" hreflang="es" aria-label="Español"{% if page.meta.language == 'es' %} aria-current="page"{% endif %}>ES</a>
+          <a href="{{ page.url | url if page.meta.language == 'en' else page.meta.translation_url }}" lang="en" hreflang="en" aria-label="English" title="English"{% if page.meta.language == 'en' %} aria-current="page"{% endif %}><img src="/assets/flags/us.svg" alt=""></a>
+          <a href="{{ page.url | url if page.meta.language == 'es' else page.meta.translation_url }}" lang="es" hreflang="es" aria-label="Español" title="Español"{% if page.meta.language == 'es' %} aria-current="page"{% endif %}><img src="/assets/flags/ar.svg" alt=""></a>
         </nav>
       {% endif %}
       {% block content %}
