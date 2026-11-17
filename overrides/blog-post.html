@@ -2,6 +2,25 @@
 {% import "partials/nav-item.html" as item with context %}
 {% block extrahead %}
   {{ super() }}
+  {% set social_description = page.meta.description | default(config.site_description, true) %}
+  {% set social_image = page.meta.cover | default('/assets/demon-head-logo.png', true) %}
+  {% if social_image.startswith('http://') or social_image.startswith('https://') %}
+    {% set social_image_url = social_image %}
+  {% else %}
+    {% set social_image_url = config.site_url.rstrip('/') ~ '/' ~ social_image.lstrip('/') %}
+  {% endif %}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ page.title | striptags | e }}">
+  <meta property="og:description" content="{{ social_description | e }}">
+  <meta property="og:url" content="{{ page.canonical_url | e }}">
+  <meta property="og:image" content="{{ social_image_url | e }}">
+  <meta property="og:image:alt" content="{{ page.title | striptags | e }}">
+  <meta property="og:site_name" content="{{ config.site_name | e }}">
+  <meta property="og:locale" content="{{ 'es_ES' if page.meta.language == 'es' else 'en_US' }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title | striptags | e }}">
+  <meta name="twitter:description" content="{{ social_description | e }}">
+  <meta name="twitter:image" content="{{ social_image_url | e }}">
   {% if page.meta.translation_url %}
     <link rel="alternate" hreflang="{{ page.meta.language }}" href="{{ page.canonical_url }}">
     <link rel="alternate" hreflang="{{ 'en' if page.meta.language == 'es' else 'es' }}" href="{{ config.site_url.rstrip('/') }}{{ page.meta.translation_url }}">

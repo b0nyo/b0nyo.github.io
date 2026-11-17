@@ -1,6 +1,7 @@
 ---
 date: 2026-11-16
 slug: omg-cable-hidx-stealthlink-es
+description: Cómo el O.MG Cable usa HIDX StealthLink para establecer un canal USB HID bidireccional entre el equipo objetivo y el operador.
 categories:
   - Hardware
 authors:
