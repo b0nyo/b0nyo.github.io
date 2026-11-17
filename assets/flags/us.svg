@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32" role="img" aria-label="United States">
+  <defs>
+    <pattern id="stripes" width="48" height="4.923076" patternUnits="userSpaceOnUse">
+      <path fill="#fff" d="M0 0h48v4.923076H0z"/>
+      <path fill="#b22234" d="M0 0h48v2.461538H0z"/>
+    </pattern>
+    <pattern id="stars" width="3.2" height="3.2" patternUnits="userSpaceOnUse">
+      <circle cx="1.6" cy="1.6" r=".55" fill="#fff"/>
+    </pattern>
+  </defs>
+  <path fill="url(#stripes)" d="M0 0h48v32H0z"/>
+  <path fill="#3c3b6e" d="M0 0h19.2v17.23H0z"/>
+  <path fill="url(#stars)" d="M.5.5h18.2v16.23H.5z"/>
+</svg>
