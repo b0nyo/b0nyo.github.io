@@ -4,31 +4,67 @@
   function initializeSectionNavigation() {
     if (cleanup) cleanup();
 
+    document.documentElement.classList.remove("landing-nav");
+
     const sections = [
-      { id: "write-ups", label: "Write-ups" },
+      { id: "blog", label: "Blog" },
       { id: "cve-disclosures", label: "CVEs" },
+      { id: "write-ups", label: "Write-ups" },
       { id: "about-contact", label: "About & Contact" },
     ].map((item) => ({ ...item, element: document.getElementById(item.id) }));
 
     if (sections.some((section) => !section.element)) return;
 
+    document.documentElement.classList.add("landing-nav");
+
     const topic = document.querySelector(".md-header__topic:last-child .md-ellipsis");
     const links = Array.from(document.querySelectorAll(".md-tabs__link"));
+    const logo = document.querySelector(".md-header__button.md-logo");
+
+    for (const link of links) {
+      const hash = new URL(link.href, window.location.href).hash;
+      if (sections.some((section) => hash === `#${section.id}`)) link.href = hash;
+    }
+
+    function headerBottom() {
+      const header = document.querySelector(".md-header");
+      const tabs = document.querySelector(".md-tabs");
+      return Math.max(
+        header ? header.getBoundingClientRect().bottom : 0,
+        tabs ? tabs.getBoundingClientRect().bottom : 0,
+      );
+    }
+
+    function scrollToSection(id, behavior = "smooth") {
+      const section = sections.find((item) => item.id === id);
+      const heading = section?.element.querySelector("h2");
+      if (!heading) return;
+
+      const top = window.scrollY + heading.getBoundingClientRect().top - headerBottom() - 18;
+      window.scrollTo({ top, behavior });
+    }
+
+    function scrollToHome(behavior = "smooth") {
+      window.scrollTo({ top: 0, behavior });
+    }
 
     function update() {
-      const threshold = 145;
+      const threshold = headerBottom() + 24;
       let active = { id: "home", label: "Home" };
 
       for (const section of sections) {
-        if (section.element.getBoundingClientRect().top <= threshold) active = section;
+        const heading = section.element.querySelector("h2");
+        if (heading && heading.getBoundingClientRect().top <= threshold) active = section;
       }
 
       if (topic) topic.textContent = active.label;
+      document.documentElement.classList.toggle("home-active", active.id === "home");
 
       for (const link of links) {
         const href = link.getAttribute("href") || "";
-        const isHome = active.id === "home" && !href.includes("#");
-        link.classList.toggle("section-active", isHome || href.endsWith(`#${active.id}`));
+        const hash = new URL(href, window.location.href).hash;
+        const isActive = active.id === "home" ? !hash : hash === `#${active.id}`;
+        link.classList.toggle("section-active", isActive);
       }
     }
 
@@ -44,11 +80,52 @@
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+
+    function onNavigationClick(event) {
+      const target = new URL(event.currentTarget.href, window.location.href);
+      const hash = target.hash;
+      const id = hash.slice(1);
+      const isHome = !hash && target.pathname === window.location.pathname;
+      if (!isHome && !sections.some((section) => section.id === id)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      history.pushState(null, "", isHome ? target.pathname + target.search : hash);
+      if (isHome) scrollToHome();
+      else scrollToSection(id);
+    }
+
+    for (const link of links) link.addEventListener("click", onNavigationClick);
+    if (logo) logo.addEventListener("click", onNavigationClick);
+
+    function onTopClick(event) {
+      if (!event.target.closest(".md-top")) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      history.pushState(null, "", window.location.pathname + window.location.search);
+      scrollToHome();
+    }
+
+    document.addEventListener("click", onTopClick, true);
+
     update();
+
+    const initialId = window.location.hash.slice(1);
+    if (sections.some((section) => section.id === initialId)) {
+      requestAnimationFrame(() => scrollToSection(initialId, "auto"));
+    }
 
     cleanup = () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      for (const link of links) link.removeEventListener("click", onNavigationClick);
+      if (logo) logo.removeEventListener("click", onNavigationClick);
+      document.removeEventListener("click", onTopClick, true);
+      document.documentElement.classList.remove("landing-nav");
+      document.documentElement.classList.remove("home-active");
     };
   }
 
